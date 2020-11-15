@@ -63,6 +63,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-include-stdlib.patch
 	"${FILESDIR}"/${P}-sniff-compiler.patch
 	"${FILESDIR}"/${P}-CCVER-var.patch
+	"${FILESDIR}"/${P}-no-jit.patch
 )
 
 python_test()
