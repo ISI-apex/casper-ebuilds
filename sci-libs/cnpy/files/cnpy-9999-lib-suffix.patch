@@ -1,0 +1,18 @@
+--- a/CMakeLists.txt	2020-11-16 12:18:34.969829411 -0500
++++ b/CMakeLists.txt	2020-11-16 12:18:51.528343047 -0500
+@@ -15,12 +15,13 @@
+ 
+ add_library(cnpy SHARED "cnpy.cpp")
+ target_link_libraries(cnpy ${ZLIB_LIBRARIES})
+-install(TARGETS "cnpy" LIBRARY DESTINATION lib PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
++install(TARGETS "cnpy" LIBRARY DESTINATION lib${LIB_SUFFIX}
++    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+ 
+ if(ENABLE_STATIC)
+     add_library(cnpy-static STATIC "cnpy.cpp")
+     set_target_properties(cnpy-static PROPERTIES OUTPUT_NAME "cnpy")
+-    install(TARGETS "cnpy-static" ARCHIVE DESTINATION lib)
++    install(TARGETS "cnpy-static" ARCHIVE DESTINATION lib${LIB_SUFFIX})
+ endif(ENABLE_STATIC)
+ 
+ install(FILES "cnpy.h" DESTINATION include)
