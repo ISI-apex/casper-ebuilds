@@ -11,6 +11,7 @@ dev-python/slepc4py
 dev-python/sympy
 sci-libs/arpack
 sci-libs/blis
+sci-libs/cnpy
 sci-libs/gsl
 sci-libs/hdf5
 sci-libs/lapack
