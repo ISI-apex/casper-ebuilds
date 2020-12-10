@@ -1,5 +1,5 @@
---- a/./3rd-party/prrte/src/util/if.h.orig	2020-11-07 07:05:25.000000000 +0000
-+++ b/./3rd-party/prrte/src/util/if.h	2020-11-07 07:12:29.000000000 +0000
+--- a/3rd-party/prrte/src/util/if.h	2020-11-07 07:05:25.000000000 +0000
++++ b/3rd-party/prrte/src/util/if.h	2020-11-07 07:12:29.000000000 +0000
 @@ -226,6 +226,7 @@
   * Determine if a specified interface is included in a NULL-terminated argv array
   */
@@ -8,8 +8,8 @@
  
  /*
   * Provide a list of strings that contain all known aliases for this node
---- a/./3rd-party/prrte/src/util/if.c.orig	2020-11-07 07:00:20.000000000 +0000
-+++ b/./3rd-party/prrte/src/util/if.c	2020-11-07 07:26:37.000000000 +0000
+--- a/3rd-party/prrte/src/util/if.c	2020-11-07 07:00:20.000000000 +0000
++++ b/3rd-party/prrte/src/util/if.c	2020-11-07 07:26:37.000000000 +0000
 @@ -675,6 +675,50 @@
      return PRTE_ERR_NOT_FOUND;
  }
@@ -61,8 +61,8 @@
  void prte_ifgetaliases(char ***aliases)
  {
      prte_if_t* intf;
---- a/./3rd-party/prrte/src/mca/oob/tcp/oob_tcp_component.c.orig	2020-11-07 07:36:16.000000000 +0000
-+++ b/./3rd-party/prrte/src/mca/oob/tcp/oob_tcp_component.c	2020-11-07 07:36:21.000000000 +0000
+--- a/3rd-party/prrte/src/mca/oob/tcp/oob_tcp_component.c	2020-11-07 07:36:16.000000000 +0000
++++ b/3rd-party/prrte/src/mca/oob/tcp/oob_tcp_component.c	2020-11-07 07:36:21.000000000 +0000
 @@ -520,7 +520,7 @@
          /* handle include/exclude directives */
          if (NULL != interfaces) {
@@ -72,3 +72,21 @@
              /* if one of the network specifications isn't parseable, then
               * error out as we can't do what was requested
               */
+--- a/3rd-party/prrte/src/mca/oob/tcp/oob_tcp_component.c	2020-12-02 06:55:22.000000000 -0000
++++ b/3rd-party/prrte/src/mca/oob/tcp/oob_tcp_component.c	2020-12-02 06:55:36.000000000 -0000
+@@ -1240,6 +1240,7 @@
+     if (NULL == argv) {
+         return NULL;
+     }
++#if 0
+     for (save = i = 0; NULL != argv[i]; ++i) {
+         if (isalpha(argv[i][0])) {
+             argv[save++] = argv[i];
+@@ -1320,6 +1321,7 @@
+     argv[save] = NULL;
+     free(*orig_str);
+     *orig_str = prte_argv_join(argv, ',');
++#endif
+     return argv;
+ }
+ 
