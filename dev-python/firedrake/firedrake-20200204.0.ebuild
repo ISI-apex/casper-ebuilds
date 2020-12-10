@@ -38,11 +38,14 @@ BDEPEND="
 		') )
 	"
 # NOTE: libspatialindex needs a patch that fixes C API
+# NOTE: does not look like metis (not parmetis) is supported (see mesh.py)
 DEPEND="
 	>=sci-libs/libsupermesh-1.0.1.20190401
 	>=sci-libs/libspatialindex-1.8.5-r1
 	sci-mathematics/petsc[hdf5,eigen,scotch?,metis?,complex-scalars=,index-64bit=]
 	slepc? ( sci-mathematics/slepc[complex-scalars=,index-64bit=] )
+	metis? ( sci-libs/parmetis )
+	scotch? ( sci-libs/scotch )
 	"
 RDEPEND="
 	=dev-python/fiat-${MY_FV}*:fd[${PYTHON_SINGLE_USEDEP}]
