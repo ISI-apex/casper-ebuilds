@@ -34,6 +34,8 @@ DEPEND="${RDEPEND}
 S=${WORKDIR}/${MY_P}
 HTML_DOCS=( doc/html/. )
 
+PATCHES=("${FILESDIR}"/${P}-cmake-optional-lib-depends.cmake)
+
 pkg_pretend() {
 	[[ ${MERGE_TYPE} != binary ]] && use openmp && tc-check-openmp
 }
