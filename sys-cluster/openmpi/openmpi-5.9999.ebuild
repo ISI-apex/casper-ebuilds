@@ -88,6 +88,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-autoconf-alps-cray-release.patch
 	"${FILESDIR}"/${PN}-5-prrte-if-addr-match.patch
 	"${FILESDIR}"/${PN}-5-rte-check-argc.patch
+	"${FILESDIR}"/${PN}-5-autogen-forward-args.patch
 )
 
 MULTILIB_WRAPPED_HEADERS=(

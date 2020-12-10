@@ -1,0 +1,28 @@
+--- a/autogen.pl	2020-12-02 23:08:04.000000000 -0000
++++ b/autogen.pl	2020-12-02 23:22:50.000000000 -0000
+@@ -188,11 +188,11 @@
+ 
+     # Run an action depending on what we find in that subdir
+     if (-x "autogen.pl") {
+-        print "--- Found autogen.pl; running...\n";
+-        safe_system("./autogen.pl");
++        print "--- Found autogen.pl; running: ./autogen.pl @main::MY_ARGV\n";
++        safe_system("./autogen.pl @main::MY_ARGV");
+     } elsif (-x "autogen.sh") {
+-        print "--- Found autogen.sh; running...\n";
+-        safe_system("./autogen.sh");
++        print "--- Found autogen.sh; running: ./autogen.sh @main::MY_ARGV\n";
++        safe_system("./autogen.sh @main::MY_ARGV");
+     } elsif (-f "configure.in" || -f "configure.ac") {
+         print "--- Found configure.in|ac; running autoreconf...\n";
+         safe_system("autoreconf -ivf");
+@@ -1414,6 +1414,9 @@
+     }
+ }
+ 
++our @MY_ARGV = ("--include=$include_arg", "--exclude=$exclude_arg");
++print "MY_ARGV @MY_ARGV";
++
+ #---------------------------------------------------------------------------
+ 
+ ++$step;
