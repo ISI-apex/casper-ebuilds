@@ -165,8 +165,18 @@ src_prepare() {
 		eapply "${FILESDIR}"/${PN}-5-odls-keep-fds-for-ofi-ugni.patch
 	fi
 
+	# Exclude framework or framework-component.
+	# On ANL Theta, routed mode other than direct breaks (even on debug
+	# queue for 8*64 ranks). And, setting the mode at runtime via '--mca
+	# routed direct' is insuffcient -- somehow this is overriden when rank
+	# count is large, at least when using 'prte --daemonize && prun'.
+	local included_components="routed-direct"
+	local excluded_components=""
+
 	# Use system pkgs for all except prrte (until it's a pkg too)
-	my_vrun ./autogen.pl --no-3rdparty "${excluded_pkgs}"
+	my_vrun ./autogen.pl --no-3rdparty "${excluded_pkgs}" \
+		--exclude "${excluded_components}" \
+		--include "${included_components}"
 }
 
 multilib_src_configure() {
