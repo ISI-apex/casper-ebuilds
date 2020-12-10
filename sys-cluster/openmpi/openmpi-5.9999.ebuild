@@ -171,7 +171,8 @@ src_prepare() {
 	# routed direct' is insuffcient -- somehow this is overriden when rank
 	# count is large, at least when using 'prte --daemonize && prun'.
 	local included_components="routed-direct"
-	local excluded_components=""
+	# TODO: cross-compilation: cannot test for AVX on build host
+	local excluded_components="op-avx"
 
 	# Use system pkgs for all except prrte (until it's a pkg too)
 	my_vrun ./autogen.pl --no-3rdparty "${excluded_pkgs}" \
