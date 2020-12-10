@@ -59,7 +59,16 @@ prefix-tools_doexe_dir() {
 	local dir="$1"
 	if [[ -d "${dir}" && -n "$(ls -A "${dir}")" ]]; then
 		for b in ${dir}/*; do
-			doexe ${b}
+			if [[ -L  "${b}" ]]
+			then
+				local tgt="$(realpath "${b}")"
+				dosym "$(basename "${tgt}")" $(basename "${b}")
+			elif [[ -f "${b}" ]]
+			then
+				doexe ${b}
+			else
+				echo "WARNING: path ignored (neither file nor symlink): ${b}" 1>&2
+			fi
 		done
 	fi
 }
