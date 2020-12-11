@@ -57,7 +57,7 @@ sci-libs/trilinos arprec boost clp hdf5 metis mumps scalapack scotch sparse tbb 
 dev-cpp/eigen openmp c++11
 sys-cluster/pmix -pmi
 # TODO: petsc hypre
-sci-mathematics/petsc -complex-scalars cxx boost eigen -index-64bit hwloc threads mpi metis parmetis pastix scotch sparse -superlu superlu_dist mumps hdf5 hypre fftw debug
+sci-mathematics/petsc -complex-scalars cxx boost eigen -index-64bit hwloc threads mpi metis parmetis pastix scotch sparse -superlu superlu_dist mumps hdf5 hypre fftw -debug
 sci-mathematics/slepc mpi -complex-scalars -index-64bit
 # TODO: hdf5, -trilinos, -sundials fails to compile, 
 sci-mathematics/dolfin mpi -hdf5 parmetis petsc scotch -trilinos umfpack -vtk zlib -sundials python
