@@ -1,0 +1,11 @@
+--- a/3rd-party/prrte/src/util/hostfile/hostfile.c	2021-01-07 06:39:13.000000000 -0000
++++ b/3rd-party/prrte/src/util/hostfile/hostfile.c	2021-01-07 06:39:16.000000000 -0000
+@@ -747,7 +747,7 @@
+                 /* search the list of nodes provided to us and find it */
+                 for (item1 = prte_list_get_first(nodes);
+                      item1 != prte_list_get_end(nodes);
+-                     item1 = prte_list_get_next(nodes)) {
++                     item1 = prte_list_get_next(item1)) {
+                     node_from_list = (prte_node_t*)item1;
+                     if (prte_node_match(node_from_pool, node_from_list->name)) {
+                         if (remove) {

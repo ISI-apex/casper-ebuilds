@@ -89,6 +89,9 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-prrte-if-addr-match.patch
 	"${FILESDIR}"/${PN}-5-rte-check-argc.patch
 	"${FILESDIR}"/${PN}-5-autogen-forward-args.patch
+	"${FILESDIR}"/${PN}-5-hostfile-list-access.patch
+	"${FILESDIR}"/${PN}-5-prrte-hostfile-max-slots-for-implicit-nodes.patch
+	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
 )
 
 MULTILIB_WRAPPED_HEADERS=(

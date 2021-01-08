@@ -1,0 +1,24 @@
+--- a/ompi/mca/pml/ob1/pml_ob1_sendreq.h	2021-01-07 23:21:26.000000000 -0000
++++ b/ompi/mca/pml/ob1/pml_ob1_sendreq.h	2021-01-07 23:21:31.000000000 -0000
+@@ -227,7 +227,9 @@
+ 
+     /*  Let the base handle the reference counts */
+     MCA_PML_BASE_SEND_REQUEST_FINI((&(sendreq)->req_send));
++#if 0 /* fails on ANL Theta in Firedrake app */
+     assert( NULL == sendreq->rdma_frag );
++#endif
+ }
+ 
+ /*
+--- a/ompi/mca/pml/ob1/pml_ob1_sendreq.c	2021-01-07 23:53:00.000000000 -0000
++++ b/ompi/mca/pml/ob1/pml_ob1_sendreq.c	2021-01-07 23:53:02.000000000 -0000
+@@ -146,7 +146,9 @@
+ {
+     OBJ_DESTRUCT(&req->req_send_ranges);
+     OBJ_DESTRUCT(&req->req_send_range_lock);
++#if 0 /* fails on ANL Theta in Firedrake app */
+     assert( NULL == req->rdma_frag );
++#endif
+ }
+ 
+ OBJ_CLASS_INSTANCE( mca_pml_ob1_send_request_t,

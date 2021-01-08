@@ -1,0 +1,27 @@
+--- a/3rd-party/prrte/src/util/hostfile/hostfile.c	2021-01-07 18:19:05.000000000 -0000
++++ b/3rd-party/prrte/src/util/hostfile/hostfile.c	2021-01-07 18:25:01.000000000 -0000
+@@ -710,6 +710,12 @@
+                                 goto skipnode;
+                             }
+                         }
++                        /* apply max_slots= from the line to all the empty nodes
++                         * chosen */
++                        if (PRTE_FLAG_TEST(node_from_file,
++                                    PRTE_NODE_FLAG_SLOTS_GIVEN)) {
++                            node_from_list->slots = node_from_file->slots;
++                        }
+                         if (remove) {
+                             /* remove item from list */
+                             prte_list_remove_item(nodes, item1);
+@@ -750,6 +756,11 @@
+                      item1 = prte_list_get_next(item1)) {
+                     node_from_list = (prte_node_t*)item1;
+                     if (prte_node_match(node_from_pool, node_from_list->name)) {
++                        /* apply max_slots= from the line to all chosen nodes */
++                        if (PRTE_FLAG_TEST(node_from_file,
++                                    PRTE_NODE_FLAG_SLOTS_GIVEN)) {
++                            node_from_list->slots = node_from_file->slots;
++                        }
+                         if (remove) {
+                             /* match - remove item from list */
+                             prte_list_remove_item(nodes, item1);
