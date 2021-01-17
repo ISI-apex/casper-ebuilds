@@ -57,12 +57,15 @@ prefix-tools_get_conflicts() {
 
 prefix-tools_doexe_dir() {
 	local dir="$1"
+	local dest="$2"
 	if [[ -d "${dir}" && -n "$(ls -A "${dir}")" ]]; then
+		exeinto "${dest}"
 		for b in ${dir}/*; do
 			if [[ -L  "${b}" ]]
 			then
 				local tgt="$(realpath "${b}")"
-				dosym "$(basename "${tgt}")" $(basename "${b}")
+				dosym "$(basename "${tgt}")" \
+					${dest}/$(basename "${b}")
 			elif [[ -f "${b}" ]]
 			then
 				doexe ${b}
@@ -74,8 +77,8 @@ prefix-tools_doexe_dir() {
 }
 
 prefix-tools_src_install() {
-	exeinto ${PREFIX_TOOLS_HOST_DIR}
-	prefix-tools_doexe_dir "${PREFIX_TOOLS_CLUSTER}/host"
+	prefix-tools_doexe_dir "${PREFIX_TOOLS_CLUSTER}/host" \
+		"${PREFIX_TOOLS_HOST_DIR}"
 
 	local exec_path="/usr/libexec/prefix-tools/bin"
 	exeinto ${exec_path}
@@ -85,7 +88,7 @@ prefix-tools_src_install() {
 	EOF
 	doenvd "${T}"/01prefix-tools
 
-	prefix-tools_doexe_dir "${PREFIX_TOOLS_CLUSTER}/prefix"
+	prefix-tools_doexe_dir "${PREFIX_TOOLS_CLUSTER}/prefix" "${exec_path}"
 }
 
 DEPEND="$(prefix-tools_get_conflicts)"
