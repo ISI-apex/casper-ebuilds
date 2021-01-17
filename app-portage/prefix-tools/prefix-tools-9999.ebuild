@@ -3,6 +3,9 @@
 
 EAPI=7
 
+PYTHON_COMPAT=( python3_{6,7,8} )
+DISTUTILS_SINGLE_IMPL=1
+
 EGIT_REPO_URI="https://github.com/ISI-apex/casper-utils.git"
 EGIT_SUBMODULES=()
 
@@ -15,7 +18,7 @@ else # live
 	KEYWORDS=""
 fi
 
-inherit git-r3
+inherit git-r3 distutils-r1
 
 DESCRIPTION="Tools for running commands within Gentoo Prefix"
 HOMEPAGE="https://github.com/ISI-apex/casper-utils"
@@ -24,6 +27,16 @@ LICENSE="GPL-3"
 IUSE=""
 
 S="${WORKDIR}/${P}/prefix-tools"
+
+src_compile() {
+	for d in python/*; do
+		pushd "${d}"
+		BUILD_DIR="${WORKDIR}/${d}"
+		python_setup
+		distutils-r1_python_compile
+		popd
+	done
+}
 
 src_install() {
 	insinto /etc/${PN}
@@ -46,5 +59,13 @@ src_install() {
 	doins host/pscommon.sh
 	for f in host/*; do
 		doexe $f
+	done
+
+	for d in python/*; do
+		pushd "${d}"
+		BUILD_DIR="${WORKDIR}/${d}"
+		python_setup
+		distutils-r1_python_install
+		popd
 	done
 }
