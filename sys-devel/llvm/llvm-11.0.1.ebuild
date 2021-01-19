@@ -4,7 +4,8 @@
 EAPI=7
 
 PYTHON_COMPAT=( python3_{6..9} )
-inherit cmake llvm.org multilib-minimal pax-utils python-any-r1 \
+DISTUTILS_OPTIONAL=1
+inherit cmake llvm.org multilib-minimal pax-utils distutils-r1 \
 	toolchain-funcs
 
 DESCRIPTION="Low Level Virtual Machine"
@@ -27,18 +28,21 @@ ALL_LLVM_TARGETS=( "${ALL_LLVM_TARGETS[@]/#/llvm_targets_}" )
 LICENSE="Apache-2.0-with-LLVM-exceptions UoI-NCSA BSD public-domain rc"
 SLOT="$(ver_cut 1)"
 KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86 ~amd64-linux ~ppc-macos ~x64-macos"
-IUSE="bitwriter debug doc exegesis gold libedit +libffi lld mcjit
+IUSE="bitwriter debug doc exegesis gold libedit +libffi lit lld mcjit
 	ncurses passes test xar xml z3
 	kernel_Darwin ${ALL_LLVM_TARGETS[*]}"
-REQUIRED_USE="|| ( ${ALL_LLVM_TARGETS[*]} )"
+REQUIRED_USE="|| ( ${ALL_LLVM_TARGETS[*]} )
+		lit? ( ${PYTHON_REQUIRED_USE} )"
 RESTRICT="!test? ( test )"
 
+# TODO: python dependencies of llvm-lit
 RDEPEND="
 	sys-libs/zlib:0=[${MULTILIB_USEDEP}]
 	exegesis? ( dev-libs/libpfm:= )
 	gold? ( >=sys-devel/binutils-2.31.1-r4:*[plugins] )
 	libedit? ( dev-libs/libedit:0=[${MULTILIB_USEDEP}] )
 	libffi? ( >=dev-libs/libffi-3.0.13-r1:0=[${MULTILIB_USEDEP}] )
+	lit? ( ${PYTHON_DEPS} )
 	ncurses? ( >=sys-libs/ncurses-5.9-r3:0=[${MULTILIB_USEDEP}] )
 	xar? ( app-arch/xar )
 	xml? ( dev-libs/libxml2:2=[${MULTILIB_USEDEP}] )
@@ -604,6 +608,13 @@ src_install() {
 
 	# move wrapped headers back
 	mv "${ED}"/usr/include "${ED}"/usr/lib/llvm/${SLOT}/include || die
+
+	if use lit; then
+		pushd utils/lit || die
+		python_setup
+		distutils-r1_python_install
+		popd || die
+	fi
 }
 
 multilib_src_install() {
@@ -617,6 +628,8 @@ multilib_src_install() {
 
 	LLVM_LDPATHS+=( "${EPREFIX}/${llvm_prefix}/$(get_libdir)" )
 
+	exeinto "/${llvm_prefix}/bin"
+	doexe bin/llvm-lit
 }
 
 multilib_src_install_all() {
