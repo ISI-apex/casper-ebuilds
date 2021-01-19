@@ -29,7 +29,7 @@ LICENSE="Apache-2.0-with-LLVM-exceptions UoI-NCSA BSD public-domain rc"
 SLOT="$(ver_cut 1)"
 KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86 ~amd64-linux ~ppc-macos ~x64-macos"
 IUSE="bitwriter debug doc examples exegesis gold libedit +libffi lit lld mcjit
-	ncurses passes test xar xml z3
+	mlir ncurses passes test xar xml z3
 	kernel_Darwin ${ALL_LLVM_TARGETS[*]}"
 REQUIRED_USE="|| ( ${ALL_LLVM_TARGETS[*]} )
 		lit? ( ${PYTHON_REQUIRED_USE} )"
@@ -70,7 +70,7 @@ RDEPEND="${RDEPEND}
 PDEPEND="sys-devel/llvm-common
 	gold? ( >=sys-devel/llvmgold-${SLOT} )"
 
-LLVM_COMPONENTS=( llvm )
+LLVM_COMPONENTS=( llvm mlir )
 LLVM_MANPAGES=pregenerated
 llvm.org_set_globals
 
@@ -178,6 +178,12 @@ src_prepare() {
 	# https://bugs.gentoo.org/show_bug.cgi?id=565358
 	eapply "${FILESDIR}"/9999/0007-llvm-config-Clean-up-exported-values-update-for-shar.patch
 	eapply "${FILESDIR}"/${PN}-10.0.0-cmake-llvm-config-interface-libs.patch
+	# fix failure to build apps with MLIR: spurious target <app>/mlir-tbgen
+	eapply "${FILESDIR}"/9999/cmake-llvm-no-dep-on-tblgen-exe.patch
+	pushd ..
+	# fix mlir not being included in the llvm build
+	eapply "${FILESDIR}"/9999/cmake-mlir-targets.patch
+	popd
 
 	# disable use of SDK on OSX, bug #568758
 	sed -i -e 's/xcrun/false/' utils/lit/lit/util.py || die
@@ -448,6 +454,14 @@ get_distribution_components() {
 
 			LLVMPasses
 		)
+		use mlir && out+=(
+			# mlir/cmake/modules/AddMLIR.cmake needs mlir-libraries
+			# to be in the component list, but
+			# llvm/cmake/modules/LLVMDistributionSupport.cmake
+			# breaks on it. So, we patched AddMLIR to look for
+			# "mlir" in project list.
+			# mlir-libraries
+		)
 	fi
 
 	printf "%s${sep}" "${out[@]}"
@@ -459,6 +473,9 @@ multilib_src_configure() {
 		ffi_cflags=$($(tc-getPKG_CONFIG) --cflags-only-I libffi)
 		ffi_ldflags=$($(tc-getPKG_CONFIG) --libs-only-L libffi)
 	fi
+
+	local my_projects=()
+	use mlir && my_projects+=(mlir)
 
 	local libdir=$(get_libdir)
 	local mycmakeargs=(
@@ -477,6 +494,7 @@ multilib_src_configure() {
 		# is that the former list is explicitly verified at cmake time
 		-DLLVM_TARGETS_TO_BUILD=""
 		-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="${LLVM_TARGETS// /;}"
+		-DLLVM_ENABLE_PROJECTS="${my_projects// /;}"
 		-DLLVM_BUILD_TESTS=$(usex test)
 		-DLLVM_BUILD_EXAMPLES=$(usex examples)
 
@@ -582,6 +600,7 @@ multilib_src_configure() {
 multilib_src_compile() {
 	local targets=(distribution)
 	use examples && targets+=(examples/all)
+	use mlir && targets+=(tools/mlir/all) # includes examples
 	cmake_build ${targets[@]}
 
 	pax-mark m "${BUILD_DIR}"/bin/llvm-rtdyld
@@ -628,6 +647,13 @@ multilib_src_install() {
 	local targets=(install-distribution)
 	if use examples; then
 		targets+=(examples/install)
+	fi
+	# The conversion of components to targets for mlir isn't working
+	if use mlir; then
+		targets+=(tools/mlir/install)
+		if use examples; then
+			targets+=(tools/mlir/examples/install)
+		fi
 	fi
 	DESTDIR=${D} cmake_build ${targets[@]}
 
