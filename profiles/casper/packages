@@ -18,6 +18,10 @@ sci-libs/scikits_learn
 # For Firedrake benchmarks
 dev-python/pybench
 
+# For SAR app
+sci-libs/fftw
+sci-libs/cnpy
+
 # For testing OpenMPI transports
 app-benchmarks/osu-micro-benchmarks
 
