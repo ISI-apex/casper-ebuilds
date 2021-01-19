@@ -28,7 +28,7 @@ ALL_LLVM_TARGETS=( "${ALL_LLVM_TARGETS[@]/#/llvm_targets_}" )
 LICENSE="Apache-2.0-with-LLVM-exceptions UoI-NCSA BSD public-domain rc"
 SLOT="$(ver_cut 1)"
 KEYWORDS="~amd64 ~arm ~arm64 ~ppc64 ~riscv ~x86 ~amd64-linux ~ppc-macos ~x64-macos"
-IUSE="bitwriter debug doc exegesis gold libedit +libffi lit lld mcjit
+IUSE="bitwriter debug doc examples exegesis gold libedit +libffi lit lld mcjit
 	ncurses passes test xar xml z3
 	kernel_Darwin ${ALL_LLVM_TARGETS[*]}"
 REQUIRED_USE="|| ( ${ALL_LLVM_TARGETS[*]} )
@@ -319,6 +319,10 @@ get_distribution_components() {
 			docs-llvm-html
 		)
 
+		use examples && out+=(
+			ExampleIRTransforms
+		)
+
 		use gold && out+=(
 			LLVMgold
 		)
@@ -474,6 +478,7 @@ multilib_src_configure() {
 		-DLLVM_TARGETS_TO_BUILD=""
 		-DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="${LLVM_TARGETS// /;}"
 		-DLLVM_BUILD_TESTS=$(usex test)
+		-DLLVM_BUILD_EXAMPLES=$(usex examples)
 
 		-DLLVM_ENABLE_FFI=$(usex libffi)
 		-DLLVM_ENABLE_LIBEDIT=$(usex libedit)
@@ -575,7 +580,9 @@ multilib_src_configure() {
 }
 
 multilib_src_compile() {
-	cmake_build distribution
+	local targets=(distribution)
+	use examples && targets+=(examples/all)
+	cmake_build ${targets[@]}
 
 	pax-mark m "${BUILD_DIR}"/bin/llvm-rtdyld
 	pax-mark m "${BUILD_DIR}"/bin/lli
@@ -618,7 +625,11 @@ src_install() {
 }
 
 multilib_src_install() {
-	DESTDIR=${D} cmake_build install-distribution
+	local targets=(install-distribution)
+	if use examples; then
+		targets+=(examples/install)
+	fi
+	DESTDIR=${D} cmake_build ${targets[@]}
 
 	local llvm_prefix="usr/lib/llvm/${SLOT}"
 
