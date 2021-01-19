@@ -609,11 +609,14 @@ src_install() {
 multilib_src_install() {
 	DESTDIR=${D} cmake_build install-distribution
 
+	local llvm_prefix="usr/lib/llvm/${SLOT}"
+
 	# move headers to /usr/include for wrapping
 	rm -rf "${ED}"/usr/include || die
-	mv "${ED}"/usr/lib/llvm/${SLOT}/include "${ED}"/usr/include || die
+	mv "${ED}"/${llvm_prefix}/include "${ED}"/usr/include || die
 
-	LLVM_LDPATHS+=( "${EPREFIX}/usr/lib/llvm/${SLOT}/$(get_libdir)" )
+	LLVM_LDPATHS+=( "${EPREFIX}/${llvm_prefix}/$(get_libdir)" )
+
 }
 
 multilib_src_install_all() {
