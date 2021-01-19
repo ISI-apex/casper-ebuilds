@@ -5,6 +5,10 @@ dev-lang/python:3.9
 
 <sys-devel/gcc-8.3
 
+# An adequate version of MLIR is present only in LLVM v11.
+<sys-devel/llvm-11
+<sys-devel/clang-11
+
 # might belong in usc-hpcc profile instead
 >sys-cluster/libpmi2-slurm-17.11.9.2-r1
 

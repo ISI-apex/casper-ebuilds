@@ -93,10 +93,7 @@ dev-python/slepc4py mpi
 # NOTE: scotch has priority over metis, so enable only one to not mislead
 dev-python/firedrake mpi metis -scotch slepc examples
 
-# Note: llvm:10 is used to build llvm:11, because MLIR fails to build
-# with GCC (v9 and v10). Then, llvm:11 is used to build Halide.
-sys-devel/llvm:10 -mlir
-sys-devel/llvm:11 bitwriter mcjit lld passes mlir examples lit
+sys-devel/llvm bitwriter mcjit lld passes mlir examples lit
 dev-lang/halide examples test opengl python tools
 
 # Dependencies of CASPER Auto-Scheduler
