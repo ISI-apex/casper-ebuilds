@@ -60,8 +60,9 @@ fi
 
 [[ ${_LLVM_SOURCE_TYPE} == git ]] && inherit git-r3
 
-[[ ${PV} == ${_LLVM_MASTER_MAJOR}.* && ${_LLVM_SOURCE_TYPE} == tar ]] &&
-	die "${ECLASS}: Release ebuild for master branch?!"
+# Disable this check to allow manual snapshots for deterministic and offline builds
+#[[ ${PV} == ${_LLVM_MASTER_MAJOR}.* && ${_LLVM_SOURCE_TYPE} == tar ]] &&
+#	die "${ECLASS}: Release ebuild for master branch?!"
 
 inherit multiprocessing
 
@@ -89,8 +90,48 @@ inherit multiprocessing
 # the manpages.  If set to 'pregenerated', fetch and install
 # pregenerated manpages from the archive.
 
+# @ECLASS-VARIABLE: LLVM_COMMIT
+# @DESCRIPTION:
+# The specific commit to fetch, instead of the default tagged release.
+
 
 # == global scope logic ==
+
+# @FUNCTION: _llvm.org_tag
+# @USAGE:
+# @INTERNAL
+# @DESCRIPTION:
+# Construct the name of the release tag (or prefix for unreleased versions).
+_llvm.org_tag() {
+	echo "llvmorg-${PV/_/-}"
+}
+
+# @FUNCTION: _llvm.org_tarball
+# @USAGE:
+# @INTERNAL
+# @DESCRIPTION:
+# Construct the name of the source tarball.
+_llvm.org_tarball() {
+	local tag=$(_llvm.org_tag)
+	if  [[ -n "${LLVM_COMMIT}" ]]; then
+		echo "${tag}.${LLVM_COMMIT}.tar.gz"
+	else
+		echo "${tag}.tar.gz"
+	fi
+}
+
+# @FUNCTION: _llvm.org_git_ref
+# @USAGE:
+# @INTERNAL
+# @DESCRIPTION:
+# Git revision reference (tag name or commit hash).
+_llvm.org_git_ref() {
+	if  [[ -n "${LLVM_COMMIT}" ]]; then
+		echo "${LLVM_COMMIT}"
+	else
+		echo "$(_llvm.org_tag)"
+	fi
+}
 
 # @FUNCTION: llvm.org_set_globals
 # @DESCRIPTION:
@@ -113,7 +154,7 @@ llvm.org_set_globals() {
 			EGIT_BRANCH="release/${PV%%.*}.x"
 	elif [[ ${_LLVM_SOURCE_TYPE} == tar ]]; then
 		SRC_URI+="
-			https://github.com/llvm/llvm-project/archive/llvmorg-${PV/_/-}.tar.gz"
+			https://github.com/llvm/llvm-project/archive/$(_llvm.org_git_ref).tar.gz -> $(_llvm.org_tarball)"
 	else
 		die "Invalid _LLVM_SOURCE_TYPE: ${LLVM_SOURCE_TYPE}"
 	fi
@@ -179,11 +220,12 @@ llvm.org_src_unpack() {
 		git-r3_checkout '' . '' "${components[@]}"
 		default_src_unpack
 	else
-		local archive=llvmorg-${PV/_/-}.tar.gz
+		local archive=$(_llvm.org_tarball)
+		local ref=$(_llvm.org_git_ref)
 		ebegin "Unpacking from ${archive}"
 		tar -x -z -o --strip-components 1 \
 			-f "${DISTDIR}/${archive}" \
-			"${components[@]/#/llvm-project-${archive%.tar*}/}" || die
+			"${components[@]/#/llvm-project-${ref}/}" || die
 		eend ${?}
 
 		# unpack all remaining distfiles
