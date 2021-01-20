@@ -1,0 +1,4 @@
+CFLAGS="-march=native -mtune=native"
+CXXFLAGS="${CFLAGS}"
+FCFLAGS="${CFLAGS}"
+FFLAGS="${CFLAGS}"
