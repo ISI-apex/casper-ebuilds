@@ -1,0 +1,13 @@
+--- a/IO/CityGML/CMakeLists.txt	2021-02-02 16:31:12.750901000 -0000
++++ b/IO/CityGML/CMakeLists.txt	2021-02-02 16:29:48.697063000 -0000
+@@ -4,8 +4,8 @@
+ # pugixml does not set _INCLUDE_DIRS or _LIBRARIES
+ if(VTK_USE_SYSTEM_PUGIXML AND NOT pugixml_INCLUDE_DIRS)
+   find_package(pugixml REQUIRED)
+-  get_target_property(pugixml_INCLUDE_DIRS pugixml INTERFACE_INCLUDE_DIRECTORIES)
+-  get_target_property(pugixml_LIBRARIES pugixml LOCATION)
++  get_target_property(pugixml_INCLUDE_DIRS pugixml::pugixml INTERFACE_INCLUDE_DIRECTORIES)
++  get_target_property(pugixml_LIBRARIES pugixml::pugixml INTERFACE_LINK_LIBRARIES)
+   include_directories(${pugixml_INCLUDE_DIRS})
+   vtk_module_link_libraries(vtkIOCityGML LINK_PRIVATE ${pugixml_LIBRARIES})
+ endif()
