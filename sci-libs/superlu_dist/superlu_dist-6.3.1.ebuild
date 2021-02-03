@@ -13,7 +13,7 @@ SRC_URI="https://portal.nersc.gov/project/sparse/superlu/${PN}_${PV}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/$(ver_cut 1)"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 # TODO: double-precision (sci-libs/parmetis has a flag like that)
 IUSE="cuda doc examples fortran index-64bit lapack openmp parmetis static-libs test"
 

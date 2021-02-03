@@ -14,7 +14,7 @@ SRC_URI="https://portal.nersc.gov/project/sparse/superlu/${PN}_${MY_PV}.tar.gz"
 
 LICENSE="BSD"
 SLOT="cuda/$(ver_cut 1)"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 # TODO: double-precision (sci-libs/parmetis has a flag like that)
 IUSE="doc examples fortran index-64bit lapack openmp parmetis static-libs test"
 
@@ -67,7 +67,13 @@ src_configure() {
 	fi
 	# TODO: FindCUDA.cmake
 	# TODO: try without
-	local cuda_dir="${EPREFIX}/opt/cuda/targets/x86_64-linux"
+	case "${ARCH}" in
+		# TODO: check for little endian
+		ppc64) NV_ARCH=ppc64le ;;
+		amd64) NV_ARCH=x86_64 ;;
+		*) die "No Nvidia CUDA for architecture: ${ARCH}" ;;
+	esac
+	local cuda_dir="${EPREFIX}/opt/cuda/targets/${NV_ARCH}-linux"
 	mycmakeargs+=(
 		-DCMAKE_C_FLAGS="${CFLAGS} -DGPU_ACC -I${cuda_dir}/include"
 		-DCMAKE_SHARED_LINKER_FLAGS="-L${cuda_dir}/lib -lcublas -lcudart"
