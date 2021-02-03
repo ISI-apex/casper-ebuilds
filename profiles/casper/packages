@@ -10,7 +10,7 @@ dev-lang/halide
 sci-libs/superlu_dist:cuda
 
 # CASPER auto-scheduling predictor
-sci-libs/tensorflow
+# sci-libs/tensorflow : listed in casper-CLUSTER/packages (doesn't build on all)
 dev-python/pandas
 dev-python/seaborn
 sci-libs/scikits_learn
