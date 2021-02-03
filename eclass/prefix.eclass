@@ -135,4 +135,26 @@ prefixify_ro() {
 		die "$1 does not exist"
 	fi
 }
+
+# @FUNCTION: exprefixify
+# @USAGE: <directory>
+# @DESCRIPTION:
+# For each ELF executable in given directory replaces the path to
+# program interpreter (i.e. the dynamic loader, for example
+# '/lib64/ld-linux-x86-64.so.2') with the path where the prefix is
+# appended the original path.
+# NOTE: ebuilds that call this must add dev-util/patchelf to DEPENDS
+exprefixify() {
+	local dir="$1"
+	einfo "Prefixifying executables in ${dir}..."
+	type -P patchelf 1>/dev/null || die "patchelf not found (add dev-util/patchelf to DEPENDS)"
+
+	# The first -exec is to filter out non-ELF executables
+	find "${dir}" \
+		\( -type f -or -type l \) -executable \
+		-not \( -name '*.la' -or -name '*.a' -or -name '*.so.*' -or -name '*.so' \) \
+		-exec sh -c 'patchelf --print-interpreter {} 1>/dev/null 2>/dev/null' \; \
+		-exec sh -c 'patchelf --set-interpreter ${EPREFIX}/$(patchelf --print-interpreter {}) {}' \; \
+	       || die
+}
 # vim: tw=72:
