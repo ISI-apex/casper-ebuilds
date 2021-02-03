@@ -83,6 +83,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-lib-dir.patch
 	"${FILESDIR}"/${P}-cmake-spm-option.patch
 	"${FILESDIR}"/${P}-cmake-starpu-libs.patch
+	"${FILESDIR}"/${P}-coeftab-extern.patch
 	)
 
 src_prepare() {
