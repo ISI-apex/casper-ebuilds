@@ -19,3 +19,17 @@ sys-fabric/libibverbs
 # to error finding some modules, and host's ghc is also very old (7.6, allows
 # building <=7.10)).
 >dev-lang/ghc-8.8.1
+
+# TODO: pin versions until we explicitly choose to update these
+>media-libs/mesa-20.1.0
+>media-libs/libglvnd-1.3.1
+>dev-cpp/catch-2.11.3
+>dev-libs/isl-0.22.1
+>sci-libs/lapack-3.8.0-r1
+>sci-libs/superlu-5.2.1-r1
+>sci-libs/arpack-3.7.0
+>sci-libs/fftw-3.3.8-r1
+>sci-mathematics/glpk-4.65
+>dev-python/versioneer-0.18-r1
+>dev-python/islpy-2019.1.2
+>sys-cluster/rdma-core-31.0
