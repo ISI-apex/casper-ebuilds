@@ -22,7 +22,7 @@ DEPEND="
 	"
 # TODO: moola, meshio, pygmsh
 RDEPEND="${DEPEND}
-	>=sci-libs/scipy-1.0[${PYTHON_USEDEP}]
+	>=dev-python/scipy-1.0[${PYTHON_USEDEP}]
 	moola? ( >=dev-python/moola-0.1.6 )
 	visualisation? ( sci-libs/tensorflow
 				>=dev-python/protobuf-python-3.6.0

@@ -36,5 +36,5 @@ python_install_all()
 }
 
 pkg_postinst() {
-	optfeature "Support for evaluating Bessel functions" sci-libs/scipy
+	optfeature "Support for evaluating Bessel functions" dev-python/scipy
 }

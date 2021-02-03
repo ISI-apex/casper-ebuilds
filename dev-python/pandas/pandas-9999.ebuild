@@ -48,7 +48,7 @@ OPTIONAL_DEPEND="
 	dev-python/xarray[${PYTHON_USEDEP}]
 	dev-python/xlrd[${PYTHON_USEDEP}]
 	dev-python/xlwt[${PYTHON_USEDEP}]
-	sci-libs/scipy[${PYTHON_USEDEP}]
+	dev-python/scipy[${PYTHON_USEDEP}]
 	X? (
 		dev-python/PyQt5[${PYTHON_USEDEP}]
 		|| (
@@ -81,7 +81,7 @@ DEPEND="${COMMON_DEPEND}
 		>=dev-python/sphinx-1.2.1[${PYTHON_USEDEP}]
 		dev-python/xlrd[${PYTHON_USEDEP}]
 		dev-python/xlwt[${PYTHON_USEDEP}]
-		sci-libs/scipy[${PYTHON_USEDEP}]
+		dev-python/scipy[${PYTHON_USEDEP}]
 		x11-misc/xclip
 	)
 	test? (
@@ -162,6 +162,6 @@ pkg_postinst() {
 	optfeature "R I/O support" dev-python/rpy
 	optfeature "Needed for parts of pandas.stats" dev-python/statsmodels
 	optfeature "SQL database support" ">=dev-python/sqlalchemy-0.8.1"
-	optfeature "miscellaneous statistical functions" sci-libs/scipy
+	optfeature "miscellaneous statistical functions" dev-python/scipy
 	optfeature "necessary to use pandas.io.clipboard.read_clipboard support" dev-python/PyQt5 dev-python/pygtk x11-misc/xclip x11-misc/xsel
 }

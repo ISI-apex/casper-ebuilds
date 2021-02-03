@@ -26,7 +26,7 @@ RDEPEND="
 	dev-python/cython[${PYTHON_USEDEP}]
 	dev-python/numpy[${PYTHON_USEDEP}]
 	dev-python/joblib[${PYTHON_USEDEP}]
-	sci-libs/scipy[${PYTHON_USEDEP}]
+	dev-python/scipy[${PYTHON_USEDEP}]
 	sci-libs/scikits[${PYTHON_USEDEP}]
 	virtual/blas:=
 	virtual/cblas:=

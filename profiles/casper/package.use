@@ -77,7 +77,7 @@ x11-libs/libxcb -xkb
 
 app-portage/layman sync-plugin-portage git
 
-sci-libs/scipy sparse
+dev-python/scipy sparse
 
 x11-drivers/nvidia-drivers -X libglvnd -driver -kms -tools -wayland -gtk3 uvm
 

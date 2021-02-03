@@ -19,5 +19,5 @@ IUSE=""
 RDEPEND="dev-python/numpy[${PYTHON_USEDEP}]"
 
 pkg_postinst() {
-	optfeature "Support for evaluating Bessel functions" sci-libs/scipy
+	optfeature "Support for evaluating Bessel functions" dev-python/scipy
 }

@@ -20,7 +20,7 @@ sci-libs/libsupermesh
 sci-libs/netcdf
 sci-libs/parmetis
 sci-libs/scalapack
-sci-libs/scipy
+dev-python/scipy
 sci-libs/scotch
 sci-libs/vtk
 sci-mathematics/glpk

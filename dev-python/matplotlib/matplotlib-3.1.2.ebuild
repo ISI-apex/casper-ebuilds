@@ -55,7 +55,7 @@ DEPEND="${COMMON_DEPEND}
 		dev-python/ipython[${PYTHON_USEDEP}]
 		>=dev-python/numpydoc-0.8[${PYTHON_USEDEP}]
 		<dev-python/numpydoc-0.9
-		sci-libs/scipy[${PYTHON_USEDEP}]
+		dev-python/scipy[${PYTHON_USEDEP}]
 		>=dev-python/sphinx-1.3.0[${PYTHON_USEDEP}]
 		>=dev-python/sphinx-gallery-0.3.1[${PYTHON_USEDEP}]
 		dev-python/xlwt[${PYTHON_USEDEP}]
