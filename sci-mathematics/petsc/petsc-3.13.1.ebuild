@@ -13,7 +13,7 @@ SRC_URI="http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/${P}.tar.gz"
 
 LICENSE="BSD-2"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux ~x86"
+KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 #TODO: cuda, openmp, ml,  trilinos
 # TODO: mkl_[c]paradiso, mkl_sparse, adblaslapack, comblas, c
 #TODO: eigen, mfem, moab, party, samrai, silo, triangle, exodusii, alquimia, pflotran, amazi, mstk, ascem-io, cgns, ctetgen, egads, elemental, moose, sundials, tchem
@@ -86,6 +86,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.13.0-pastix-params.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-comm-type.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-refine.patch
+	"${FILESDIR}"/${P}-config-mpi-timeout.patch
 )
 	#"${FILESDIR}"/${PN}-pkgconfig.patch
 	#"${FILESDIR}"/${PN}-3.13.0-install_prefix.patch
