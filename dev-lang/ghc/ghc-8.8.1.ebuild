@@ -74,7 +74,7 @@ BUMP_LIBRARIES=(
 
 LICENSE="BSD"
 SLOT="0/${PV}"
-KEYWORDS=""
+KEYWORDS="~ppc64 ~ppc64-linux"
 IUSE="big-endian doc elfutils ghcbootstrap ghcmakebinary +gmp numa profile test"
 IUSE+=" binary"
 RESTRICT="!test? ( test )"
@@ -94,6 +94,7 @@ RDEPEND="
 #    utils/ghc-pkg_HC_OPTS += -DBOOTSTRAPPING
 PREBUILT_BINARY_DEPENDS="
 	!prefix? ( elibc_glibc? ( >=sys-libs/glibc-2.17 ) )
+	prefix? ( dev-util/patchelf )
 "
 # This set of dependencies is needed to install
 # ghc[binary] in system. terminfo package is linked
@@ -340,6 +341,7 @@ relocate_ghc() {
 
 	if use prefix; then
 		hprefixify "${bin_libpath}"/${PN}*/settings
+		exprefixify "${WORKDIR}"
 	fi
 
 	# regenerate the binary package cache
