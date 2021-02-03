@@ -50,6 +50,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-cmake-pybind11.patch
 	"${FILESDIR}"/${P}-generator-param-info.patch
 	"${FILESDIR}"/${P}-throw-on-compile-warn.patch
+	"${FILESDIR}"/${P}-pybind11-no-system.patch
 )
 	#"${FILESDIR}"/${P}-generator-registry-lookup.patch
 
