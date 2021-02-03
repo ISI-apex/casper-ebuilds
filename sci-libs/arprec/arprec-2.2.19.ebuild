@@ -17,7 +17,7 @@ SRC_URI="https://www.davidhbailey.com/dhbsoftware/${P}.tar.gz"
 
 SLOT="0"
 LICENSE="BSD"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 IUSE="cpu_flags_x86_fma3 cpu_flags_x86_fma4 doc fortran qd static-libs"
 
 DEPEND="qd? ( sci-libs/qd[fortran=] )"

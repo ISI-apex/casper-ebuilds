@@ -16,7 +16,7 @@ SRC_URI="https://computing.llnl.gov/projects/sundials/download/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0/$(ver_cut 1)"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 # TODO: cuda
 IUSE="doc examples fortran hypre index-64bit lapack mpi openmp sparse static-libs superlu_mt superlu_dist threads"
 REQUIRED_USE="

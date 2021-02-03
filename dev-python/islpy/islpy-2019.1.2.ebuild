@@ -14,7 +14,7 @@ SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${PN}-${PV}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 # TODO: barvinok: http://barvinok.gforge.inria.fr/
 IUSE="jit"
 

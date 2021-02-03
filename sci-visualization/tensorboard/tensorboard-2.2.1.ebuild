@@ -12,7 +12,7 @@ SRC_URI="https://files.pythonhosted.org/packages/py3/${PN::1}/${PN}/${P}-py3-non
 
 LICENSE="Apache-2.0"
 SLOT="0"
-KEYWORDS="~amd64"
+KEYWORDS="~amd64 ~ppc64 ~ppc64-linux"
 IUSE=""
 REQUIRED_USE=${PYTHON_REQUIRED_USE}
 

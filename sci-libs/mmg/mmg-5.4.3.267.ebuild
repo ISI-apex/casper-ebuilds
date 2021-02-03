@@ -44,7 +44,7 @@ SRC_URI="https://github.com/MmgTools/${PN}/archive/${MY_COMMIT}.tar.gz -> ${P}.t
 		"
 
 LICENSE="LGPL"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 SLOT="0/$(ver_cut 1)"
 IUSE="doc elas +delaunay +scotch index-64bit src static-libs test"
 

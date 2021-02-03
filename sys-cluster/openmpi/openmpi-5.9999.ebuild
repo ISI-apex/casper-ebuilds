@@ -19,7 +19,7 @@ then
 	# TODO: will go away once prrte is separate pkg
 	# TODO: doesn't work anyway.... (acknowledged, but not checked out)
 	# EGIT_OVERRIDE_COMMIT_DATE_OPENPMIX_PRRTE=${EGIT_COMMIT_DATE}
-	KEYWORDS="~amd64 ~amd64-linux"
+	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 else # live
 	#EGIT_OVERRIDE_BRANCH_OPENPMIX_PRRTE=master
 	KEYWORDS=""

@@ -13,7 +13,7 @@ SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="complex-scalars index-64bit doc examples mpi test"
 
 # With MPI, tests fail with segfault in PETSc

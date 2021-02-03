@@ -14,7 +14,7 @@ HOMEPAGE="https://github.com/hpddm/hpddm"
 SRC_URI="https://github.com/hpddm/${PN}/archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="LGPL-3"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 SO_VER=0
 SLOT="0/${PV}" # no semantic versining, so rebuild on all changes
 IUSE="c fortran hypre index-64bit mumps pastix python scalapack suitesparse test"

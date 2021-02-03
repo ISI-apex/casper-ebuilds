@@ -13,7 +13,7 @@ SRC_URI="https://github.com/${MY_PN}/${MY_PN}-sources/archive/v${PV}.tar.gz -> $
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="cblas doc examples fftw hdf5 lapack ipopt metis mumps mpi nlopt
 	scalapack scotch superlu tetgen umfpack"
 

@@ -13,7 +13,7 @@ DESCRIPTION="Multithreaded multifrontal sparse QR factorization library"
 
 LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="cuda partition expert timing tbb"
 
 # We require the cholmod supernodal module that is enabled with

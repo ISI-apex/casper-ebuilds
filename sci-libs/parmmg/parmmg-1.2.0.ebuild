@@ -15,7 +15,7 @@ HOMEPAGE="
 SRC_URI="https://github.com/MmgTools/${MY_PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="LGPL"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 SLOT="0/$(ver_cut 1)"
 IUSE="doc scotch index-64bit test vtk"
 

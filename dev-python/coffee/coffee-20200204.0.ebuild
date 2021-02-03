@@ -15,7 +15,7 @@ SRC_URI="https://github.com/coneoproject/${MY_PN}/archive/Firedrake_${PV}.tar.gz
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 
 S="${WORKDIR}/${MY_PN}-Firedrake_${PV}"
 

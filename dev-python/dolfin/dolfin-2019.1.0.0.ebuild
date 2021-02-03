@@ -16,7 +16,7 @@ SRC_URI="https://bitbucket.org/fenics-project/${PN}/downloads/${MYP}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux ~x86"
+KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 IUSE="mpi petsc slepc test"
 
 # cmake is invoked by setup.py

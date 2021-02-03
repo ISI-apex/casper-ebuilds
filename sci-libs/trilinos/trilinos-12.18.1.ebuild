@@ -17,7 +17,7 @@ PATCHSET="r0"
 SRC_URI="https://github.com/${PN}/Trilinos/archive/${PN}-release-${MY_PV}.tar.gz -> ${P}.tar.gz"
 #https://dev.gentoo.org/~tamiko/distfiles/trilinos-12.14.1-patches-${PATCHSET}.tar.xz"
 
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 
 LICENSE="BSD LGPL-2.1"
 SLOT="0"

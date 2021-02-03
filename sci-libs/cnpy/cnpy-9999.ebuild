@@ -13,7 +13,7 @@ if [[ "$(ver_cut 2 ${PV})" = "pre" ]]
 then
 	MY_D="$(ver_cut 3 ${PV})"
 	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
-	KEYWORDS="~amd64 ~amd64-linux"
+	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 else # live
 	KEYWORDS=""
 fi

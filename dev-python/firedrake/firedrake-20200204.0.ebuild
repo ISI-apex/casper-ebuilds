@@ -14,7 +14,7 @@ SRC_URI="https://github.com/firedrakeproject/${PN}/archive/Firedrake_${PV}.tar.g
 
 LICENSE="LGPL"
 SLOT="0"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 # index-64bit flag in order to keep our configuration.json in sync with petsc installation
 IUSE="test examples complex-scalars index-64bit mpi metis scotch slepc"
 
@@ -23,7 +23,7 @@ IUSE="test examples complex-scalars index-64bit mpi metis scotch slepc"
 # ints, firedrake falls back to Chaco, which is not packaged for Gentoo, and
 # it's not worth since it's not great, so just require ptscotch or parmetis.
 REQUIRED_USE="${PYTHON_REQUIRED_USE}
-	mpi? ( metis scotch )
+	mpi? ( || ( metis scotch ) )
 	"
 
 MY_FV=$(ver_cut 1)

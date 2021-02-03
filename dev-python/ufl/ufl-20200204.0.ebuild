@@ -14,7 +14,7 @@ SRC_URI="https://github.com/firedrakeproject/${PN}/archive/Firedrake_${PV}.tar.g
 
 LICENSE="GPL-3"
 SLOT="fd" # as opposed to "mainline" (aka. FEniCS)
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86 ~ppc64 ~ppc64-linux"
 IUSE="test"
 
 S="${WORKDIR}/${PN}-Firedrake_${PV}"

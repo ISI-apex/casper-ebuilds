@@ -20,7 +20,7 @@ LICENSE="LGPL"
 # upstream, we can change to SLOT=0 here.
 SLOT="fd"
 
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 
 MY_FV=$(ver_cut 1)
 

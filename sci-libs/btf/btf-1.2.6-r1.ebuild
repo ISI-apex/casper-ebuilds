@@ -13,7 +13,7 @@ DESCRIPTION="Algorithm for matrix permutation into block triangular form"
 LICENSE="LGPL-2.1+"
 SLOT="0"
 
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 
 DEPEND=">=sci-libs/suitesparseconfig-${SUITESPARSE_VER}"
 RDEPEND="${DEPEND}"

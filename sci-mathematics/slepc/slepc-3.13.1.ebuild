@@ -13,7 +13,7 @@ SRC_URI="http://slepc.upv.es/download/distrib/${P}.tar.gz"
 
 LICENSE="LGPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux ~x86"
+KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 
 IUSE="complex-scalars index-64bit doc mpi"
 

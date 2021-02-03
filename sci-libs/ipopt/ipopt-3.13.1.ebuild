@@ -19,7 +19,7 @@ SRC_URI="https://github.com/coin-or/${MY_PN}/archive/releases/${PV}.tar.gz -> ${
 
 LICENSE="EPL-1.0 hsl? ( HSL )"
 SLOT="0/1"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 IUSE="asl doc examples hsl java lapack mpi mumps static-libs test"
 RESTRICT="test" # Fails to compile
 

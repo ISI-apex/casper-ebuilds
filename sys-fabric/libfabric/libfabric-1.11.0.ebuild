@@ -10,7 +10,7 @@ HOMEPAGE="http://libfabric.org"
 SRC_URI="https://github.com/ofiwg/libfabric/releases/download/v${PV}/${P}.tar.bz2"
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 # TODO: netdir
 IUSE="bgq debug efa gni mrail perf
 	psm psm2 rstream rxd rxm shm sockets tcp udp

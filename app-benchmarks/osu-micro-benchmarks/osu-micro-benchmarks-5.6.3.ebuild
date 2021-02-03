@@ -9,7 +9,7 @@ SRC_URI="https://mvapich.cse.ohio-state.edu/download/mvapich/${P}.tar.gz"
 
 SLOT="0"
 LICENSE="BSD"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="cuda openacc"
 
 # TODO: OpenACC deps?

@@ -13,7 +13,7 @@ SRC_URI="https://github.com/dolfin-adjoint/${PN}/archive/${PV}.tar.gz -> ${P}.ta
 
 LICENSE="LGPL"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86 ~ppc64 ~ppc64-linux"
 IUSE="test moola visualisation meshing"
 
 # TODO: testing requires fenics (and, with HDF5)

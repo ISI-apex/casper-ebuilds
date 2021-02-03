@@ -10,7 +10,7 @@ SRC_URI="https://github.com/openucx/ucx/releases/download/v${PV}/${P}.tar.gz"
 # subslotted because openmpi needs to be rebuilt when UCX minor changes
 SLOT="0/$(ver_cut 1-2)"
 LICENSE="BSD"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 IUSE="cm cuda debug gdrcopy java knem +numa +openmp rocm rdmacm ugni verbs xpmem"
 
 RDEPEND="

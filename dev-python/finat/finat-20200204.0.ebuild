@@ -16,7 +16,7 @@ SRC_URI="https://github.com/FInAT/${MY_PN}/archive/Firedrake_${PV}.tar.gz -> ${P
 
 LICENSE="MIT"
 SLOT="fd"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 
 MY_FV=$(ver_cut 1)
 

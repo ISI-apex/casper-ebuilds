@@ -24,7 +24,7 @@ SRC_URI="https://github.com/coin-or/${MYPN}/archive/releases/${PV}.tar.gz -> ${P
 
 LICENSE="EPL-1.0"
 SLOT="0/3"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 # TODO: aboca
 IUSE="bzip2 doc glpk blas lapack static-libs test zlib"
 

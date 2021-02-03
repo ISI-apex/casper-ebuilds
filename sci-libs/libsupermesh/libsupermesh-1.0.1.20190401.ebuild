@@ -18,7 +18,7 @@ S="${WORKDIR}/libsupermesh-${PN}-${MY_COMMIT}"
 
 SLOT="0"
 LICENSE="LGPL-2.1"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 # TODO: rename to double-precision (or rename to double in sci-libs/parmetis)
 IUSE="doc +judy timers overlap_comms +double test"
 

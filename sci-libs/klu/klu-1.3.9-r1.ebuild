@@ -12,7 +12,7 @@ DESCRIPTION="Sparse LU factorization for circuit simulation"
 
 LICENSE="LGPL-2.1+"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 # TODO: demo
 
 DEPEND="

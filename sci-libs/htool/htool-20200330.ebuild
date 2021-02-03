@@ -17,7 +17,7 @@ HOMEPAGE="https://github.com/htool-ddm/htool"
 SRC_URI="https://github.com/htool-ddm/${PN}/archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 SLOT="0/${PV}" # header-only library, so rebuild on all changes
 IUSE="arpack examples gui hpddm lapack python test"
 

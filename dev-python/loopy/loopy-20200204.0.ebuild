@@ -27,7 +27,7 @@ S="${WORKDIR}/${PN}-Firedrake_${PV}"
 
 LICENSE="MIT"
 SLOT="fd"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="opencl fortran"
 
 # Tests don't treat pyopencl as optional

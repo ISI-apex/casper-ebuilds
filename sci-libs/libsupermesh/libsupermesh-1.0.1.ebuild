@@ -11,7 +11,7 @@ SRC_URI="https://bitbucket.org/libsupermesh/${PN}/downloads/${P}.tar.gz"
 
 SLOT="0"
 LICENSE="LGPL-2.1"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="doc +judy timers overlap_comms +double test"
 
 # TODO: uses private headers from libspatialindex....

@@ -12,7 +12,7 @@ HOMEPAGE="http://cadna.lip6.fr/index.php"
 SRC_URI="http://cadna.lip6.fr/Download_Dir/${MY_PN}-${PV}.tar.gz"
 
 LICENSE="LGPL"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 SLOT="0/$(ver_cut 1)"
 IUSE="fortran mpi +openmp test"
 

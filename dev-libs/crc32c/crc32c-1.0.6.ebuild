@@ -11,7 +11,7 @@ SRC_URI="https://github.com/google/crc32c/archive/${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 x86 ~ppc64 ~ppc64-linux"
 IUSE=""
 
 DOCS=( README.md )

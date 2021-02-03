@@ -14,7 +14,7 @@ SRC_URI="https://bitbucket.org/fenics-project/ffc/downloads/${P}.tar.gz"
 
 LICENSE="GPL-3"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux ~x86"
+KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 IUSE="test"
 
 MAIN_PV=$(ver_cut 1-3)

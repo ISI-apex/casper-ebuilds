@@ -16,7 +16,7 @@ SRC_URI="https://github.com/AvtechScientific/${MY_PN}/archive/v${PV}.tar.gz -> $
 LICENSE="AGPL-3"
 SLOT="0"
 IUSE="doc examples matlab"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86 ~ppc64 ~ppc64-linux"
 
 RDEPEND="
 	>=dev-libs/boost-1.53:=

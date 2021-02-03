@@ -14,7 +14,7 @@ SRC_URI="https://github.com/firedrakeproject/${PN}/archive/Firedrake_${PV}.tar.g
 
 LICENSE="LGPL-3"
 SLOT="fd"
-KEYWORDS="~amd64 ~amd64-linux ~x86"
+KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 IUSE="test"
 REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 

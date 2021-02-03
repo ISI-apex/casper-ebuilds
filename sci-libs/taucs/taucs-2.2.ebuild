@@ -12,7 +12,7 @@ SRC_URI="https://www.tau.ac.il/~stoledo/${PN}/${PV}/${PN}.tgz -> ${P}.tgz"
 SLOT="0"
 LICENSE="LGPL-2.1"
 IUSE="cilk doc static-libs"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 
 BDEPEND="virtual/pkgconfig"
 RDEPEND="

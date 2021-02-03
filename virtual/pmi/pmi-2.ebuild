@@ -5,7 +5,7 @@ EAPI=6
 
 DESCRIPTION="Virtual for Process Management Interface (PMI) v2 implementation"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE=""
 
 RDEPEND="|| (

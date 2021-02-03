@@ -16,7 +16,7 @@ SRC_URI="https://github.com/halide/${MY_PN}/archive/${MY_COMMIT}.tar.gz -> ${P}.
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 
 # subset of LLVM targets
 MY_TARGETS=(AArch64 AMDGPU ARM Hexagon Mips

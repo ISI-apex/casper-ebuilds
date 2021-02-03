@@ -11,7 +11,7 @@ OFED_SUFFIX="1.gdc6ef69"
 inherit openib
 
 DESCRIPTION="OpenIB userspace driver for Mellanox ConnectX HCA"
-KEYWORDS="amd64 ~x86 ~amd64-linux"
+KEYWORDS="amd64 ~x86 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE=""
 
 DEPEND="

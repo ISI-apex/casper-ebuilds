@@ -7,7 +7,7 @@ inherit multilib-build
 
 DESCRIPTION="Virtual for OpenCL API"
 SLOT="0"
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 x86 ~ppc64 ~ppc64-linux"
 
 RDEPEND="|| ( dev-libs/ocl-icd[khronos-headers,${MULTILIB_USEDEP}]
 	dev-libs/opencl-icd-loader[${MULTILIB_USEDEP}] )"

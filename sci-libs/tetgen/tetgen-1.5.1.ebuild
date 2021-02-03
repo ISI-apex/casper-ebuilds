@@ -11,7 +11,7 @@ SRC_URI="${PN}${PV}.tar.gz"
 RESTRICT="fetch" # requires submitting a web form
 
 LICENSE="AGPL-3"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 SLOT="0"
 IUSE=""
 

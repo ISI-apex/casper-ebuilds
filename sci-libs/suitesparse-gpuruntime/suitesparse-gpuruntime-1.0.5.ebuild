@@ -12,7 +12,7 @@ DESCRIPTION="Helper functions for the GPU"
 
 LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE=""
 
 RDEPEND=">=sci-libs/suitesparseconfig-${SUITESPARSE_VER}

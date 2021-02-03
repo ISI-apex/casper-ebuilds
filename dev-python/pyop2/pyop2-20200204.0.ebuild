@@ -26,7 +26,7 @@ LICENSE="BSD"
 # upstream, we can change to SLOT=0 here.
 SLOT="fd"
 
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="complex-scalars index-64bit"
 
 BDEPEND="

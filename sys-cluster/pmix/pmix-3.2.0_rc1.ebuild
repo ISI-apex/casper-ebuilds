@@ -11,7 +11,7 @@ SRC_URI="https://github.com/pmix/pmix/releases/download/v${MY_PV}/${PN}-${MY_PV}
 # TODO: confirm that openmpi complains, and needs rebuild
 SLOT="0/$(ver_cut 1-2)"
 LICENSE="BSD"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 IUSE="debug +munge pmi +hwloc"
 
 # TODO: if add a pmi use flag to sys-cluster/slurm, then update

@@ -18,7 +18,7 @@ SRC_URI="https://bitbucket.org/fenics-project/${PN}/downloads/${MYP}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="hdf5 mpi parmetis petsc python scotch slepc sundials test trilinos umfpack zlib vtk"
 
 REQUIRED_USE="${PYTHON_REQUIRED_USE}

@@ -16,7 +16,7 @@ HOMEPAGE="
 SRC_URI="https://github.com/stevengj/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="LGPL-2.1 MIT"
-KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux"
+KEYWORDS="amd64 x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 SLOT="0"
 IUSE="cxx fortran guile octave python test"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"

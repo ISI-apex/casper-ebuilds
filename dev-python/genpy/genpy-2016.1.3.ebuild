@@ -14,8 +14,7 @@ SRC_URI="mirror://pypi/${PN:0:1}/${PN}/${PN}-${PV}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="amd64 ~amd64-linux"
-
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 RDEPEND="${DEPEND}
 	>=dev-python/numpy-1.6[${PYTHON_USEDEP}]
 	dev-python/pytools[${PYTHON_USEDEP}]

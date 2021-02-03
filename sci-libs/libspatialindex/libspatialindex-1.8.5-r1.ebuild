@@ -13,7 +13,7 @@ HOMEPAGE="http://libspatialindex.github.com/"
 SRC_URI="http://download.osgeo.org/libspatialindex/${MY_P}.tar.bz2"
 LICENSE="MIT"
 
-KEYWORDS="amd64 x86"
+KEYWORDS="amd64 x86 ~ppc64 ~ppc64-linux"
 SLOT="0/4"
 IUSE="debug static-libs"
 

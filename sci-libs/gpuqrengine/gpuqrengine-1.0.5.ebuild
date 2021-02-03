@@ -12,7 +12,7 @@ DESCRIPTION="A GPU-accelerated QR factorization engine"
 
 LICENSE="GPL-2+"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux"
+KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE=""
 
 RDEPEND="

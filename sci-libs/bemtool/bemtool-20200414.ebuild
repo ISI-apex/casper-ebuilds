@@ -16,7 +16,7 @@ HOMEPAGE="https://github.com/PierreMarchand20/BemTool
 SRC_URI="https://github.com//PierreMarchand20/${MY_PN}/archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="LGPL-3"
-KEYWORDS="amd64 ~amd64-linux"
+KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 SLOT="0/${PV}" # header-only library, so rebuild on all changes
 IUSE="test"
 
