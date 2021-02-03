@@ -26,12 +26,14 @@ DEPEND="
 	sci-mathematics/ufc
 	python? (
 		${PYTHON_DEPS}
-		dev-python/ufl[${PYTHON_USEDEP}]
-		dev-python/ffc[${PYTHON_USEDEP}]
-		dev-python/fiat[${PYTHON_USEDEP}]
-		dev-python/instant[${PYTHON_USEDEP}]
-		dev-python/viper[${PYTHON_USEDEP}]
-		)"
+		$(python_gen_cond_dep '
+			dev-python/ufl[${PYTHON_USEDEP}]
+			dev-python/ffc[${PYTHON_USEDEP}]
+			dev-python/fiat[${PYTHON_USEDEP}]
+			dev-python/instant[${PYTHON_USEDEP}]
+			dev-python/viper[${PYTHON_USEDEP}]
+		')
+	)"
 RDEPEND="${DEPEND}"
 
 pkg_setup() {

@@ -23,8 +23,9 @@ DEPEND="
 			'dev-python/pytest[${PYTHON_MULTI_USEDEP}]') )
 	"
 RDEPEND="${DEPEND}
-	$(python_gen_cond_dep \
-		'dev-python/numpy[${PYTHON_MULTI_USEDEP}]' \
-		'dev-python/sympy[${PYTHON_MULTI_USEDEP}]' \
-		)
+	${PYTHON_DEPS}
+	$(python_gen_cond_dep '
+		dev-python/numpy[${PYTHON_MULTI_USEDEP}]
+		dev-python/sympy[${PYTHON_MULTI_USEDEP}]
+	')
 	"

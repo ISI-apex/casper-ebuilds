@@ -24,11 +24,11 @@ BDEPEND="
 	test? ( $(python_gen_cond_dep \
 			'dev-python/pytest[${PYTHON_MULTI_USEDEP}]') )
 	"
-RDEPEND="
-	$(python_gen_cond_dep \
-		'dev-python/numpy[${PYTHON_MULTI_USEDEP}]' \
-		'dev-python/sympy[${PYTHON_MULTI_USEDEP}]' \
-		)
+RDEPEND="${PYTHON_DEPS}
+	$(python_gen_cond_dep '
+		dev-python/numpy[${PYTHON_MULTI_USEDEP}]
+		dev-python/sympy[${PYTHON_MULTI_USEDEP}]
+	')
 	"
 python_install_all()
 {
