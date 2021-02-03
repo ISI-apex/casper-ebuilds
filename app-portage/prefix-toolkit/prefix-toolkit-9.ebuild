@@ -269,8 +269,16 @@ if [[ -d /proc/registry ]]; then # we're on Cygwin
 	[[ -n ${TEMP} ]] && RETAIN+=(TEMP=$TEMP)
 fi
 # retain variables whose names match patterns listed in a file
-ENV_FILES=(
-	"${EPREFIX}/etc/prefix-tools/prefixenv"
+PENV_DIR="${EPREFIX}"/etc/prefix-tools/env.d
+ENV_FILES=()
+if [[ -d "${PENV_DIR}" && -n "$(ls -A "${PENV_DIR}")" ]]
+then
+	for f in "${PENV_DIR}"/*
+	do
+		ENV_FILES+=("${f}")
+	done
+fi
+ENV_FILES+=(
 	"${EPREFIX}/.prefixenv"
 )
 for ENV_FILE in ${ENV_FILES[@]}

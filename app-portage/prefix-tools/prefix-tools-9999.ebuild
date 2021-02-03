@@ -46,8 +46,8 @@ src_install() {
 		etc/prefixrc > "${T}"/prefixrc
 	doins "${T}"/prefixrc
 
-	doins etc/prefixenv
 	doins etc/prefixhelpers
+	doins -r etc/env.d
 
 	for f in bin/*; do
 		dobin $f
