@@ -96,6 +96,9 @@ dev-python/firedrake mpi metis -scotch slepc examples
 sys-devel/llvm bitwriter mcjit lld passes mlir examples lit
 dev-lang/halide examples test opengl python tools
 
+# TODO: ubsan requires cfi but can't turn on cfi for some reason
+sys-libs/compiler-rt-sanitizers -ubsan
+
 # Dependencies of CASPER Auto-Scheduler
 
 # For tensorflow
