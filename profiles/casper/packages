@@ -31,8 +31,9 @@ dev-lang/python:3.8
 dev-python/pkgconfig
 dev-python/pytest
 
-# Latest version supported by Nvidia CUDA
-sys-devel/gcc:8.3.0
+# If latest version supported by Nvidia CUDA (see cuda-config -s) is lower than
+# the default sys-devel/gcc version, then add another version here.
+#sys-devel/gcc:10.2.0
 
 # For Casper compiler (uses MLIR) and for Halide
 sys-devel/clang
