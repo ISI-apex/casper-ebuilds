@@ -9,11 +9,25 @@ DRIVER_PV="460.27.04"
 
 DESCRIPTION="NVIDIA CUDA Toolkit (compiler and friends)"
 HOMEPAGE="https://developer.nvidia.com/cuda-zone"
-SRC_URI="https://developer.download.nvidia.com/compute/cuda/${PV}/local_installers/cuda_${PV}_${DRIVER_PV}_linux.run"
+
+case "${ARCH}" in
+	ppc64)
+		# TODO: how to check endianness here?
+		MY_ARCH=ppc64le
+	;;
+	*)
+		MY_ARCH=
+	;;
+esac
+if [[ -n "${MY_ARCH}" ]]; then
+	MY_ARCH_SUFFIX=_${MY_ARCH}
+fi
+
+SRC_URI="https://developer.download.nvidia.com/compute/cuda/${PV}/local_installers/cuda_${PV}_${DRIVER_PV}_linux${MY_ARCH_SUFFIX}.run"
 
 LICENSE="NVIDIA-CUDA"
 SLOT="0/${PV}"
-KEYWORDS="-* ~amd64 ~amd64-linux"
+KEYWORDS="-* ~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="debugger nsight profiler vis-profiler sanitizer"
 RESTRICT="bindist mirror"
 
