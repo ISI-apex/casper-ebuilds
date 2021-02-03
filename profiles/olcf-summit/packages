@@ -1,6 +1,4 @@
-# The headers have been packaged manually since the tarballs in gentoo
-# repository are too new, look in the ebuild
-*=sys-kernel/linux-headers-3.10
+=sys-kernel/linux-headers-4.14-r1
 
 # doesn't exist yet
 #app-portage/prefix-tools-olcf-summit

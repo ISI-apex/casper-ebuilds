@@ -1,6 +1,5 @@
->sys-kernel/linux-headers-3.10
->sys-kernel/vanilla-sources-3.10.0
-#>sys-kernel/vanilla-sources-3.16.82
+>sys-kernel/linux-headers-4.15
+>sys-kernel/vanilla-sources-4.15
 sys-kernel/gentoo-sources
 
 # (Just in case) OLCF Summit does not use PMIv2 to talk between OpenMPI and
