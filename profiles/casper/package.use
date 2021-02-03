@@ -115,4 +115,4 @@ dev-libs/libxml2 python
 media-gfx/graphviz -cairo
 media-libs/gd fontconfig jpeg png truetype
 
-dev-lang/ghc -profile
+dev-lang/ghc -profile -ghcbootstrap
