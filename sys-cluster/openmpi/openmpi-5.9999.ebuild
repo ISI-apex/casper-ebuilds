@@ -192,6 +192,8 @@ multilib_src_configure() {
 		export ac_cv_path_JAVAC="$(java-pkg_get-javac) $(java-pkg_javac-args)"
 	fi
 
+	local host_ldflags
+
 	# TODO: if libfabric has gni use flag, it is linked against cray
 	# libs that live outside of EPREFIX, so when ./configure tests
 	# linking against libfabric, linker fails; so add -rpath-link ld
@@ -200,15 +202,15 @@ multilib_src_configure() {
 		local gni_libs=(cray-ugni cray-xpmem cray-alpsutil cray-alpslli
 				cray-udreg cray-wlm_detect)
 		$(tc-getPKG_CONFIG) --exists ${gni_libs[@]} || die
-		local gni_ldflags="$($(tc-getPKG_CONFIG) \
+		host_ldflags+="$($(tc-getPKG_CONFIG) \
 			--libs-only-L ${gni_libs[@]} \
 			| sed 's/-L\(\S\+\)/-Wl,-rpath-link -Wl,\1/g')"
 	fi
 
 	unset F77 FFLAGS # configure warns that unused, FC, FCFLAGS is used
 
-	echo LDFLAGS="${LDFLAGS} ${gni_ldflags}"
-	LDFLAGS="${LDFLAGS} ${gni_ldflags}" \
+	echo LDFLAGS="${LDFLAGS} ${host_ldflags}"
+	export LDFLAGS="${LDFLAGS} ${host_ldflags}"
 	ECONF_SOURCE=${S} econf \
 		--sysconfdir="${EPREFIX}/etc/${PN}" \
 		--enable-pretty-print-stacktrace \
