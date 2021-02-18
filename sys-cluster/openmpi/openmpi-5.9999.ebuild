@@ -37,6 +37,7 @@ IUSE_OPENMPI_FABRICS="
 
 IUSE_OPENMPI_RM="
 	openmpi_rm_alps
+	openmpi_rm_lsf
 	openmpi_rm_pbs
 	openmpi_rm_slurm"
 
@@ -92,6 +93,8 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-hostfile-list-access.patch
 	"${FILESDIR}"/${PN}-5-prrte-hostfile-max-slots-for-implicit-nodes.patch
 	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
+	"${FILESDIR}"/${PN}-5-ras-lsf-renamed-vars.patch
+	"${FILESDIR}"/${PN}-5-ras-lsf-no-physical-cpuids.patch
 )
 
 MULTILIB_WRAPPED_HEADERS=(
@@ -207,6 +210,13 @@ multilib_src_configure() {
 			| sed 's/-L\(\S\+\)/-Wl,-rpath-link -Wl,\1/g')"
 	fi
 
+	if use openmpi_rm_lsf; then
+		# TODO: fetch these programatically somehow
+		local lsf_dir="/opt/ibm/spectrumcomputing/lsf/10.1.0.9"
+		local lsf_libdir="${lsf_dir}/linux3.10-glibc2.17-ppc64le-csm/lib"
+		host_ldflags+="-lrt -lnsl"
+	fi
+
 	unset F77 FFLAGS # configure warns that unused, FC, FCFLAGS is used
 
 	echo LDFLAGS="${LDFLAGS} ${host_ldflags}"
@@ -239,6 +249,8 @@ multilib_src_configure() {
 		$(multilib_native_use_with openmpi_fabrics_psm psm2 "${EPREFIX}"/usr) \
 		$(multilib_native_use_with openmpi_fabrics_ugni ugni) \
 		$(multilib_native_use_with openmpi_rm_alps alps) \
+		$(multilib_native_use_with openmpi_rm_lsf lsf "${lsf_dir}") \
+		$(multilib_native_use_with openmpi_rm_lsf lsf-libdir "${lsf_libdir}") \
 		$(multilib_native_use_with openmpi_rm_pbs tm) \
 		$(multilib_native_use_with openmpi_rm_slurm slurm)
 

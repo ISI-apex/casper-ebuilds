@@ -1,0 +1,15 @@
+--- a/3rd-party/prrte/src/mca/ras/lsf/ras_lsf_module.c	2021-02-09 10:37:40.085226900 -0000
++++ b/3rd-party/prrte/src/mca/ras/lsf/ras_lsf_module.c	2021-02-09 10:38:47.882752966 -0000
+@@ -145,10 +145,12 @@
+         }
+         PRTE_SET_MAPPING_POLICY(jdata->map->mapping, PRTE_MAPPING_SEQ);
+         jdata->map->req_mapper = strdup("seq"); // need sequential mapper
++#if 0
+         /* tell the sequential mapper that all cpusets are to be treated as "physical" */
+         prte_set_attribute(&jdata->attributes, PRTE_JOB_PHYSICAL_CPUIDS, true, NULL, PRTE_BOOL);
++#endif
+         /* LSF provides its info as hwthreads, so set the hwthread-as-cpus flag */
+         prte_hwloc_default_use_hwthread_cpus = true;
+         /* don't override something provided by the user, but default to bind-to hwthread */
+         if (!PRTE_BINDING_POLICY_IS_SET(prte_hwloc_default_binding_policy)) {
+             PRTE_SET_BINDING_POLICY(prte_hwloc_default_binding_policy, PRTE_BIND_TO_HWTHREAD);

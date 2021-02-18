@@ -1,0 +1,25 @@
+--- a/3rd-party/prrte/src/mca/ras/lsf/ras_lsf_module.c	2021-02-09 10:33:39.074018893 -0000
++++ b/3rd-party/prrte/src/mca/ras/lsf/ras_lsf_module.c	2021-02-09 10:37:40.085226900 -0000
+@@ -121,7 +121,7 @@
+             directives_given = true;
+         }
+     } else if ((PRTE_MAPPING_GIVEN & PRTE_GET_MAPPING_DIRECTIVE(prte_rmaps_base.mapping)) ||
+-               PRTE_BINDING_POLICY_IS_SET(prte_hwloc_binding_policy)) {
++               PRTE_BINDING_POLICY_IS_SET(prte_hwloc_default_binding_policy)) {
+             directives_given = true;
+     }
+ 
+@@ -148,10 +148,10 @@
+         /* tell the sequential mapper that all cpusets are to be treated as "physical" */
+         prte_set_attribute(&jdata->attributes, PRTE_JOB_PHYSICAL_CPUIDS, true, NULL, PRTE_BOOL);
+         /* LSF provides its info as hwthreads, so set the hwthread-as-cpus flag */
+-        prte_hwloc_use_hwthreads_as_cpus = true;
++        prte_hwloc_default_use_hwthread_cpus = true;
+         /* don't override something provided by the user, but default to bind-to hwthread */
+-        if (!PRTE_BINDING_POLICY_IS_SET(prte_hwloc_binding_policy)) {
+-            PRTE_SET_BINDING_POLICY(prte_hwloc_binding_policy, PRTE_BIND_TO_HWTHREAD);
++        if (!PRTE_BINDING_POLICY_IS_SET(prte_hwloc_default_binding_policy)) {
++            PRTE_SET_BINDING_POLICY(prte_hwloc_default_binding_policy, PRTE_BIND_TO_HWTHREAD);
+         }
+         /*
+          * Do not set the hostfile attribute on each app_context since that
