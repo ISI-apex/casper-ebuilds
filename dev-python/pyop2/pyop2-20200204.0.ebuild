@@ -64,6 +64,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-sniff-compiler.patch
 	"${FILESDIR}"/${P}-CCVER-var.patch
 	"${FILESDIR}"/${P}-no-jit.patch
+	"${FILESDIR}"/${P}-no-march-native.patch
 )
 
 python_test()

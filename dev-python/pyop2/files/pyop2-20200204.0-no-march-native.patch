@@ -1,0 +1,14 @@
+--- a/pyop2/compilation.py	2021-02-08 16:53:14.673103000 -0000
++++ b/pyop2/compilation.py	2021-02-08 16:56:16.563114000 -0000
+@@ -395,7 +395,10 @@
+     :kwarg comm: Optional communicator to compile the code on (only
+     rank 0 compiles code) (defaults to COMM_WORLD)."""
+     def __init__(self, cppargs=[], ldargs=[], cpp=False, comm=None):
+-        opt_flags = ['-march=native', '-O3', '-ffast-math']
++        # TODO: Don't pass -march=native because not supported on
++        # some compilers (powerpc64le-unknown-linux-gnu-gcc). Need
++        # a different solution: perhaps honor CFLAGS env var.
++        opt_flags = ['-O3', '-ffast-math']
+         if configuration['debug']:
+             opt_flags = ['-O0', '-g']
+         cc = "mpicc"
