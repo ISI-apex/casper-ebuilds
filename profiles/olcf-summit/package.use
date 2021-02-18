@@ -1,6 +1,6 @@
 virtual/mpi -cxx romio
 
-sys-cluster/openmpi -cxx heterogeneous romio -pmi ucx -internal_pmix openmpi_rm_slurm
+sys-cluster/openmpi -cxx heterogeneous romio -pmi ucx -internal_pmix openmpi_rm_lsf
 
 # Perferred option: use userspace libraries from sys-cluster/rdma-core
 # # Note: must have ucx_ib_mlx5-db (otherwise build fails due to a non-existant
