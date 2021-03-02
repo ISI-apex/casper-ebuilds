@@ -185,6 +185,12 @@ src_prepare() {
 	my_vrun ./autogen.pl --no-3rdparty "${excluded_pkgs}" \
 		--exclude "${excluded_components}" \
 		--include "${included_components}"
+
+	# Workaround for detection of -llsf (issue is that it needs -lrt)
+	sed -i \
+		-e 's/LIBS="\(-l$ac_lib $ls_info_lsf_LIBS $yp_all_nsl_LIBS $ac_func_search_save_LIBS\)"/LIBS="\1 -lrt"/g' \
+		-e 's/LIBS="\(-l$ac_lib $yp_all_nsl_LIBS $ac_func_search_save_LIBS\)"/LIBS="\1 -lrt"/g' \
+		3rd-party/prrte/configure
 }
 
 multilib_src_configure() {
