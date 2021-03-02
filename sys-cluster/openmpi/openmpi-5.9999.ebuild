@@ -94,7 +94,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-prrte-hostfile-max-slots-for-implicit-nodes.patch
 	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
 	"${FILESDIR}"/${PN}-5-ras-lsf-renamed-vars.patch
-	"${FILESDIR}"/${PN}-5-ras-lsf-no-physical-cpuids.patch
+	"${FILESDIR}"/${P}-ras-lsf-no-physical-cpuids.patch
 )
 
 MULTILIB_WRAPPED_HEADERS=(
