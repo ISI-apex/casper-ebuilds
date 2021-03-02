@@ -14,14 +14,19 @@ case "${ARCH}" in
 	ppc64)
 		# TODO: how to check endianness here?
 		MY_ARCH=ppc64le
-	;;
-	*)
+		MY_TARGET=ppc64le-linux
+		MY_ARCH_SUFFIX=_${MY_ARCH}
+		;;
+	amd64)
 		MY_ARCH=
+		MY_TARGET=x86_64-linux
+		MY_ARCH_SUFFIX=
+		;;
+	*)
+		echo "Unsupported ARCH: ${ARCH}" 1>&2
+		exit 1
 	;;
 esac
-if [[ -n "${MY_ARCH}" ]]; then
-	MY_ARCH_SUFFIX=_${MY_ARCH}
-fi
 
 SRC_URI="https://developer.download.nvidia.com/compute/cuda/${PV}/local_installers/cuda_${PV}_${DRIVER_PV}_linux${MY_ARCH_SUFFIX}.run"
 
@@ -214,8 +219,8 @@ src_install() {
 	fi
 
 	# Add include and lib symlinks
-	dosym targets/x86_64-linux/include ${cudadir}/include
-	dosym targets/x86_64-linux/lib ${cudadir}/lib64
+	dosym targets/${TARGET}/include ${cudadir}/include
+	dosym targets/${TARGET}/lib ${cudadir}/lib64
 
 	newenvd - 99cuda <<-EOF
 		PATH=${ecudadir}/bin${pathextradirs}
