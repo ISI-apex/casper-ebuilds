@@ -99,6 +99,9 @@ PATCHES=(
 if ver_test -le "5.0.0_pre20201202"; then
 	PATCHES+=("${FILESDIR}"/${PN}-5-hostfile-list-access.patch)
 fi
+if ver_test -gt "5.0.0_pre20201202"; then # >= baec91f3d77
+	PATCHES+=("${FILESDIR}"/${PN}-5.9999-ras-lsf-jdata-typo.patch)
+fi
 
 MULTILIB_WRAPPED_HEADERS=(
 	/usr/include/mpi.h
