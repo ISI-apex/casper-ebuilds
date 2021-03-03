@@ -277,6 +277,13 @@ multilib_src_configure() {
 	# are unrecognized options (harmless).
 }
 
+multilib_src_compile() {
+	default
+	pushd 3rd-party/prrte || die
+	emake
+	popd || die
+}
+
 multilib_src_test() {
 	# Doesn't work with the default src_test as the dry run (-n) fails.
 	emake -j1 check
@@ -284,6 +291,9 @@ multilib_src_test() {
 
 multilib_src_install() {
 	default
+	pushd 3rd-party/prrte || die
+	emake DESTDIR="${D}" install
+	popd || die
 
 	# fortran header cannot be wrapped (bug #540508), workaround part 1
 	if multilib_is_native_abi && use fortran; then
