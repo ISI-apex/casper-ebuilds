@@ -92,6 +92,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-autogen-forward-args.patch
 	"${FILESDIR}"/${PN}-5-prrte-hostfile-max-slots-for-implicit-nodes.patch
 	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
+	"${FILESDIR}"/${PN}-5-prrte-ompi5-personality.patch
 	"${FILESDIR}"/${PN}-5-ras-lsf-renamed-vars.patch
 	"${FILESDIR}"/${P}-ras-lsf-no-physical-cpuids.patch
 )
@@ -100,7 +101,12 @@ if ver_test -le "5.0.0_pre20201202"; then
 	PATCHES+=("${FILESDIR}"/${PN}-5-hostfile-list-access.patch)
 fi
 if ver_test -gt "5.0.0_pre20201202"; then # >= baec91f3d77
-	PATCHES+=("${FILESDIR}"/${PN}-5.9999-ras-lsf-jdata-typo.patch)
+	PATCHES+=(
+		  "${FILESDIR}"/${PN}-5.9999-ras-lsf-jdata-typo.patch
+		  "${FILESDIR}"/${PN}-5.9999-prrte-rankfile-help.patch
+		  "${FILESDIR}"/${PN}-5.9999-prrte-nidmap-topo.patch
+		  "${FILESDIR}"/${PN}-5.9999-prrte-nidmap-topo-buf.patch
+		 )
 fi
 
 MULTILIB_WRAPPED_HEADERS=(

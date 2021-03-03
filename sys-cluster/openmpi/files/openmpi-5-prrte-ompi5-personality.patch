@@ -1,0 +1,10 @@
+--- a/3rd-party/prrte/src/mca/schizo/ompi/schizo_ompi.c	2021-03-03 18:43:44.148652000 -0000
++++ b/3rd-party/prrte/src/mca/schizo/ompi/schizo_ompi.c	2021-03-03 18:44:24.057746000 -0000
+@@ -1228,6 +1228,7 @@
+     /* if the basename of the cmd was "mpirun" or "mpiexec",
+      * we default to us */
+     if (prte_schizo_base.test_proxy_launch ||
++        0 == strcmp(prte_tool_basename, "prterun") ||
+         0 == strcmp(prte_tool_basename, "mpirun") ||
+         0 == strcmp(prte_tool_basename, "mpiexec") ||
+         0 == strcmp(prte_tool_basename, "oshrun")) {
