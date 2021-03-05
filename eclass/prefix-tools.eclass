@@ -81,7 +81,6 @@ prefix-tools_src_install() {
 		"${PREFIX_TOOLS_HOST_DIR}"
 
 	local exec_path="/usr/libexec/prefix-tools/bin"
-	local etc_path="/etc/prefix-tools"
 	exeinto ${exec_path}
 
 	cat >> "${T}"/01prefix-tools <<-EOF
@@ -91,10 +90,10 @@ prefix-tools_src_install() {
 
 	prefix-tools_doexe_dir "${PREFIX_TOOLS_CLUSTER}/prefix" "${exec_path}"
 
-	insinto "${etc_path}"
-	local env_d_dir="${PREFIX_TOOLS_CLUSTER}/etc/env.d"
-	if [[ -d "${env_d_dir}" ]]; then
-		doins -r "${env_d_dir}"
+	insinto /
+	local etc_dir="${PREFIX_TOOLS_CLUSTER}/etc"
+	if [[ -d "${etc_dir}" ]]; then
+		doins -r "${etc_dir}"
 	fi
 }
 
