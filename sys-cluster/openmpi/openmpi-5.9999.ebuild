@@ -92,7 +92,6 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-autogen-forward-args.patch
 	"${FILESDIR}"/${PN}-5-prrte-hostfile-max-slots-for-implicit-nodes.patch
 	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
-	"${FILESDIR}"/${PN}-5-prrte-ompi5-personality.patch
 	"${FILESDIR}"/${PN}-5-ras-lsf-renamed-vars.patch
 )
 
