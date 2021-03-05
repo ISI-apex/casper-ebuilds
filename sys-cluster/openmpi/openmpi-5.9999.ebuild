@@ -141,7 +141,7 @@ my_get_submodule_url()
 }
 
 src_prepare() {
-	if [[ -z "${MY_UPDATE_PRRTE}" ]]; then
+	if [[ -n "${MY_UPDATE_PRRTE}" ]]; then
 		# Update prrte submodule to latest (regardless of submodule ref)
 		# TODO: this is aggressive, but it will go away once prrte is separate pkg
 		# TODO: get the submodule URL, the convert it to EGIT3 src dir
