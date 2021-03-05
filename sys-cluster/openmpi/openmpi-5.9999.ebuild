@@ -92,21 +92,24 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-autogen-forward-args.patch
 	"${FILESDIR}"/${PN}-5-prrte-hostfile-max-slots-for-implicit-nodes.patch
 	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
-	"${FILESDIR}"/${PN}-5-ras-lsf-renamed-vars.patch
 )
 
 if ver_test -le "5.0.0_pre20201202"; then
 	PATCHES+=(
 		  "${FILESDIR}"/${PN}-5-hostfile-list-access.patch
+		  "${FILESDIR}"/${PN}-5-ras-lsf-renamed-vars.patch
 		  "${FILESDIR}"/${P}-ras-lsf-no-physical-cpuids.patch
 		 )
 fi
-if ver_test -gt "5.0.0_pre20201202"; then # >= baec91f3d77
+
+# >= baec91f3d77
+if ver_test -gt "5.0.0_pre20201202" && ver_test -lt "5.0.0_pre20210305"; then
 	PATCHES+=(
 		  "${FILESDIR}"/${PN}-5.9999-ras-lsf-jdata-typo.patch
 		  "${FILESDIR}"/${PN}-5.9999-prrte-rankfile-help.patch
 		  "${FILESDIR}"/${PN}-5.9999-prrte-nidmap-topo.patch
 		  "${FILESDIR}"/${PN}-5.9999-prrte-nidmap-topo-buf.patch
+		  "${FILESDIR}"/${PN}-5-ras-lsf-renamed-vars.patch
 		  "${FILESDIR}"/${PN}-5.9999-ras-lsf-no-physical-cpuids.patch
 		 )
 fi
