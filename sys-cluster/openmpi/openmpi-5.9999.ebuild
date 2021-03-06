@@ -5,7 +5,7 @@ EAPI=7
 
 FORTRAN_NEEDED=fortran
 
-inherit cuda flag-o-matic fortran-2 git-r3 java-pkg-opt-2 toolchain-funcs multilib multilib-minimal
+inherit conf-overlay cuda flag-o-matic fortran-2 git-r3 java-pkg-opt-2 toolchain-funcs multilib multilib-minimal
 
 MY_UPDATE_PRRTE=
 
@@ -113,6 +113,11 @@ if ver_test -gt "5.0.0_pre20201202" && ver_test -lt "5.0.0_pre20210305"; then
 		  "${FILESDIR}"/${PN}-5.9999-ras-lsf-no-physical-cpuids.patch
 		 )
 fi
+
+CONF_OVERLAY_FILES=(
+	"etc/openmpi/openmpi-mca-params.conf"
+	"etc/openmpi/prte-mca-params.conf"
+)
 
 MULTILIB_WRAPPED_HEADERS=(
 	/usr/include/mpi.h
@@ -330,4 +335,5 @@ multilib_src_install_all() {
 		rm "${mpi_jar}" || die
 	fi
 	einstalldocs
+	conf-overlay_src_install
 }

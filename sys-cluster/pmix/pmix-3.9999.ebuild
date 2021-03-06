@@ -5,7 +5,7 @@
 
 EAPI=7
 
-inherit git-r3
+inherit git-r3 conf-overlay
 
 DESCRIPTION="Reference implementation of the Process Management Interface Exascale (PMIx)"
 HOMEPAGE="https://openpmix.org/"
@@ -38,6 +38,8 @@ RDEPEND="
 	"
 DEPEND="${RDEPEND}"
 
+CONF_OVERLAY_FILES=("etc/pmix-mca-params.conf")
+
 src_prepare() {
 	default
 	./autogen.pl || die
@@ -50,4 +52,9 @@ src_configure() {
 		$(use_with munge munge ${EPREFIX}/usr) \
 		$(use_with hwloc hwloc ${EPREFIX}/usr) \
 		--with-libevent=${EPREFIX}/usr
+}
+
+src_install() {
+	default
+	conf-overlay_src_install
 }
