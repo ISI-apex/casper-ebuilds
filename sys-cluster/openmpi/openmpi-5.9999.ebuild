@@ -318,6 +318,7 @@ multilib_src_configure() {
 		$(use_enable ipv6) \
 		$(use_enable man man-pages) \
 		$(usex internal_pmix --with-pmix="internal" --with-pmix="${EPREFIX}/usr" ) \
+		$(usex internal_prrte --with-prrte="internal" --with-prrte="${EPREFIX}/usr" ) \
 		$(use_with ucx ucx "${EPREFIX}/usr") \
 		$(usex ucx --with-ucx-libdir="${EPREFIX}/usr/$(get_libdir)" "") \
 		$(multilib_native_use_enable java mpi-java) \
