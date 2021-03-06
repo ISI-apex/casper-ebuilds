@@ -46,7 +46,7 @@ HOMEPAGE="http://www.open-mpi.org"
 LICENSE="BSD"
 SLOT="0"
 # TODO: ltdl: looks for nonexistant ltprtedl.h header
-IUSE="cma cray-pmi cuda debug fortran heterogeneous ipv6 java ltdl +man
+IUSE="cma cuda debug fortran heterogeneous ipv6 java ltdl +man
 	mpi1 romio internal_pmix ucx
 	${IUSE_OPENMPI_FABRICS} ${IUSE_OPENMPI_RM} ${IUSE_OPENMPI_OFED_FEATURES}"
 
@@ -71,7 +71,6 @@ CDEPEND="
 	openmpi_fabrics_ugni? ( sys-cluster/cray-libs )
 	openmpi_rm_pbs? ( sys-cluster/torque )
 	openmpi_rm_alps? ( sys-cluster/cray-libs )
-	cray-pmi? ( sys-cluster/cray-libs )
 	internal_pmix? ( !sys-cluster/pmix )
 	!internal_pmix? ( >sys-cluster/pmix-3.2.0:= )
 	ucx? ( sys-cluster/ucx:= )
@@ -267,7 +266,6 @@ multilib_src_configure() {
 		$(use_enable heterogeneous) \
 		$(use_enable ipv6) \
 		$(use_enable man man-pages) \
-		$(use_with cray-pmi) \
 		$(usex internal_pmix --with-pmix="internal" --with-pmix="${EPREFIX}/usr" ) \
 		$(use_with ucx ucx "${EPREFIX}/usr") \
 		$(usex ucx --with-ucx-libdir="${EPREFIX}/usr/$(get_libdir)" "") \

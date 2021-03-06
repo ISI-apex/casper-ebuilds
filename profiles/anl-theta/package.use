@@ -1,5 +1,5 @@
 virtual/mpi -cxx romio
-sys-cluster/openmpi -cxx heterogeneous romio -pmi -cray-pmi -ucx -internal_pmix -openmpi_rm_slurm openmpi_rm_alps -debug -openmpi_fabrics_ofi openmpi_fabrics_ugni -mpi1
+sys-cluster/openmpi -cxx heterogeneous romio -pmi -ucx -internal_pmix -openmpi_rm_slurm openmpi_rm_alps -debug -openmpi_fabrics_ofi openmpi_fabrics_ugni -mpi1
 sys-cluster/pmix -debug
 
 # Masked altogether, since using the uGNI transport built-into OpenMPI
