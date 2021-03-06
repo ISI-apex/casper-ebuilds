@@ -115,8 +115,9 @@ if ver_test -gt "5.0.0_pre20201202" && ver_test -lt "5.0.0_pre20210305"; then
 fi
 
 CONF_OVERLAY_FILES=(
-	"etc/openmpi/openmpi-mca-params.conf"
-	"etc/openmpi/prte-mca-params.conf"
+	"etc/openmpi-mca-params.conf"
+	# relevant only with internal_prrte, but harmless otherwise
+	"etc/prte-mca-params.conf"
 )
 
 MULTILIB_WRAPPED_HEADERS=(
@@ -250,7 +251,6 @@ multilib_src_configure() {
 	echo LDFLAGS="${LDFLAGS} ${host_ldflags}"
 	export LDFLAGS="${LDFLAGS} ${host_ldflags}"
 	ECONF_SOURCE=${S} econf \
-		--sysconfdir="${EPREFIX}/etc/${PN}" \
 		--enable-pretty-print-stacktrace \
 		--enable-prte-prefix-by-default \
 		--with-hwloc="${EPREFIX}/usr" \

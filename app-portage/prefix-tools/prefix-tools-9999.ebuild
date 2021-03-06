@@ -29,8 +29,8 @@ IUSE=""
 S="${WORKDIR}/${P}/prefix-tools"
 
 CONF_OVERLAY_FILES=(
-	"etc/openmpi/openmpi-mca-params.conf"
-	"etc/openmpi/prte-mca-params.conf"
+	"etc/openmpi-mca-params.conf"
+	"etc/prte-mca-params.conf"
 )
 
 src_compile() {
