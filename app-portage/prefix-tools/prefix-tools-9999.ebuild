@@ -18,7 +18,7 @@ else # live
 	KEYWORDS=""
 fi
 
-inherit git-r3 distutils-r1
+inherit conf-overlay distutils-r1 git-r3
 
 DESCRIPTION="Tools for running commands within Gentoo Prefix"
 HOMEPAGE="https://github.com/ISI-apex/casper-utils"
@@ -27,6 +27,11 @@ LICENSE="GPL-3"
 IUSE=""
 
 S="${WORKDIR}/${P}/prefix-tools"
+
+CONF_OVERLAY_FILES=(
+	"etc/openmpi/openmpi-mca-params.conf"
+	"etc/openmpi/prte-mca-params.conf"
+)
 
 src_compile() {
 	for d in python/*; do

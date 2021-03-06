@@ -4,7 +4,11 @@
 EAPI=7
 
 PREFIX_TOOLS_CLUSTER="anl-theta"
-inherit prefix-tools
+inherit prefix-tools conf-overlay
+
+CONF_OVERLAY_FILES=(
+	"etc/openmpi/openmpi-mca-params.conf"
+)
 
 src_install() {
 	prefix-tools_src_install
