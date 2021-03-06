@@ -94,6 +94,7 @@ PATCHES=(
 
 MY_PRRTE_PATCHES=(
 	"${FILESDIR}"/${PN}-5-autoconf-alps-cray-release.patch
+	"${FILESDIR}"/${PN}-5-autoconf-librt-for-liblsf.patch
 	"${FILESDIR}"/${PN}-5-prrte-if-addr-match.patch
 	"${FILESDIR}"/${PN}-5-prrte-hostfile-max-slots-for-implicit-nodes.patch
 )
@@ -232,14 +233,6 @@ src_prepare() {
 	my_vrun ./autogen.pl --no-3rdparty "${excluded_pkgs}" \
 		--exclude "${excluded_components}" \
 		--include "${included_components}"
-
-	# Workaround for detection of -llsf (issue is that it needs -lrt)
-	if use internal_prrte && use openmpi_rm_lsf; then
-		sed -i \
-			-e 's/LIBS="\(-l$ac_lib $ls_info_lsf_LIBS $yp_all_nsl_LIBS $ac_func_search_save_LIBS\)"/LIBS="\1 -lrt"/g' \
-			-e 's/LIBS="\(-l$ac_lib $yp_all_nsl_LIBS $ac_func_search_save_LIBS\)"/LIBS="\1 -lrt"/g' \
-			3rd-party/prrte/configure
-	fi
 }
 
 multilib_src_configure() {
@@ -271,7 +264,18 @@ multilib_src_configure() {
 			# TODO: fetch these programatically somehow
 			local lsf_dir="/opt/ibm/spectrumcomputing/lsf/10.1.0.9"
 			local lsf_libdir="${lsf_dir}/linux3.10-glibc2.17-ppc64le-csm/lib"
-			host_ldflags+="-lrt -lnsl"
+			# Woraround for configure failing to link against -llsf
+			# due to undefined shm_open, shm_unlink symbols  (which
+			# are in -lrt)
+			#
+			# ( ) Option A:
+			#host_ldflags+="-lrt"
+			## Drop existing ${LDFLAGS} because otherwise they
+			## contain -Wl,-as-needed and the above -lrt workaround
+			## does not work.
+			#local drop_ldflags=1
+			#
+			# (*) Option B: apply the patch to autoconf to add librt
 		fi
 
 		# NOTE: the openmpi_rm_* config flags are passed through to
@@ -289,8 +293,14 @@ multilib_src_configure() {
 
 	unset F77 FFLAGS # configure warns that unused, FC, FCFLAGS is used
 
-	echo LDFLAGS="${LDFLAGS} ${host_ldflags}"
-	export LDFLAGS="${LDFLAGS} ${host_ldflags}"
+	local final_ldflags
+	if [[ -n "${drop_ldflags}" ]]; then
+		final_ldflags="${host_ldflags}"
+	else
+		final_ldflags="${LDFLAGS} ${host_ldflags}"
+	fi
+	echo LDFLAGS="${final_ldflags}"
+	export LDFLAGS="${final_ldflags}"
 	ECONF_SOURCE=${S} econf \
 		--enable-pretty-print-stacktrace \
 		--with-hwloc="${EPREFIX}/usr" \
