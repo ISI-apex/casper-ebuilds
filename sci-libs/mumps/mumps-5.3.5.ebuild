@@ -14,7 +14,7 @@ S="${WORKDIR}/${MYP}"
 
 LICENSE="public-domain"
 SLOT="0"
-KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
 # index-64bit so that we rebuild if scotch changes
 IUSE="doc examples metis mpi +scotch index-64bit static-libs"
 
