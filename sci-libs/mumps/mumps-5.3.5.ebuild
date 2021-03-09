@@ -15,7 +15,10 @@ S="${WORKDIR}/${MYP}"
 LICENSE="public-domain"
 SLOT="0"
 KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux"
-IUSE="doc examples metis mpi +scotch static-libs"
+# index-64bit so that we rebuild if scotch changes
+IUSE="doc examples metis mpi +scotch index-64bit static-libs"
+
+REQUIRED_USE="index-64bit? ( scotch )"
 
 BDEPEND="virtual/pkgconfig"
 RDEPEND="
@@ -25,7 +28,7 @@ RDEPEND="
 		   mpi? ( >=sci-libs/parmetis-4 )
 	)
 	mpi? ( sci-libs/scalapack )
-	scotch? ( >=sci-libs/scotch-6.0.1:=[mpi=] )
+	scotch? ( >=sci-libs/scotch-6.0.1:=[mpi=,index-64bit=] )
 "
 DEPEND="${RDEPEND}"
 
