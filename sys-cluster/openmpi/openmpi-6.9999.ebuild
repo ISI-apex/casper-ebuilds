@@ -60,7 +60,7 @@ CDEPEND="
 	!sys-cluster/mpich
 	!sys-cluster/mpich2
 	!sys-cluster/nullmpi
-	>sys-cluster/pmix-3.2.0:=
+	>sys-cluster/pmix-4.0.1:=
 	>=sys-cluster/prrte-1
 	>=dev-libs/libevent-2.0.22:=[${MULTILIB_USEDEP},threads]
 	ltdl? ( dev-libs/libltdl:0[${MULTILIB_USEDEP}] )
