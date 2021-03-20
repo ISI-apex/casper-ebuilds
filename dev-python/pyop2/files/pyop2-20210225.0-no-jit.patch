@@ -1,0 +1,126 @@
+--- a/pyop2/base.py	2021-01-22 16:22:42.000000000 -0000
++++ b/pyop2/base.py	2021-03-19 17:32:40.613951000 -0000
+@@ -1534,7 +1534,7 @@
+         return self.dtype.itemsize * self.dataset.total_size * self.dataset.cdim
+ 
+     @collective
+-    def zero(self, subset=None):
++    def zero(self, subset=None, compute=True):
+         """Zero the data associated with this :class:`Dat`
+ 
+         :arg subset: A :class:`Subset` of entries to zero (optional)."""
+@@ -1569,17 +1569,22 @@
+                                 iterset,
+                                 self(WRITE))
+             loops[iterset] = loop
+-        loop.compute()
++        if compute:
++            loop.compute()
++        return [loop]
+ 
+     @collective
+-    def copy(self, other, subset=None):
++    def copy(self, other, subset=None, compute=True):
+         """Copy the data in this :class:`Dat` into another.
+ 
+         :arg other: The destination :class:`Dat`
+         :arg subset: A :class:`Subset` of elements to copy (optional)"""
+         if other is self:
+             return
+-        self._copy_parloop(other, subset=subset).compute()
++        copy_loop = self._copy_parloop(other, subset=subset)
++        if compute:
++            copy_loop.compute()
++        return [copy_loop]
+ 
+     @collective
+     def _copy_parloop(self, other, subset=None):
+@@ -2097,14 +2102,16 @@
+             s.local_to_global_end(insert_mode)
+ 
+     @collective
+-    def zero(self, subset=None):
++    def zero(self, subset=None, compute=True):
+         """Zero the data associated with this :class:`MixedDat`.
+ 
+         :arg subset: optional subset of entries to zero (not implemented)."""
+         if subset is not None:
+             raise NotImplementedError("Subsets of mixed sets not implemented")
++        loops = []
+         for d in self._dats:
+-            d.zero()
++            loops += d.zero(compute=compute)
++        return loops
+ 
+     @cached_property
+     def nbytes(self):
+@@ -2120,7 +2127,7 @@
+         return np.sum([d.nbytes for d in self._dats])
+ 
+     @collective
+-    def copy(self, other, subset=None):
++    def copy(self, other, subset=None, compute=True):
+         """Copy the data in this :class:`MixedDat` into another.
+ 
+         :arg other: The destination :class:`MixedDat`
+@@ -2128,8 +2135,10 @@
+ 
+         if subset is not None:
+             raise NotImplementedError("MixedDat.copy with a Subset is not supported")
++        loops = []
+         for s, o in zip(self, other):
+-            s.copy(o)
++            loops += s.copy(o, compute=compute)
++        return loops
+ 
+     def __iter__(self):
+         r"""Yield all :class:`Dat`\s when iterated over."""
+@@ -2385,7 +2394,7 @@
+         other.data = np.copy(self.data_ro)
+ 
+     @collective
+-    def zero(self):
++    def zero(self, compute=True):
+         self._data[...] = 0
+ 
+     @collective
+@@ -3753,7 +3762,7 @@
+ 
+ 
+ @collective
+-def par_loop(kernel, iterset, *args, **kwargs):
++def par_loop(kernel, iterset, *args, compute=True, **kwargs):
+     r"""Invocation of an OP2 kernel
+ 
+     :arg kernel: The :class:`Kernel` to be executed.
+@@ -3815,5 +3824,8 @@
+     """
+     if isinstance(kernel, types.FunctionType):
+         from pyop2 import pyparloop
+-        return pyparloop.ParLoop(kernel, iterset, *args, **kwargs).compute()
+-    return _make_object('ParLoop', kernel, iterset, *args, **kwargs).compute()
++        loop = pyparloop.ParLoop(kernel, iterset, *args, **kwargs)
++    loop = _make_object('ParLoop', kernel, iterset, *args, **kwargs)
++    if compute:
++        loop.compute()
++    return loop
+--- a/pyop2/petsc_base.py	2020-11-05 13:41:58.948568557 -0500
++++ b/pyop2/petsc_base.py	2020-11-05 13:43:21.065108436 -0500
+@@ -785,10 +785,14 @@
+         yield from itertools.chain(*self.blocks)
+ 
+     @collective
+-    def zero(self):
++    def zero(self, compute=True):
+         """Zero the matrix."""
+-        self.assemble()
+-        self.handle.zeroEntries()
++        def thunk():
++            self.assemble()
++            self.handle.zeroEntries()
++        if compute:
++            thunk()
++        return thunk
+ 
+     @collective
+     def zero_rows(self, rows, diag_val=1.0):

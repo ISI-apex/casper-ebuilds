@@ -1,0 +1,12 @@
+--- a/pyop2/compilation.py	2021-03-19 17:28:24.691913000 -0000
++++ b/pyop2/compilation.py	2021-03-19 17:28:45.236752000 -0000
+@@ -181,6 +181,9 @@
+         self.comm = compilation_comm(comm)
+         self._cc = os.environ.get(ccenv, cc)
+         self._ld = os.environ.get('LDSHARED', ld)
++        self._ver = os.environ.get('CCVER')
++        if self._ver is not None:
++            Compiler.compiler_versions.setdefault(self._cc, CompilerInfo(self._cc, self._ver))
+         self._cppargs = cppargs + configuration['cflags'].split()
+         if configuration["use_safe_cflags"]:
+             self._cppargs += self.workaround_cflags
