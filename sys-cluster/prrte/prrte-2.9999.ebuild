@@ -46,7 +46,7 @@ REQUIRED_USE="
 DEPEND="
 	>=dev-libs/libevent-2.0.22:=[${MULTILIB_USEDEP},threads]
 	>=sys-apps/hwloc-2.0.2[${MULTILIB_USEDEP}]
-	>sys-cluster/pmix-3.2.0:=
+	>=sys-cluster/pmix-4.0.1:=
 	>=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}]
 	ltdl? ( dev-libs/libltdl:0[${MULTILIB_USEDEP}] )
 	openmpi_rm_pbs? ( sys-cluster/torque )
