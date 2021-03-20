@@ -1,0 +1,12 @@
+--- a/config/packages/slepc4py.py	2021-03-20 00:38:37.932218000 -0000
++++ b/config/packages/slepc4py.py	2021-03-20 00:38:47.978143000 -0000
+@@ -79,7 +79,8 @@
+     rule =  'slepc4pyinstall:\n'
+     rule += '\t@echo "*** Installing slepc4py ***"\n'
+     rule += '\t@cd '+builddir+' && \\\n'
+-    rule += '\t   %s ${PYTHON} setup.py install --install-lib=%s ' % (envvars,destdir)
++    rule += '\t   %s ${PYTHON} setup.py install --install-lib=%s \\\n' % (envvars,destdir)
++    rule += '\t      $(if $(DESTDIR),--root=\'$(DESTDIR)\')'
+     rule += '\t   2>&1 || \\\n'
+     rule += '\t   (echo "**************************ERROR*************************************" && \\\n'
+     rule += '\t   echo "Error installing slepc4py" && \\\n'
