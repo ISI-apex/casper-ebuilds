@@ -69,6 +69,7 @@ RDEPEND="
 BDEPEND="
 	virtual/pkgconfig
 	dev-util/cmake
+	dev-util/sowing
 	"
 DEPEND="${RDEPEND}
 	${PYTHON_DEPS}
