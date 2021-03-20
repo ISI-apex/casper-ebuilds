@@ -1,0 +1,34 @@
+--- a/firedrake/mesh.py	2021-03-19 16:38:59.898866000 -0000
++++ b/firedrake/mesh.py	2021-03-19 16:44:23.766847000 -0000
+@@ -946,15 +946,24 @@
+                         raise ValueError("Unable to use 'parmetis': Firedrake is not "
+                                          "installed with 'parmetis'.")
+             else:
+-                if IntType.itemsize == 8:
+-                    # Default to PTSCOTCH on 64bit ints (Chaco is 32 bit int only).
+-                    # Chaco does not work on distributed meshes.
+-                    if get_config().get("options", {}).get("with_parmetis", False):
+-                        partitioner_type = "parmetis"
++                # Default to PTSCOTCH on 64bit ints (Chaco is 32 bit int only).
++                # Chaco does not work on distributed meshes.
++                cfg_opts = get_config().get("options", {})
++                if cfg_opts.get("with_parmetis", False):
++                    partitioner_type = "parmetis"
++                    if IntType.itemsize == 8:
++                        raise Exception("parmetis partitioner is for 64-bit only")
++                elif cfg_opts.get("with_ptscotch", False):
++                    partitioner_type = "ptscotch"
++                    if IntType.itemsize == 8:
++                        raise Exception("ptscotch partitioner is for 64-bit only")
++                elif cfg_opts.get("with_chaco", False):
++                    if IntType.itemsize == 4:
++                        partitioner_type = "chaco"
+                     else:
+-                        partitioner_type = "ptscotch"
++                        raise Exception("chaco partitioner is for 32-bit only")
+                 else:
+-                    partitioner_type = "chaco"
++                    raise Exception("no partitioner available")
+             partitioner.setType({"chaco": partitioner.Type.CHACO,
+                                  "ptscotch": partitioner.Type.PTSCOTCH,
+                                  "parmetis": partitioner.Type.PARMETIS}[partitioner_type])

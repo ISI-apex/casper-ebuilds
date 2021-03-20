@@ -1,0 +1,143 @@
+From 44fd923563624a55a56f40995a1f1c248cd0426d Mon Sep 17 00:00:00 2001
+From: Lawrence Mitchell <lawrence@wence.uk>
+Date: Thu, 4 Mar 2021 10:54:41 +0000
+Subject: [PATCH] halo: Adapt to new PetscSFBcast interface
+
+Need to provide op in this case too. Since they're now wrapped in
+petsc4py, just use those definitions.
+---
+ firedrake/cython/dmcommon.pyx            | 60 ------------------------
+ firedrake/cython/extrusion_numbering.pyx |  8 +---
+ firedrake/halo.py                        |  8 ++--
+ 3 files changed, 6 insertions(+), 70 deletions(-)
+
+diff --git a/firedrake/cython/dmcommon.pyx b/firedrake/cython/dmcommon.pyx
+index c6fbb784..2b6bc52c 100644
+diff --git a/firedrake/cython/extrusion_numbering.pyx b/firedrake/cython/extrusion_numbering.pyx
+index 8adeb2cf..9ed1568f 100644
+--- a/firedrake/cython/extrusion_numbering.pyx
++++ b/firedrake/cython/extrusion_numbering.pyx
+@@ -304,12 +304,8 @@ def layer_extents(PETSc.DM dm, PETSc.Section cell_numbering,
+     # OK, now we have the correct extents for owned points, but
+     # potentially incorrect extents for ghost points, so do a SF Bcast
+     # over the point SF to get it right.
+-    CHKERR(PetscSFBcastBegin(sf.sf, contig.ob_mpi,
+-                             <const void*>tmp.data,
+-                             <void *>layer_extents.data))
+-    CHKERR(PetscSFBcastEnd(sf.sf, contig.ob_mpi,
+-                           <const void*>tmp.data,
+-                           <void *>layer_extents.data))
++    sf.bcastBegin(contig, tmp, layer_extents, MPI.REPLACE)
++    sf.bcastEnd(contig, tmp, layer_extents, MPI.REPLACE)
+     contig.Free()
+     return layer_extents
+ 
+diff --git a/firedrake/halo.py b/firedrake/halo.py
+index 2d3d28af..15e4b47b 100644
+--- a/firedrake/halo.py
++++ b/firedrake/halo.py
+@@ -131,14 +131,14 @@ class Halo(op2.Halo):
+         if self.comm.size == 1:
+             return
+         mtype, _ = _get_mtype(dat)
+-        dmcommon.halo_begin(self.sf, dat, mtype, False)
++        self.sf.bcastBegin(mtype, dat._data, dat._data, MPI.REPLACE)
+ 
+     def global_to_local_end(self, dat, insert_mode):
+         assert insert_mode is op2.WRITE, "Only WRITE GtoL supported"
+         if self.comm.size == 1:
+             return
+         mtype, _ = _get_mtype(dat)
+-        dmcommon.halo_end(self.sf, dat, mtype, False)
++        self.sf.bcastEnd(mtype, dat._data, dat._data, MPI.REPLACE)
+ 
+     def local_to_global_begin(self, dat, insert_mode):
+         assert insert_mode in {op2.INC, op2.MIN, op2.MAX}, "%s LtoG not supported" % insert_mode
+@@ -151,7 +151,7 @@ class Halo(op2.Halo):
+               (True, op2.MIN): MPI.MIN,
+               (False, op2.MAX): _contig_max_op,
+               (True, op2.MAX): MPI.MAX}[(builtin, insert_mode)]
+-        dmcommon.halo_begin(self.sf, dat, mtype, True, op=op)
++        self.sf.reduceBegin(mtype, dat._data, dat._data, op)
+ 
+     def local_to_global_end(self, dat, insert_mode):
+         assert insert_mode in {op2.INC, op2.MIN, op2.MAX}, "%s LtoG not supported" % insert_mode
+@@ -164,4 +164,4 @@ class Halo(op2.Halo):
+               (True, op2.MIN): MPI.MIN,
+               (False, op2.MAX): _contig_max_op,
+               (True, op2.MAX): MPI.MAX}[(builtin, insert_mode)]
+-        dmcommon.halo_end(self.sf, dat, mtype, True, op=op)
++        self.sf.reduceEnd(mtype, dat._data, dat._data, op)
+-- 
+2.30.0
+
+--- a/firedrake/cython/dmcommon.pyx	2021-03-19 23:49:40.367182000 -0000
++++ b/firedrake/cython/dmcommon.pyx	2021-03-19 23:49:43.857152000 -0000
+@@ -2414,67 +2414,6 @@
+                            new_iremote, PETSC_OWN_POINTER))
+     return pruned_sf
+ 
+-
+-def halo_begin(PETSc.SF sf, dat, MPI.Datatype dtype, reverse, MPI.Op op=MPI.SUM):
+-    """Begin a halo exchange.
+-
+-    :arg sf: the PETSc SF to use for exchanges
+-    :arg dat: the :class:`pyop2.Dat` to perform the exchange on
+-    :arg dtype: an MPI datatype describing the unit of data
+-    :arg reverse: should a reverse (local-to-global) exchange be
+-        performed.
+-
+-    Forward exchanges are implemented using ``PetscSFBcastBegin``,
+-    reverse exchanges with ``PetscSFReduceBegin``.
+-    """
+-    cdef:
+-        np.ndarray buf = dat._data
+-
+-    # We've pruned the SF so it only references remote roots.
+-    # Therefore, we can pass the same buffer for input and output.
+-    # This works because the sends will be packed into buffers
+-    # internally in XXXBegin and unpacked in XXXEnd.  So any
+-    # subsequent changes to the input buffer are ignored for the
+-    # purposes of exchanging data.  If we didn't want to rely on this
+-    # implementation we would have to do a dance with temporary
+-    # buffers (which is slightly inefficient and messier).
+-    if reverse:
+-        CHKERR(PetscSFReduceBegin(sf.sf, dtype.ob_mpi,
+-                                  <const void*>buf.data,
+-                                  <void *>buf.data,
+-                                  op.ob_mpi))
+-    else:
+-        CHKERR(PetscSFBcastBegin(sf.sf, dtype.ob_mpi,
+-                                 <const void *>buf.data,
+-                                 <void *>buf.data))
+-
+-
+-def halo_end(PETSc.SF sf, dat, MPI.Datatype dtype, reverse, MPI.Op op=MPI.SUM):
+-    """End a halo exchange.
+-
+-    :arg sf: the PETSc SF to use for exchanges
+-    :arg dat: the :class:`pyop2.Dat` to perform the exchange on
+-    :arg dtype: an MPI datatype describing the unit of data
+-    :arg reverse: should a reverse (local-to-global) exchange be
+-        performed.
+-
+-    Forward exchanges are implemented using ``PetscSFBcastEnd``,
+-    reverse exchanges with ``PetscSFReduceEnd``.
+-    """
+-    cdef:
+-        np.ndarray buf = dat._data
+-
+-    if reverse:
+-        CHKERR(PetscSFReduceEnd(sf.sf, dtype.ob_mpi,
+-                                <const void *>buf.data,
+-                                <void*>buf.data,
+-                                op.ob_mpi))
+-    else:
+-        CHKERR(PetscSFBcastEnd(sf.sf, dtype.ob_mpi,
+-                               <const void *>buf.data,
+-                               <void *>buf.data))
+-
+-
+ def to_petsc_local_numbering(PETSc.Vec vec, V):
+     """Reorder a PETSc Vec corresponding to a Firedrake Function
+        w.r.t. to initial PETSc numbering

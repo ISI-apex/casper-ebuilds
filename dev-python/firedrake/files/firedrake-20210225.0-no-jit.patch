@@ -1,0 +1,237 @@
+--- a/firedrake/assemble.py	2021-02-25 07:41:34.000000000 -0000
++++ b/firedrake/assemble.py	2021-03-19 17:01:19.266945000 -0000
+@@ -152,7 +152,7 @@
+ 
+ def create_assembly_callable(expr, tensor=None, bcs=None, form_compiler_parameters=None,
+                              mat_type=None, sub_mat_type=None,
+-                             diagonal=False):
++                             diagonal=False, ret_parloops=False):
+     r"""Create a callable object than be used to assemble expr into a tensor.
+ 
+     This is really only designed to be used inside residual and
+@@ -174,12 +174,19 @@
+                       diagonal=diagonal,
+                       assemble_now=False)
+ 
+-    loops = tuple(loops)
+-
+-    def thunk():
+-        for kernel in loops:
+-            kernel()
+-    return thunk
++    loops = tuple(loops) # apparently it matters when you eval the iterator
++    if ret_parloops:
++        return loops
++    else:
++        def thunk():
++            for kernel in loops:
++                #print("KERNEL=", kernel)
++                if hasattr(kernel, "compute"):
++                    kernel.compute()
++                else:
++                    kernel()
++        return thunk
++ 
+ 
+ 
+ def get_matrix(expr, mat_type, sub_mat_type, *, bcs=None,
+@@ -628,7 +635,8 @@
+         args.extend(extra_args)
+         kwargs["pass_layer_arg"] = pass_layer_arg
+         try:
+-            yield op2.ParLoop(*args, **kwargs).compute
++            #yield op2.ParLoop(*args, **kwargs).compute
++            yield op2.ParLoop(*args, **kwargs)
+         except MapValueError:
+             raise RuntimeError("Integral measure does not match measure of all coefficients/arguments")
+ 
+@@ -759,5 +767,6 @@
+         if assembly_rank == AssemblyRank.MATRIX:
+             # Queue up matrix assembly (after we've done all the other operations)
+             yield tensor.M.assemble
+-        if assemble_now:
++        #if assemble_now:
++        if True:
+             yield result
+--- a/firedrake/parloops.py	2021-02-25 07:41:34.000000000 -0000
++++ b/firedrake/parloops.py	2021-03-19 16:56:56.529965000 -0000
+@@ -163,7 +163,7 @@
+                         "par_loop_kernel", **kwargs)
+ 
+ 
+-def par_loop(kernel, measure, args, kernel_kwargs=None, is_loopy_kernel=False, **kwargs):
++def par_loop(kernel, measure, args, kernel_kwargs=None, is_loopy_kernel=False, compute=True, **kwargs):
+     r"""A :func:`par_loop` is a user-defined operation which reads and
+     writes :class:`.Function`\s by looping over the mesh cells or facets
+     and accessing the degrees of freedom on adjacent entities.
+@@ -362,4 +362,4 @@
+         return f.dat(intent, _map['nodes'](f))
+     op2args += [mkarg(func, intent) for (func, intent) in args.values()]
+ 
+-    return pyop2.par_loop(*op2args, **kwargs)
++    return pyop2.par_loop(*op2args, compute=compute, **kwargs)
+--- a/firedrake/function.py	2021-02-25 07:41:34.000000000 -0000
++++ b/firedrake/function.py	2021-03-19 17:02:16.465010000 -0000
+@@ -356,7 +356,7 @@
+ 
+     @FunctionMixin._ad_annotate_assign
+     @utils.known_pyop2_safe
+-    def assign(self, expr, subset=None):
++    def assign(self, expr, subset=None, compute=True):
+         r"""Set the :class:`Function` value to the pointwise value of
+         expr. expr may only contain :class:`Function`\s on the same
+         :class:`.FunctionSpace` as the :class:`Function` being assigned to.
+@@ -379,7 +379,9 @@
+             return self
+         elif (isinstance(expr, Function)
+               and expr.function_space() == self.function_space()):
+-            expr.dat.copy(self.dat, subset=subset)
++            copy_loops = expr.dat.copy(self.dat, subset=subset, compute=compute)
++            if not compute:
++                return copy_loops
+             return self
+ 
+         from firedrake import assemble_expressions
+--- a/firedrake/solving_utils.py	2021-02-25 07:41:34.000000000 -0000
++++ b/firedrake/solving_utils.py	2021-03-19 17:03:25.573965000 -0000
+@@ -234,7 +234,7 @@
+         self._assemble_residual = create_assembly_callable(self.F,
+                                                            tensor=self._F,
+                                                            bcs=self.bcs_F,
+-                                                           form_compiler_parameters=self.fcp)
++                                                           form_compiler_parameters=self.fcp, ret_parloops=True)
+ 
+         self._jacobian_assembled = False
+         self._splits = {}
+@@ -410,7 +410,13 @@
+         if ctx._pre_function_callback is not None:
+             ctx._pre_function_callback(X)
+ 
+-        ctx._assemble_residual()
++        #ctx._assemble_residual()
++        for loop in ctx._assemble_residual:
++            #print("LOOP=", loop)
++            if hasattr(loop, "compute"): # some are funcs
++                loop.compute()
++            else:
++                loop()
+ 
+         if ctx._post_function_callback is not None:
+             with ctx._F.dat.vec as F_:
+@@ -449,14 +455,24 @@
+         if ctx._pre_jacobian_callback is not None:
+             ctx._pre_jacobian_callback(X)
+ 
+-        ctx._assemble_jac()
++        #ctx._assemble_jac()
++        for loop in ctx._assemble_jac:
++            if hasattr(loop, "compute"): # some are funcs
++                loop.compute()
++            else:
++                loop()
+ 
+         if ctx._post_jacobian_callback is not None:
+             ctx._post_jacobian_callback(X, J)
+ 
+         if ctx.Jp is not None:
+             assert P.handle == ctx._pjac.petscmat.handle
+-            ctx._assemble_pjac()
++            #ctx._assemble_pjac()
++            for loop in ctx._assemble_pjac:
++                if hasattr(loop, "compute"): # some are funcs
++                    loop.compute()
++                else:
++                    loop()
+ 
+         ises = problem.J.arguments()[0].function_space()._ises
+         ctx.set_nullspace(ctx._nullspace, ises, transpose=False, near=False)
+@@ -491,10 +507,20 @@
+                 if isinstance(bc, DirichletBC):
+                     bc.apply(ctx._x)
+ 
+-        ctx._assemble_jac()
++        #ctx._assemble_jac()
++        for loop in ctx._assemble_jac:
++            if hasattr(loop, "compute"): # some are funcs
++                loop.compute()
++            else:
++                loop()
+         if ctx.Jp is not None:
+             assert P.handle == ctx._pjac.petscmat.handle
+-            ctx._assemble_pjac()
++            #ctx._assemble_pjac()
++            for loop in ctx._assemble_pjac:
++                if hasattr(loop, "compute"): # some are funcs
++                    loop.compute()
++                else:
++                    loop()
+ 
+     @cached_property
+     def _jac(self):
+@@ -513,7 +539,8 @@
+                                         tensor=self._jac,
+                                         bcs=self.bcs_J,
+                                         form_compiler_parameters=self.fcp,
+-                                        mat_type=self.mat_type)
++                                        mat_type=self.mat_type,
++                                        ret_parloops=True)
+ 
+     @cached_property
+     def is_mixed(self):
+@@ -539,7 +566,8 @@
+                                         tensor=self._pjac,
+                                         bcs=self.bcs_Jp,
+                                         form_compiler_parameters=self.fcp,
+-                                        mat_type=self.pmat_type)
++                                        mat_type=self.pmat_type,
++                                        ret_parloops=True)
+ 
+     @cached_property
+     def _F(self):
+--- a/firedrake/adjoint/assembly.py	2021-03-20 20:50:55.737138000 -0000
++++ b/firedrake/adjoint/assembly.py	2021-03-20 20:52:00.204134000 -0000
+@@ -31,9 +31,11 @@
+             tape.add_block(block)
+ 
+             block.add_output(output.block_variable)
+-        else:
++        elif hasattr(output, "form"): # TODO: hack for no-JIT
+             # Assembled a vector or matrix
+             output.form = form
++        else:
++            pass
+ 
+         return output
+ 
+--- a/firedrake/assemble.py	2021-03-20 20:42:46.534995000 -0000
++++ b/firedrake/assemble.py	2021-03-20 20:53:35.071910000 -0000
+@@ -83,9 +83,9 @@
+     """
+     if "nest" in kwargs:
+         raise ValueError("Can't use 'nest', set 'mat_type' instead")
+-    if "collect_loops" in kwargs or "allocate_only" in kwargs:
+-        raise RuntimeError
+ 
++    collect_loops = kwargs.pop("collect_loops", False)
++    allocate_only = kwargs.pop("allocate_only", False)
+     diagonal = kwargs.pop("diagonal", False)
+     if len(kwargs) > 0:
+         raise TypeError("Unknown keyword arguments '%s'" % ', '.join(kwargs.keys()))
+@@ -97,9 +97,14 @@
+                           sub_mat_type=sub_mat_type, appctx=appctx,
+                           diagonal=diagonal,
+                           options_prefix=options_prefix)
+-        for l in loops:
+-            m = l()
+-        return m
++        loops = tuple(loops)
++        if collect_loops and not allocate_only:
++            # Will this be useful?
++            return loops
++        else:
++            for l in loops:
++                m = l()
++            return m
+     elif isinstance(expr, ufl.core.expr.Expr):
+         return assemble_expressions.assemble_expression(expr)
+     else:
