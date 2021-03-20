@@ -47,7 +47,7 @@ LICENSE="BSD"
 SLOT="0"
 # TODO: ltdl: looks for nonexistant ltprtedl.h header
 IUSE="cma cuda debug fortran heterogeneous ipv6 java ltdl +man
-	mpi1 romio internal_pmix internal_prrte ucx
+	mpi1 romio ucx
 	${IUSE_OPENMPI_FABRICS} ${IUSE_OPENMPI_RM} ${IUSE_OPENMPI_OFED_FEATURES}"
 
 REQUIRED_USE="
@@ -60,6 +60,8 @@ CDEPEND="
 	!sys-cluster/mpich
 	!sys-cluster/mpich2
 	!sys-cluster/nullmpi
+	>sys-cluster/pmix-3.2.0:=
+	>=sys-cluster/prrte-1
 	>=dev-libs/libevent-2.0.22:=[${MULTILIB_USEDEP},threads]
 	ltdl? ( dev-libs/libltdl:0[${MULTILIB_USEDEP}] )
 	>=sys-apps/hwloc-2.0.2[${MULTILIB_USEDEP}]
@@ -71,10 +73,6 @@ CDEPEND="
 	openmpi_fabrics_ugni? ( sys-cluster/cray-libs )
 	openmpi_rm_pbs? ( sys-cluster/torque )
 	openmpi_rm_alps? ( sys-cluster/cray-libs )
-	internal_pmix? ( !sys-cluster/pmix )
-	!internal_pmix? ( >sys-cluster/pmix-3.2.0:= )
-	internal_prrte? ( !sys-cluster/prrte )
-	!internal_prrte? ( >=sys-cluster/prrte-1 )
 	ucx? ( sys-cluster/ucx:= )
 	"
 
@@ -101,8 +99,6 @@ MY_PRRTE_PATCHES=(
 
 CONF_OVERLAY_FILES=(
 	"etc/openmpi-mca-params.conf"
-	# relevant only with internal_prrte, but harmless otherwise
-	"etc/prte-mca-params.conf"
 )
 
 MULTILIB_WRAPPED_HEADERS=(
@@ -133,48 +129,8 @@ my_get_submodule_url()
 		| sed -ne 's/^\s*url\s*=\s*\(.*\)\s*/\1/p'
 }
 
-src_unpack() {
-	EGIT_SUBMODULES+=(
-		$(usex internal_prrte prrte)
-		$(usex internal_pmix openpmix)
-	)
-	git-r3_src_unpack
-}
-
 src_prepare() {
-	if use internal_prrte && [[ -n "${MY_UPDATE_PRRTE}" ]]; then
-		# Update prrte submodule to latest (regardless of submodule ref)
-		# TODO: this is aggressive, but it will go away once prrte is separate pkg
-		# TODO: get the submodule URL, the convert it to EGIT3 src dir
-		#local prrte_url="$(my_get_submodule_url prrte)"
-		local prrte_url="${EGIT3_STORE_DIR}/openpmix_prrte.git"
-		pushd 3rd-party/prrte
-		my_vrun git remote add up "${prrte_url}"
-		my_vrun git fetch up
-		if [[ -n "${EGIT_COMMIT}" ]]; then
-			COMMIT=${EGIT_COMMIT}
-		elif [[ -n "${EGIT_COMMIT_DATE}" ]]; then
-			my_vrun git rev-list -1 --before ${EGIT_COMMIT_DATE} up/master
-			COMMIT=$(git rev-list -1 --before ${EGIT_COMMIT_DATE} up/master)
-		else
-			my_vrun git rev-list -1 up/master
-			COMMIT=$(git rev-list -1 up/master)
-		fi
-		my_vrun git fetch up "${COMMIT}" # just in case
-		my_vrun git reset --hard "${COMMIT}"
-		popd
-	fi
-
 	default
-
-	if use internal_prrte; then
-		if use openmpi_fabrics_ofi; then
-			MY_PRRTE_PATCHES+=("${FILESDIR}"/${PN}-5-odls-keep-fds-for-ofi-ugni.patch)
-		fi
-		for p in ${MY_PRRTE_PATCHES[@]}; do
-			eapply "${p}"
-		done
-	fi
 
 	# Necessary for scalibility, see
 	# http://www.open-mpi.org/community/lists/users/2008/09/6514.php
@@ -182,27 +138,10 @@ src_prepare() {
 		>> opal/etc/openmpi-mca-params.conf || die
 
 	local submodules=()
-	local excluded_pkgs="libevent,hwloc"
+	local excluded_pkgs="libevent,hwloc,prrte,pmix"
 	local included_components=""
 	# TODO: cross-compilation: cannot test for AVX on build host
 	local excluded_components="op-avx"
-	if use internal_prrte; then
-		submodules+=(3rd-party/prrte)
-		# On ANL Theta, routed mode other than direct breaks (even on
-		# debug queue for 8*64 ranks). And, setting the mode at runtime
-		# via '--mca routed direct' is insuffcient -- somehow this is
-		# overriden when rank count is large, at least when using 'prte
-		# --daemonize && prun'.
-		[[ -z "${included_components}" ]] || die "ebuild is buggy"
-		included_components="routed-direct"
-	else
-		excluded_pkgs+=",prrte"
-	fi
-	if use internal_pmix; then
-		submodules+=(3rd-party/openpmix)
-	else
-		excluded_pkgs+=",pmix"
-	fi
 
 	# TODO: somehow git-r3 checks out the submodules, but
 	# git submodule status shows them with a '-' so check fails
@@ -239,38 +178,6 @@ multilib_src_configure() {
 			| sed 's/-L\(\S\+\)/-Wl,-rpath-link -Wl,\1/g')"
 	fi
 
-	if use internal_prrte; then
-		if use openmpi_rm_lsf; then
-			# TODO: fetch these programatically somehow
-			local lsf_dir="/opt/ibm/spectrumcomputing/lsf/10.1.0.9"
-			local lsf_libdir="${lsf_dir}/linux3.10-glibc2.17-ppc64le-csm/lib"
-			# Woraround for configure failing to link against -llsf
-			# due to undefined shm_open, shm_unlink symbols  (which
-			# are in -lrt)
-			#
-			# ( ) Option A:
-			#host_ldflags+="-lrt"
-			## Drop existing ${LDFLAGS} because otherwise they
-			## contain -Wl,-as-needed and the above -lrt workaround
-			## does not work.
-			#local drop_ldflags=1
-			#
-			# (*) Option B: apply the patch to autoconf to add librt
-		fi
-
-		# NOTE: the openmpi_rm_* config flags are passed through to
-		# the prrte submodule, the parent throws an error that they
-		# are unrecognized options (harmless).
-		conf_flags+=(
-			--enable-prte-prefix-by-default
-			$(multilib_native_use_with openmpi_rm_alps alps)
-			$(multilib_native_use_with openmpi_rm_lsf lsf "${lsf_dir}")
-			$(multilib_native_use_with openmpi_rm_lsf lsf-libdir "${lsf_libdir}")
-			$(multilib_native_use_with openmpi_rm_pbs tm)
-			$(multilib_native_use_with openmpi_rm_slurm slurm)
-		)
-	fi
-
 	unset F77 FFLAGS # configure warns that unused, FC, FCFLAGS is used
 
 	local final_ldflags
@@ -297,8 +204,8 @@ multilib_src_configure() {
 		$(use_enable heterogeneous) \
 		$(use_enable ipv6) \
 		$(use_enable man man-pages) \
-		$(usex internal_pmix --with-pmix="internal" --with-pmix="${EPREFIX}/usr" ) \
-		$(usex internal_prrte --with-prrte="internal" --with-prrte="${EPREFIX}/usr" ) \
+		--with-pmix="${EPREFIX}/usr" \
+		--with-prrte="${EPREFIX}/usr" \
 		$(use_with ucx ucx "${EPREFIX}/usr") \
 		$(usex ucx --with-ucx-libdir="${EPREFIX}/usr/$(get_libdir)" "") \
 		$(multilib_native_use_enable java mpi-java) \
@@ -309,15 +216,6 @@ multilib_src_configure() {
 		${conf_flags[@]}
 }
 
-multilib_src_compile() {
-	default
-	if use internal_prrte; then
-		pushd 3rd-party/prrte || die
-		emake
-		popd || die
-	fi
-}
-
 multilib_src_test() {
 	# Doesn't work with the default src_test as the dry run (-n) fails.
 	emake -j1 check
@@ -325,11 +223,6 @@ multilib_src_test() {
 
 multilib_src_install() {
 	default
-	if use internal_prrte; then
-		pushd 3rd-party/prrte || die
-		emake DESTDIR="${D}" install
-		popd || die
-	fi
 
 	# fortran header cannot be wrapped (bug #540508), workaround part 1
 	if multilib_is_native_abi && use fortran; then
