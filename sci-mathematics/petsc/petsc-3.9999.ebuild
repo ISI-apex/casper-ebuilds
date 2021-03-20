@@ -8,7 +8,7 @@ EGIT_SUBMODULES=()
 
 PYTHON_COMPAT=( python3_{6,7,8} )
 
-inherit flag-o-matic fortran-2 git-r3 python-any-r1 toolchain-funcs
+inherit flag-o-matic fortran-2 git-r3 python-single-r1 toolchain-funcs
 
 if [[ "$(ver_cut 4 ${PV})" = "p" ]]
 then
@@ -29,7 +29,8 @@ KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 #TODOO: lgrind, libceed, libjpeg, libmesh, libpng, med, memkind, mpe, mpfr, mpi4pi, muparser, opencl, opengles, p4est, parms, pami, petsc4py, pragmatic, radau5, revolve, saws, sowing, spai, sprint, ssl, strumpack,  valgrind, viennacl, xsdktilinos, yaml, zstd, slepc (???)
 # TODO: chaco (mesh partitioning)
 IUSE="afterimage boost complex-scalars cxx debug doc eigen fftw
-	fortran hdf5 hpddm hwloc hypre index-64bit mpi metis mumps parmetis pastix scotch sparse
+	fortran hdf5 hpddm hwloc hypre index-64bit mpi metis mumps parmetis
+	pastix python scotch sparse
 	superlu superlu_dist tetgen threads X"
 
 # hypre and superlu curretly exclude each other due to missing linking to hypre
@@ -44,6 +45,7 @@ REQUIRED_USE="
 	mumps? ( mpi )
 	parmetis? ( metis )
 	pastix? ( hwloc )
+	python? ( ${PYTHON_REQUIRED_USE} )
 	scotch? ( mpi )
 	superlu? ( !hypre )
 	index-64bit? ( !superlu )
@@ -63,6 +65,7 @@ RDEPEND="
 	hypre? ( >=sci-libs/hypre-2.18.0[mpi?,index-64bit=] )
 	parmetis? ( >=sci-libs/parmetis-4[index-64bit=] )
 	!parmetis? ( metis? ( sci-libs/metis ) )
+	python? ( ${PYTHON_DEPS} )
 	mpi? ( virtual/mpi[fortran?] )
 	mumps? ( >=sci-libs/mumps-5.2.1[mpi?] sci-libs/scalapack )
 	pastix? ( >=sci-libs/pastix-5[index-64bit=] )
@@ -92,6 +95,9 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.13.0-pastix-params.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-comm-type.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-refine.patch
+	"${FILESDIR}"/${P}-0001-config-petsc4py-remove-code-duplication-in-install-p.patch
+	"${FILESDIR}"/${P}-0002-config-petsc4py-honor-DESTDIR-make-var.patch
+	"${FILESDIR}"/${P}-petsc4py-site-packages-install-dir.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
@@ -258,7 +264,7 @@ src_configure() {
 		--with-matlab=0 \
 		--with-cmake:BOOL=1 \
 		--with-imagemagick=0 \
-		--with-python=0 \
+		$(use_with python petsc4py) \
 		$(petsc_enable threads pthread) \
 		--with-blaslapack=2 \
 		--with-blaslapack-pkgconfig="${EPREFIX}/usr/$(get_libdir)/pkgconfig" \
@@ -287,9 +293,11 @@ src_configure() {
 }
 
 src_install() {
+	python_setup
 	#emake DESTDIR="${ED}" DESTPREFIX="/usr/$(get_libdir)/petsc" install
 	#dodir /usr/$(get_libdir)/petsc
 	emake DESTDIR="${D}" install
+	python_optimize
 
 	# add PETSC_DIR to environmental variables
 	cat >> 99petsc <<- EOF
