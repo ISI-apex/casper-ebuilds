@@ -47,18 +47,18 @@ src_configure() {
 	source "${EPREFIX}"/etc/env.d/99petsc
 	export PETSC_DIR
 
+	local conf_args=(
+		--prefix="${EPREFIX}/usr/$(get_libdir)/slepc"
+		--with-arpack=1
+
+		#--with-arpack-dir="${EPREFIX}/usr/$(get_libdir)"
+		#--with-arpack-flags="$(usex mpi "-lparpack,-larpack" "-larpack")"
+	)
+
 	# configure is a custom python script and doesn't want to have default
 	# configure arguments that we set with econf
-	echo ./configure \
-		--prefix="${EPREFIX}/usr/$(get_libdir)/slepc" \
-		--with-arpack=1 || die
-	./configure \
-		--prefix="${EPREFIX}/usr/$(get_libdir)/slepc" \
-		--with-arpack=1 || die
-
-		#--with-arpack-dir="${EPREFIX}/usr/$(get_libdir)" \
-		#--with-arpack-flags="$(usex mpi "-lparpack,-larpack" "-larpack")"
-
+	echo ./configure "${conf_args[@]}"
+	./configure "${conf_args[@]}"
 }
 
 src_compile() {
