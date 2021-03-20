@@ -4,10 +4,8 @@ dev-python/firedrake
 dev-python/h5py
 dev-python/matplotlib
 dev-python/numpy
-dev-python/petsc4py
 dev-python/pybind11
 dev-python/pyop2
-dev-python/slepc4py
 dev-python/sympy
 sci-libs/arpack
 sci-libs/blis
