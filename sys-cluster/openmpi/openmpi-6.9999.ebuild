@@ -99,26 +99,6 @@ MY_PRRTE_PATCHES=(
 	"${FILESDIR}"/${PN}-5-prrte-hostfile-max-slots-for-implicit-nodes.patch
 )
 
-if ver_test -le "5.0.0_pre20201202"; then
-	MY_PRRTE_PATCHES+=(
-		  "${FILESDIR}"/${PN}-5-hostfile-list-access.patch
-		  "${FILESDIR}"/${PN}-5-ras-lsf-renamed-vars.patch
-		  "${FILESDIR}"/${P}-ras-lsf-no-physical-cpuids.patch
-		 )
-fi
-
-# >= baec91f3d77
-if ver_test -gt "5.0.0_pre20201202" && ver_test -lt "5.0.0_pre20210305"; then
-	MY_PRRTE_PATCHES+=(
-		  "${FILESDIR}"/${PN}-5.9999-ras-lsf-jdata-typo.patch
-		  "${FILESDIR}"/${PN}-5.9999-prrte-rankfile-help.patch
-		  "${FILESDIR}"/${PN}-5.9999-prrte-nidmap-topo.patch
-		  "${FILESDIR}"/${PN}-5.9999-prrte-nidmap-topo-buf.patch
-		  "${FILESDIR}"/${PN}-5-ras-lsf-renamed-vars.patch
-		  "${FILESDIR}"/${PN}-5.9999-ras-lsf-no-physical-cpuids.patch
-		 )
-fi
-
 CONF_OVERLAY_FILES=(
 	"etc/openmpi-mca-params.conf"
 	# relevant only with internal_prrte, but harmless otherwise
