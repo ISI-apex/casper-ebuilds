@@ -29,26 +29,24 @@ BDEPEND="
 # Need headers from pybind11 to build the native parts, so not an RDEPEND
 DEPEND="
 	=sci-mathematics/dolfin-${MAIN_PV}*
-	$(python_gen_cond_dep \
-		'mpi? (
+	$(python_gen_cond_dep '
+		mpi? (
 			>=dev-python/pybind11-2.2.3-r1[${PYTHON_MULTI_USEDEP}]
 			dev-python/mpi4py[${PYTHON_MULTI_USEDEP}]
-		)' \
-		'petsc? ( dev-python/petsc4py[${PYTHON_MULTI_USEDEP}] )' \
-		'slepc? ( dev-python/slepc4py[${PYTHON_MULTI_USEDEP}] )' \
-	)
-	"
+		)
+		petsc? ( dev-python/petsc4py[${PYTHON_MULTI_USEDEP}] )
+		slepc? ( dev-python/slepc4py[${PYTHON_MULTI_USEDEP}] )
+	')"
 # Depend on slot 0 ("mainline"), to forbid slot 'fd' (Firedrake fork)
 RDEPEND="
 	=dev-python/ffc-${MAIN_PV}*:0[${PYTHON_SINGLE_USEDEP}]
 	=dev-python/fiat-${MAIN_PV}*:0[${PYTHON_SINGLE_USEDEP}]
 	=dev-python/dijitso-${MAIN_PV}*:0[${PYTHON_SINGLE_USEDEP}]
 	=dev-python/ufl-${MAIN_PV}*:0[${PYTHON_SINGLE_USEDEP}]
-	$(python_gen_cond_dep \
-		'dev-python/numpy[${PYTHON_MULTI_USEDEP}]' \
-		'dev-python/pkgconfig[${PYTHON_MULTI_USEDEP}]' \
-	)
-	"
+	$(python_gen_cond_dep '
+		dev-python/numpy[${PYTHON_MULTI_USEDEP}]
+		dev-python/pkgconfig[${PYTHON_MULTI_USEDEP}]
+	')"
 
 S="${WORKDIR}/${MYP}/python"
 
