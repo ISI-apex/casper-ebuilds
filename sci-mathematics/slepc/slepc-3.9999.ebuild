@@ -44,8 +44,8 @@ DEPEND="${RDEPEND}
 	"
 
 PATCHES=(
-	"${FILESDIR}"/${P}-slepc4py-root-destdir.patch
-	"${FILESDIR}"/${P}-slepc4py-site-packages-install-dir.patch
+	"${FILESDIR}"/${PN}-3.9999-slepc4py-root-destdir.patch
+	"${FILESDIR}"/${PN}-3.9999-slepc4py-site-packages-install-dir.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
