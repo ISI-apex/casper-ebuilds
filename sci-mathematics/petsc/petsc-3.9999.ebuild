@@ -94,9 +94,9 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.13.0-pastix-params.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-comm-type.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-refine.patch
-	"${FILESDIR}"/${P}-0001-config-petsc4py-remove-code-duplication-in-install-p.patch
-	"${FILESDIR}"/${P}-0002-config-petsc4py-honor-DESTDIR-make-var.patch
-	"${FILESDIR}"/${P}-petsc4py-site-packages-install-dir.patch
+	"${FILESDIR}"/${PN}-3.9999-0001-config-petsc4py-remove-code-duplication-in-install-p.patch
+	"${FILESDIR}"/${PN}-3.9999-0002-config-petsc4py-honor-DESTDIR-make-var.patch
+	"${FILESDIR}"/${PN}-3.9999-petsc4py-site-packages-install-dir.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
