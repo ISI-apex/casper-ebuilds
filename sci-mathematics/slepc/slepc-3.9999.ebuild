@@ -4,7 +4,6 @@
 EAPI=7
 
 EGIT_REPO_URI="https://gitlab.com/slepc/slepc.git"
-EGIT_SUBMODULES=()
 
 PYTHON_COMPAT=( python3_{6,7,8} )
 
