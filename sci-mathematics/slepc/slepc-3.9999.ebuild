@@ -64,7 +64,7 @@ src_configure() {
 	local conf_args=(
 		--prefix="${EPREFIX}/usr/$(get_libdir)/slepc"
 		--with-arpack=1
-		$(use_with python slepc4py)
+		--with-slepc4py=$(usex python 1 0)
 		#--with-arpack-dir="${EPREFIX}/usr/$(get_libdir)"
 		#--with-arpack-flags="$(usex mpi "-lparpack,-larpack" "-larpack")"
 	)
