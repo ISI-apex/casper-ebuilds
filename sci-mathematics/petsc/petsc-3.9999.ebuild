@@ -264,7 +264,7 @@ src_configure() {
 		--with-matlab=0 \
 		--with-cmake:BOOL=1 \
 		--with-imagemagick=0 \
-		$(use_with python petsc4py) \
+		--with-petsc4py=$(usex python 1 0) \
 		$(petsc_enable threads pthread) \
 		--with-blaslapack=2 \
 		--with-blaslapack-pkgconfig="${EPREFIX}/usr/$(get_libdir)/pkgconfig" \
