@@ -13,14 +13,13 @@ if [[ "$(ver_cut 4 ${PV})" = "p" ]]
 then
 	MY_D="$(ver_cut 5 ${PV})"
 	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
-	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
+	KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 else # live
 	KEYWORDS=""
 fi
 
 LICENSE="BSD-2"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 #TODO: cuda, openmp, ml,  trilinos
 # TODO: mkl_[c]paradiso, mkl_sparse, adblaslapack, comblas, c
 #TODO: eigen, mfem, moab, party, samrai, silo, triangle, exodusii, alquimia, pflotran, amazi, mstk, ascem-io, cgns, ctetgen, egads, elemental, moose, sundials, tchem
