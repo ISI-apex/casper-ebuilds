@@ -1,0 +1,35 @@
+--- a/./lib/matplotlib/cbook/__init__.py	2021-03-22 01:21:03.023719424 -0000
++++ b/./lib/matplotlib/cbook/__init__.py	2021-03-22 01:22:34.760388822 -0000
+@@ -1793,25 +1793,15 @@
+     """
+     path = Path(path)
+     lock_path = path.with_name(path.name + ".matplotlib-lock")
+-    retries = 50
+-    sleeptime = 0.1
+-    for _ in range(retries):
+-        try:
+-            with lock_path.open("xb"):
+-                break
+-        except FileExistsError:
+-            time.sleep(sleeptime)
+-    else:
+-        raise TimeoutError("""\
+-Lock error: Matplotlib failed to acquire the following lock file:
+-    {}
+-This maybe due to another process holding this lock file.  If you are sure no
+-other Matplotlib process is running, remove this file and try again.""".format(
+-            lock_path))
++    lock_fd = open(lock_path, 'w')
+     try:
+-        yield
++        fcntl.flock(lock_fd, fcntl.LOCK_EX)
++        try:
++            yield
++        finally:
++            fcntl.flock(lock_fd, fcntl.LOCK_UN)
+     finally:
+-        lock_path.unlink()
++        lock_fd.close()
+ 
+ 
+ def _topmost_artist(
