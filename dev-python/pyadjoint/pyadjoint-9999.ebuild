@@ -10,9 +10,9 @@ PYTHON_COMPAT=( python3_{6,7,8} )
 
 inherit distutils-r1 eutils git-r3
 
-if [[ "$(ver_cut 2 ${PV})" = "pre" ]]
+if [[ "$(ver_cut 4 ${PV})" = "p" ]]
 then
-	MY_D="$(ver_cut 3 ${PV})"
+	MY_D="$(ver_cut 5 ${PV})"
 	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
 	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 else # live
