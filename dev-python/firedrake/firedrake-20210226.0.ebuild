@@ -73,7 +73,7 @@ PATCHES=(
 	"${FILESDIR}/${PN}-20200204.0-no-hdf5.patch"
 	"${FILESDIR}/${PN}-20210225.0-no-jit.patch"
 	"${FILESDIR}/${P}-halo-Adapt-to-new-PetscSFBcast-interface.patch"
-	"${FILESDIR}/${PN}-20210225.0-setup-py-adjoint.patch"
+	"${FILESDIR}/${PN}-20210225.0-setup-py-find-packages.patch"
 	)
 #"${FILESDIR}/${P}-slot-pypath.patch"
 
