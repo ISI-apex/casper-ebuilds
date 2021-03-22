@@ -96,7 +96,6 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.13.0-pastix-refine.patch
 	"${FILESDIR}"/${PN}-3.9999-0001-config-petsc4py-remove-code-duplication-in-install-p.patch
 	"${FILESDIR}"/${PN}-3.9999-0002-config-petsc4py-honor-DESTDIR-make-var.patch
-	"${FILESDIR}"/${PN}-3.9999-petsc4py-site-packages-install-dir.patch
 	"${FILESDIR}"/${PN}-3.9999-config-petsc4py-with-arg-bool.patch
 )
 
@@ -298,6 +297,20 @@ src_install() {
 	#dodir /usr/$(get_libdir)/petsc
 	emake DESTDIR="${D}" install
 	python_optimize
+
+	# petsc4py installs into PETSC_DIR, so create shortcut from site dir
+	if use python; then
+		local dest_sitedir="${D}$(python_get_sitedir)"
+		mkdir -p "${dest_sitedir}" || die
+		# NOTE: contents of .pth needs to be one line
+		echo \
+			"import sys, os;" \
+			"p = os.getenv('PETSC_DIR');" \
+		        "a = os.getenv('PETSC_ARCH') or '';" \
+			"p = p and os.path.join(p, a, 'lib');" \
+			"p and (p in sys.path or sys.path.append(p))" \
+			> "${dest_sitedir}"/petsc4py.pth || die
+	fi
 
 	# add PETSC_DIR to environmental variables
 	cat >> 99petsc <<- EOF
