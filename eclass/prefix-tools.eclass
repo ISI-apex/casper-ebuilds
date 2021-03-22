@@ -95,6 +95,11 @@ prefix-tools_src_install() {
 	if [[ -d "${etc_dir}" ]]; then
 		doins -r "${etc_dir}"
 	fi
+
+	insinto /usr/share/prefix-tools
+	if [[ -d "${PREFIX_TOOLS_CLUSTER}/make" ]]; then
+		doins -r "${PREFIX_TOOLS_CLUSTER}/make"
+	fi
 }
 
 DEPEND="$(prefix-tools_get_conflicts)"
