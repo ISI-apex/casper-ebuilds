@@ -292,11 +292,11 @@ src_configure() {
 }
 
 src_install() {
-	python_setup
+	use python && python_setup
 	#emake DESTDIR="${ED}" DESTPREFIX="/usr/$(get_libdir)/petsc" install
 	#dodir /usr/$(get_libdir)/petsc
 	emake DESTDIR="${D}" install
-	python_optimize
+	use python && python_optimize
 
 	# petsc4py installs into PETSC_DIR, so create shortcut from site dir
 	if use python; then
