@@ -1,4 +1,3 @@
 =sys-kernel/linux-headers-4.14-r1
 
-# doesn't exist yet
-#app-portage/prefix-tools-olcf-summit
+app-portage/prefix-tools-olcf-summit
