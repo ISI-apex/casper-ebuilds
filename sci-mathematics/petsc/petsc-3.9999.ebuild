@@ -95,6 +95,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.13.0-pastix-comm-type.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-refine.patch
 	"${FILESDIR}"/${PN}-3.9999-config-petsc4py-with-arg-bool.patch
+	"${FILESDIR}"/${PN}-3.9999-petsc4py-build-against-petsc-being-built.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
