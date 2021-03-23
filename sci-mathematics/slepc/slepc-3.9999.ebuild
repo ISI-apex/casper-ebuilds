@@ -44,8 +44,6 @@ DEPEND="${RDEPEND}
 	"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-3.9999-slepc4py-root-destdir.patch
-	"${FILESDIR}"/${PN}-3.9999-slepc4py-site-packages-install-dir.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
@@ -84,6 +82,20 @@ src_install() {
 	#emake DESTDIR="${ED}" SLEPC_INSTALLDIR=/usr/$(get_libdir)/slepc install
 	emake SLEPC_DIR="${S}" DESTDIR="${D}" install
 	use python && python_optimize
+
+	# slepc4py installs into SLEPC_DIR, so create shortcut from site dir
+	if use python; then
+		local dest_sitedir="${D}$(python_get_sitedir)"
+		mkdir -p "${dest_sitedir}" || die
+		# NOTE: contents of .pth needs to be one line
+		echo \
+			"import sys, os;" \
+			"p = os.getenv('SLEPC_DIR');" \
+		        "a = os.getenv('PETSC_ARCH') or '';" \
+			"p = p and os.path.join(p, a, 'lib');" \
+			"p and (p in sys.path or sys.path.append(p))" \
+			> "${dest_sitedir}"/slepc4py.pth || die
+	fi
 
 	# add PETSC_DIR to environmental variables
 	cat >> 99slepc <<- EOF
