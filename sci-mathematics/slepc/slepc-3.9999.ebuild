@@ -80,10 +80,10 @@ src_compile() {
 }
 
 src_install() {
-	python_setup
+	use python && python_setup
 	#emake DESTDIR="${ED}" SLEPC_INSTALLDIR=/usr/$(get_libdir)/slepc install
 	emake SLEPC_DIR="${S}" DESTDIR="${D}" install
-	python_optimize
+	use python && python_optimize
 
 	# add PETSC_DIR to environmental variables
 	cat >> 99slepc <<- EOF
