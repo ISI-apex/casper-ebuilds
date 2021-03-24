@@ -1,19 +1,46 @@
---- a/src/binding/petsc4py/conf/baseconf.py	2021-03-23 02:09:05.823590000 -0000
-+++ b/src/binding/petsc4py/conf/baseconf.py	2021-03-23 02:09:17.722666000 -0000
-@@ -163,8 +163,11 @@
-             from cStringIO import StringIO
-         except ImportError:
+--- a/config/BuildSystem/config/packages/petsc4py.py	2021-03-24 19:17:49.385541000 -0000
++++ b/config/BuildSystem/config/packages/petsc4py.py	2021-03-24 19:17:53.836726000 -0000
+@@ -45,11 +45,12 @@
+       else:
+         archflags = "ARCHFLAGS=\'-arch x86_64\' "
+ 
+-    # if installing prefix location then need to set new value for PETSC_DIR/PETSC_ARCH
+-    if self.argDB['prefix'] and not 'package-prefix-hash' in self.argDB:
+-       newdir = 'PETSC_DIR='+os.path.abspath(os.path.expanduser(self.argDB['prefix']))+' '+'PETSC_ARCH= MPICC=${PCC} '
+-    else:
+-       newdir = 'MPICC=${PCC} '
++    # if installing prefix location then need to set new value for PETSC_DIR/PETSC_ARCH
++    if self.argDB['prefix'] and not 'package-prefix-hash' in self.argDB:
++      newdir = 'PETSC_BUILD_DIR=$(PETSC_DIR) PETSC_BUILD_ARCH=$(PETSC_ARCH) ' + \
++        'PETSC_DIR='+os.path.abspath(os.path.expanduser(self.argDB['prefix']))+' '+'PETSC_ARCH= MPICC=${PCC} '
++    else:
++      newdir = 'MPICC=${PCC} '
+ 
+     #  if installing as Superuser than want to return to regular user for clean and build
+     if self.installSudo:
+--- a/src/binding/petsc4py/conf/baseconf.py	2021-03-24 19:17:50.821040000 -0000
++++ b/src/binding/petsc4py/conf/baseconf.py	2021-03-24 19:18:36.847426213 -0000
+@@ -141,6 +141,8 @@
+         from os.path import join, isdir, exists
+         PETSC_DIR  = petsc_dir
+         PETSC_ARCH = petsc_arch
++        PETSC_BUILD_DIR = os.environ.get('PETSC_BUILD_DIR', default=PETSC_DIR)
++        PETSC_BUILD_ARCH = os.environ.get('PETSC_BUILD_ARCH', default=PETSC_ARCH)
+         #
+         confdir = join('lib', 'petsc', 'conf')
+         if not (PETSC_ARCH and isdir(join(PETSC_DIR, PETSC_ARCH))):
+@@ -165,6 +167,10 @@
              from io import StringIO
--        confstr  = 'PETSC_DIR  = %s\n' % PETSC_DIR
-+        confstr = ''
+         confstr  = 'PETSC_DIR  = %s\n' % PETSC_DIR
          confstr += 'PETSC_ARCH = %s\n' % PETSC_ARCH
-+        confstr += 'PETSC_DIR  = ${wPETSC_DIR}\n'
-+        confstr += 'PETSC_BUILD_DIR  = %s\n' % PETSC_DIR
-+        confstr += 'PETSC_LIB_BUILD_DIR = ${PETSC_BUILD_DIR}/${PETSC_ARCH}/lib\n'
++        # PETSC_LIB_DIR already in the file
++        confstr += 'PETSC_BUILD_DIR  = %s\n' % PETSC_BUILD_DIR
++        confstr += 'PETSC_BUILD_ARCH  = %s\n' % PETSC_BUILD_ARCH
++        confstr += 'PETSC_LIB_BUILD_DIR = ${PETSC_BUILD_DIR}/${PETSC_BUILD_ARCH}/lib\n'
          confstr += contents
          confdict = makefile(StringIO(confstr))
          return confdict
-@@ -184,7 +187,7 @@
+@@ -184,7 +190,7 @@
          # includes and libraries
          petsc_inc = flaglist(self['PETSC_CC_INCLUDES'])
          petsc_lib = flaglist(
@@ -22,15 +49,16 @@
          # runtime_library_dirs is not supported on Windows
          if sys.platform != 'win32':
              petsc_lib['runtime_library_dirs'].append(self['PETSC_LIB_DIR'])
-@@ -253,6 +256,7 @@
- 
+@@ -254,6 +260,8 @@
      def log_info(self):
          PETSC_DIR  = self['PETSC_DIR']
-+        PETSC_BUILD_DIR  = self['PETSC_BUILD_DIR']
          PETSC_ARCH = self['PETSC_ARCH']
++        PETSC_BUILD_DIR  = self['PETSC_BUILD_DIR']
++        PETSC_BUILD_ARCH = self['PETSC_BUILD_ARCH']
          version = ".".join([str(i) for i in self.version[0]])
          release = ("development", "release")[self.version[1]]
-@@ -263,15 +267,16 @@
+         version_info = version + ' ' + release
+@@ -263,15 +271,17 @@
          language     = self['PETSC_LANGUAGE']
          compiler     = self['PCC']
          linker       = self['PCC_LINKER']
@@ -44,8 +72,9 @@
 -        log.info('compiler:     %s' % compiler)
 -        log.info('linker:       %s' % linker)
 +        log.info('PETSC_DIR:            %s' % PETSC_DIR )
-+        log.info('PETSC_BUILD_DIR:      %s' % PETSC_BUILD_DIR )
 +        log.info('PETSC_ARCH:           %s' % PETSC_ARCH )
++        log.info('PETSC_BUILD_DIR:      %s' % PETSC_BUILD_DIR )
++        log.info('PETSC_BUILD_ARCH:     %s' % PETSC_BUILD_ARCH )
 +        log.info('version:              %s' % version_info)
 +        log.info('integer-size:         %s' % integer_size)
 +        log.info('scalar-type:          %s' % scalar_type)
@@ -56,19 +85,3 @@
  
  # --------------------------------------------------------------------
  
---- a/config/BuildSystem/config/packages/petsc4py.py	2021-03-23 02:22:34.228847000 -0000
-+++ b/config/BuildSystem/config/packages/petsc4py.py	2021-03-23 02:24:27.562745000 -0000
-@@ -45,11 +45,8 @@
-       else:
-         archflags = "ARCHFLAGS=\'-arch x86_64\' "
- 
--    # if installing prefix location then need to set new value for PETSC_DIR/PETSC_ARCH
--    if self.argDB['prefix'] and not 'package-prefix-hash' in self.argDB:
--       newdir = 'PETSC_DIR='+os.path.abspath(os.path.expanduser(self.argDB['prefix']))+' '+'PETSC_ARCH= MPICC=${PCC} '
--    else:
--       newdir = 'MPICC=${PCC} '
-+    # PETSC_DIR and PETSC_ARCH are set by the rule in the parent makefile
-+    newdir = 'MPICC=${PCC} '
- 
-     #  if installing as Superuser than want to return to regular user for clean and build
-     if self.installSudo:
