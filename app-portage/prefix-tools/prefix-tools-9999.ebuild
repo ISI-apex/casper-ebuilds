@@ -18,7 +18,7 @@ else # live
 	KEYWORDS=""
 fi
 
-inherit conf-overlay distutils-r1 git-r3
+inherit conf-overlay distutils-r1 git-r3 prefix-tools
 
 DESCRIPTION="Tools for running commands within Gentoo Prefix"
 HOMEPAGE="https://github.com/ISI-apex/casper-utils"
@@ -57,9 +57,8 @@ src_install() {
 		dobin $f
 	done
 
-	local ptools_dir=/ptools
-	insinto ${ptools_dir}
-	exeinto ${ptools_dir}
+	insinto "${PREFIX_TOOLS_HOST_DIR}"
+	exeinto "${PREFIX_TOOLS_HOST_DIR}"
 	doins host/pscommon.sh
 	for f in host/*; do
 		doexe $f
