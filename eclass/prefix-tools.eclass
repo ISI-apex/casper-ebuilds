@@ -20,6 +20,11 @@ PREFIX_TOOLS_CLUSTERS=(usc-discovery anl-theta)
 # @DESCRIPTION: Installation directory for host-side tools
 PREFIX_TOOLS_HOST_DIR="/ptools"
 
+# @ECLASS-VARIABLE: PREFIX_TOOLS_DIR
+# @INTERNAL
+# @DESCRIPTION: Installation directory for all prefix-tools stuff
+PREFIX_TOOLS_DIR="/usr/lib/prefix-tools"
+
 EGIT_REPO_URI="https://github.com/ISI-apex/casper-utils.git"
 EGIT_SUBMODULES=()
 
@@ -80,9 +85,7 @@ prefix-tools_src_install() {
 	prefix-tools_doexe_dir "${PREFIX_TOOLS_CLUSTER}/host" \
 		"${PREFIX_TOOLS_HOST_DIR}"
 
-	local ptools_path="/usr/lib/prefix-tools"
-
-	local exec_path="${ptools_path}/bin"
+	local exec_path="${PREFIX_TOOLS_DIR}/bin"
 	exeinto ${exec_path}
 
 	cat >> "${T}"/01prefix-tools <<-EOF
@@ -98,7 +101,7 @@ prefix-tools_src_install() {
 		doins -r "${etc_dir}"
 	fi
 
-	insinto "${ptools_path}"
+	insinto "${PREFIX_TOOLS_DIR}"
 	if [[ -d "${PREFIX_TOOLS_CLUSTER}/make" ]]; then
 		doins -r "${PREFIX_TOOLS_CLUSTER}/make"
 	fi

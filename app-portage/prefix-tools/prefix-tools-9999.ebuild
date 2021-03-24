@@ -46,12 +46,19 @@ src_compile() {
 src_install() {
 	mkdir -p "${T}"/etc/prefix-tools
 	sed -e "s:@__EPREFIX__@:${EPREFIX}:g" \
-		-e "s:@__ETC_PTOOLS__@:etc/${PN}:g" \
 		etc.in/prefix-tools/prefixrc > "${T}"/etc/prefix-tools/prefixrc
 
 	insinto /
 	doins -r "${T}"/etc
 	doins -r etc
+
+	insinto "${PREFIX_TOOLS_DIR}"
+	if [[ -d "sh" ]]; then
+		doins -r sh
+	fi
+	if [[ -d "make" ]]; then
+		doins -r make
+	fi
 
 	for f in bin/*; do
 		dobin $f
