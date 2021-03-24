@@ -1,5 +1,5 @@
---- a/./lib/matplotlib/cbook/__init__.py	2021-03-22 01:21:03.023719424 -0000
-+++ b/./lib/matplotlib/cbook/__init__.py	2021-03-22 01:22:34.760388822 -0000
+--- a/lib/matplotlib/cbook/__init__.py	2021-03-22 01:21:03.023719424 -0000
++++ b/lib/matplotlib/cbook/__init__.py	2021-03-22 01:22:34.760388822 -0000
 @@ -1793,25 +1793,15 @@
      """
      path = Path(path)
@@ -33,3 +33,13 @@
  
  
  def _topmost_artist(
+--- a/lib/matplotlib/cbook/__init__.py	2021-03-24 18:59:16.439949000 -0000
++++ b/lib/matplotlib/cbook/__init__.py	2021-03-24 18:59:23.809803407 -0000
+@@ -9,6 +9,7 @@
+ import collections
+ import collections.abc
+ import contextlib
++import fcntl
+ import functools
+ import gzip
+ import itertools
