@@ -80,7 +80,9 @@ prefix-tools_src_install() {
 	prefix-tools_doexe_dir "${PREFIX_TOOLS_CLUSTER}/host" \
 		"${PREFIX_TOOLS_HOST_DIR}"
 
-	local exec_path="/usr/libexec/prefix-tools/bin"
+	local ptools_path="/usr/lib/prefix-tools"
+
+	local exec_path="${ptools_path}/bin"
 	exeinto ${exec_path}
 
 	cat >> "${T}"/01prefix-tools <<-EOF
@@ -96,7 +98,7 @@ prefix-tools_src_install() {
 		doins -r "${etc_dir}"
 	fi
 
-	insinto /usr/share/prefix-tools
+	insinto "${ptools_path}"
 	if [[ -d "${PREFIX_TOOLS_CLUSTER}/make" ]]; then
 		doins -r "${PREFIX_TOOLS_CLUSTER}/make"
 	fi
