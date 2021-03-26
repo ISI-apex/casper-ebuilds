@@ -33,7 +33,3 @@ sys-fabric/libibverbs
 >dev-python/versioneer-0.18-r1
 >dev-python/islpy-2019.1.2
 >sys-cluster/rdma-core-31.0
-
-# segfaults since upstream b23a56b0b9771bdf79edceac028a5838ec3fb22f
-# Upstream Issue #870
->=sys-cluster/prrte-2.0.0_pre20210326
