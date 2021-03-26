@@ -35,3 +35,7 @@ dev-java/oracle-jdk-bin
 # nvidia-cuda-toolkit can be installed without it (false dep)
 x11-drivers/nvidia-drivers
 
+# After update from 1.9.0_p20201004 to 1.10, OpenMPI generates a warning:
+# mca/pml/ucx/pml_ucx.c:328  Warning: UCP worker does not support
+# MPI_THREAD_MULTIPLE. PML UCX could not be selected
+>=sys-cluster/ucx-1.10
