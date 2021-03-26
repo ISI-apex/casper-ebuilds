@@ -195,6 +195,7 @@ multilib_src_configure() {
 		--with-libevent="${EPREFIX}/usr" \
 		--with-libevent-libdir="${EPREFIX}/usr/$(get_libdir)" \
 		--enable-mpi-fortran=$(usex fortran all no) \
+		--enable-mca-dso \
 		$(use_with ltdl libltdl "${EPREFIX}/usr") \
 		$(use_with cma) \
 		$(multilib_native_use_with cuda cuda "${EPREFIX}"/opt/cuda) \
