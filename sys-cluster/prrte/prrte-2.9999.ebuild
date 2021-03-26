@@ -8,10 +8,16 @@ inherit conf-overlay cuda flag-o-matic git-r3 toolchain-funcs multilib multilib-
 EGIT_REPO_URI="https://github.com/openpmix/prrte.git"
 EGIT_SUBMODULES=()
 
-if [[ "$(ver_cut 4 ${PV})" = "pre" ]]
+if [[ "$(ver_cut 4)" = "pre" ]]
 then
-	MY_D="$(ver_cut 5 ${PV})"
-	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
+	MY_TS="$(ver_cut 5)"
+	MY_TS_DATE="${MY_TS:0:4}-${MY_TS:4:2}-${MY_TS:6:2}"
+	MY_TS_TIME="${MY_TS:8:2}:${MY_TS:10:2}:${MY_TS:12:2}"
+	if [[ -n "${MY_TS_TIME}" ]]; then
+		EGIT_COMMIT_DATE="${MY_TS_DATE}T${MY_TS_TIME}+0000"
+	else
+		EGIT_COMMIT_DATE="${MY_TS_DATE}T00:00:00+0000"
+	fi
 	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 else # live
 	KEYWORDS=""
