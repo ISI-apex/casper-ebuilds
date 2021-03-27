@@ -1,6 +1,7 @@
 virtual/mpi -cxx romio
 
-sys-cluster/openmpi -cxx heterogeneous romio -pmi -internal_pmix -internal_prrte openmpi_fabrics_ucx openmpi_fs_gpfs -debug
+# disable gpfs because causes link trouble (libgpfs.so is only on host) #8718
+sys-cluster/openmpi -cxx heterogeneous romio -pmi -internal_pmix -internal_prrte openmpi_fabrics_ucx -openmpi_fs_gpfs -debug
 sys-cluster/prrte openmpi_rm_lsf -debug
 
 # Perferred option: use userspace libraries from sys-cluster/rdma-core
