@@ -46,7 +46,7 @@ HOMEPAGE="http://www.open-mpi.org"
 LICENSE="BSD"
 SLOT="0"
 # TODO: ltdl: looks for nonexistant ltprtedl.h header
-IUSE="cma cuda debug fortran heterogeneous ipv6 java ltdl +man
+IUSE="+avx cma cuda debug fortran heterogeneous ipv6 java ltdl +man
 	mpi1 romio ucx
 	${IUSE_OPENMPI_FABRICS} ${IUSE_OPENMPI_RM} ${IUSE_OPENMPI_OFED_FEATURES}"
 
@@ -157,8 +157,8 @@ multilib_src_configure() {
 		export ac_cv_path_JAVAC="$(java-pkg_get-javac) $(java-pkg_javac-args)"
 	fi
 
-	# TODO: cross-compilation: cannot test for AVX on build host
-	local excluded_components="op-avx"
+	local excluded_components=""
+	use avx || excluded_components="op-avx"
 
 	local host_ldflags
 	local conf_flags=()
