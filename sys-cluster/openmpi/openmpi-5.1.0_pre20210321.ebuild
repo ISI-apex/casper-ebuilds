@@ -139,9 +139,6 @@ src_prepare() {
 
 	local submodules=()
 	local excluded_pkgs="libevent,hwloc,prrte,pmix"
-	local included_components=""
-	# TODO: cross-compilation: cannot test for AVX on build host
-	local excluded_components="op-avx"
 
 	# TODO: somehow git-r3 checks out the submodules, but
 	# git submodule status shows them with a '-' so check fails
@@ -149,9 +146,7 @@ src_prepare() {
 		my_vrun git submodule init -- ${submodules[@]}
 	fi
 
-	my_vrun ./autogen.pl --no-3rdparty "${excluded_pkgs}" \
-		--exclude "${excluded_components}" \
-		--include "${included_components}"
+	my_vrun ./autogen.pl --no-3rdparty "${excluded_pkgs}"
 }
 
 multilib_src_configure() {
@@ -161,6 +156,9 @@ multilib_src_configure() {
 		# but we can cheat by overriding the configure test for javac.
 		export ac_cv_path_JAVAC="$(java-pkg_get-javac) $(java-pkg_javac-args)"
 	fi
+
+	# TODO: cross-compilation: cannot test for AVX on build host
+	local excluded_components="op-avx"
 
 	local host_ldflags
 	local conf_flags=()
@@ -190,6 +188,7 @@ multilib_src_configure() {
 	export LDFLAGS="${final_ldflags}"
 	ECONF_SOURCE=${S} econf \
 		--enable-pretty-print-stacktrace \
+		--enable-mca-no-build="${excluded_components}" \
 		--with-hwloc="${EPREFIX}/usr" \
 		--with-hwloc-libdir="${EPREFIX}/usr/$(get_libdir)" \
 		--with-libevent="${EPREFIX}/usr" \
