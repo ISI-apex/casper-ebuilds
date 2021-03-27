@@ -41,6 +41,13 @@ IUSE_OPENMPI_RM="
 	openmpi_rm_pbs
 	openmpi_rm_slurm"
 
+IUSE_OPENMPI_FS="
+	openmpi_fs_gpfs
+	openmpi_fs_ime
+	openmpi_fs_pvfs2
+	openmpi_fs_lustre
+"
+
 DESCRIPTION="A high-performance message passing library (MPI)"
 HOMEPAGE="http://www.open-mpi.org"
 LICENSE="BSD"
@@ -48,7 +55,8 @@ SLOT="0"
 # TODO: ltdl: looks for nonexistant ltprtedl.h header
 IUSE="+avx cma cuda debug fortran heterogeneous ipv6 java ltdl +man
 	mpi1 romio ucx
-	${IUSE_OPENMPI_FABRICS} ${IUSE_OPENMPI_RM} ${IUSE_OPENMPI_OFED_FEATURES}"
+	${IUSE_OPENMPI_FABRICS} ${IUSE_OPENMPI_FS} ${IUSE_OPENMPI_RM}
+	${IUSE_OPENMPI_OFED_FEATURES}"
 
 REQUIRED_USE="
 	openmpi_rm_slurm? ( !openmpi_rm_pbs )
@@ -209,6 +217,10 @@ multilib_src_configure() {
 		$(use_with ucx ucx "${EPREFIX}/usr") \
 		$(usex ucx --with-ucx-libdir="${EPREFIX}/usr/$(get_libdir)" "") \
 		$(multilib_native_use_enable java mpi-java) \
+		$(multilib_native_use_with openmpi_fs_gpfs gpfs /usr) \
+		$(multilib_native_use_with openmpi_fs_ime ime /usr) \
+		$(multilib_native_use_with openmpi_fs_lustre lustre /usr) \
+		$(multilib_native_use_with openmpi_fs_pvfs2 pvfs2 /usr) \
 		$(multilib_native_use_with openmpi_fabrics_knem knem "${EPREFIX}"/usr) \
 		$(multilib_native_use_with openmpi_fabrics_ofi ofi "${EPREFIX}"/usr) \
 		$(multilib_native_use_with openmpi_fabrics_psm psm2 "${EPREFIX}"/usr) \
