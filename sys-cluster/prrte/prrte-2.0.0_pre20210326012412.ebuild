@@ -66,12 +66,6 @@ CONF_OVERLAY_FILES=(
 	"etc/prte-mca-params.conf"
 )
 
-# Be verbose when executing important commands
-my_vrun() {
-	echo "$@"
-	"$@" || die
-}
-
 src_prepare() {
 	if use openmpi_fabrics_ofi; then
 		for p in ${MY_OFI_PATCHES[@]}; do
@@ -80,22 +74,17 @@ src_prepare() {
 	fi
 
 	default
-
-	# Exclude framework or framework-component.
-	# On ANL Theta, routed mode other than direct breaks (even on debug
-	# queue for 8*64 ranks). And, setting the mode at runtime via '--mca
-	# routed direct' is insuffcient -- somehow this is overriden when rank
-	# count is large, at least when using 'prte --daemonize && prun'.
-	local included_components="routed-direct"
-	local excluded_components=""
-
-	my_vrun ./autogen.pl \
-		--exclude "${excluded_components}" \
-		--include "${included_components}"
+	./autogen.pl
 }
 
 multilib_src_configure() {
 	local host_ldflags
+
+	# On ANL Theta, routed mode other than 'directi' breaks (even on debug
+	# queue for 8*64 ranks). And, setting the mode at runtime via '--mca
+	# routed direct' is insuffcient -- somehow this is overriden when rank
+	# count is large, at least when using 'prte --daemonize && prun'.
+	local excluded_components="routed-binomial,routed-debruijn,routed-radix"
 
 	if use openmpi_rm_lsf; then
 		# TODO: fetch these programatically somehow
@@ -126,6 +115,7 @@ multilib_src_configure() {
 	ECONF_SOURCE=${S} econf \
 		--enable-pretty-print-stacktrace \
 		--enable-prte-prefix-by-default \
+		--enable-mca-no-build="${excluded_components}" \
 		--enable-mca-dso=plm-lsf,ess-lsf,ras-lsf \
 		--with-hwloc="${EPREFIX}/usr" \
 		--with-hwloc-libdir="${EPREFIX}/usr/$(get_libdir)" \
