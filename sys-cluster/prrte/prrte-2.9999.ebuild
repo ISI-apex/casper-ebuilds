@@ -3,24 +3,16 @@
 
 EAPI=7
 
-inherit conf-overlay cuda flag-o-matic git-r3 toolchain-funcs multilib multilib-minimal
-
 EGIT_REPO_URI="https://github.com/openpmix/prrte.git"
 EGIT_SUBMODULES=()
+SNAPSHOT_POS=4
 
-if [[ "$(ver_cut 4)" = "pre" ]]
-then
-	MY_TS="$(ver_cut 5)"
-	MY_TS_DATE="${MY_TS:0:4}-${MY_TS:4:2}-${MY_TS:6:2}"
-	MY_TS_TIME="${MY_TS:8:2}:${MY_TS:10:2}:${MY_TS:12:2}"
-	if [[ -n "${MY_TS_TIME}" ]]; then
-		EGIT_COMMIT_DATE="${MY_TS_DATE}T${MY_TS_TIME}+0000"
-	else
-		EGIT_COMMIT_DATE="${MY_TS_DATE}T00:00:00+0000"
-	fi
-	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
-else # live
+inherit conf-overlay cuda flag-o-matic git-r3 toolchain-funcs multilib multilib-minimal snapshot
+
+if [[ "${PV}" = *9999 ]]; then
 	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 fi
 
 DESCRIPTION="PMIx Reference RunTime Environment (PRRTE)"
