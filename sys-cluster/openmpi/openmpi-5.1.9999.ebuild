@@ -99,13 +99,6 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
 )
 
-MY_PRRTE_PATCHES=(
-	"${FILESDIR}"/${PN}-5-autoconf-alps-cray-release.patch
-	"${FILESDIR}"/${PN}-5-autoconf-librt-for-liblsf.patch
-	"${FILESDIR}"/${PN}-5-prrte-if-addr-match.patch
-	"${FILESDIR}"/${PN}-5-prrte-hostfile-max-slots-for-implicit-nodes.patch
-)
-
 CONF_OVERLAY_FILES=(
 	"etc/openmpi-mca-params.conf"
 )
