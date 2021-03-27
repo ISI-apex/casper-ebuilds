@@ -1,6 +1,6 @@
 virtual/mpi -cxx romio
 
-sys-cluster/openmpi -cxx heterogeneous romio -pmi ucx -internal_pmix -internal_prrte -debug
+sys-cluster/openmpi -cxx heterogeneous romio -pmi ucx -internal_pmix -internal_prrte openmpi_fs_gpfs -debug
 sys-cluster/prrte openmpi_rm_lsf -debug
 
 # Perferred option: use userspace libraries from sys-cluster/rdma-core
