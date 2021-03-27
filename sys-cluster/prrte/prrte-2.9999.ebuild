@@ -126,7 +126,7 @@ multilib_src_configure() {
 	ECONF_SOURCE=${S} econf \
 		--enable-pretty-print-stacktrace \
 		--enable-prte-prefix-by-default \
-		--enable-mca-dso \
+		--enable-mca-dso=plm-lsf,ess-lsf,ras-lsf \
 		--with-hwloc="${EPREFIX}/usr" \
 		--with-hwloc-libdir="${EPREFIX}/usr/$(get_libdir)" \
 		--with-libevent="${EPREFIX}/usr" \
