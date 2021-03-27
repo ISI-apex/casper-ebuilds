@@ -32,6 +32,7 @@ IUSE_OPENMPI_FABRICS="
 	openmpi_fabrics_knem
 	openmpi_fabrics_ofi
 	openmpi_fabrics_psm
+	openmpi_fabrics_ucx
 	openmpi_fabrics_ugni
 	"
 
@@ -54,7 +55,7 @@ LICENSE="BSD"
 SLOT="0"
 # TODO: ltdl: looks for nonexistant ltprtedl.h header
 IUSE="+avx cma cuda debug fortran heterogeneous ipv6 java ltdl +man
-	mpi1 romio ucx
+	mpi1 romio
 	${IUSE_OPENMPI_FABRICS} ${IUSE_OPENMPI_FS} ${IUSE_OPENMPI_RM}
 	${IUSE_OPENMPI_OFED_FEATURES}"
 
@@ -78,10 +79,10 @@ CDEPEND="
 	openmpi_fabrics_knem? ( sys-cluster/knem )
 	openmpi_fabrics_ofi? ( sys-fabric/libfabric )
 	openmpi_fabrics_psm? ( sys-fabric/infinipath-psm:* )
+	openmpi_fabrics_ucx? ( sys-cluster/ucx:= )
 	openmpi_fabrics_ugni? ( sys-cluster/cray-libs )
 	openmpi_rm_pbs? ( sys-cluster/torque )
 	openmpi_rm_alps? ( sys-cluster/cray-libs )
-	ucx? ( sys-cluster/ucx:= )
 	"
 
 RDEPEND="${CDEPEND}
@@ -214,8 +215,6 @@ multilib_src_configure() {
 		$(use_enable man man-pages) \
 		--with-pmix="${EPREFIX}/usr" \
 		--with-prrte="${EPREFIX}/usr" \
-		$(use_with ucx ucx "${EPREFIX}/usr") \
-		$(usex ucx --with-ucx-libdir="${EPREFIX}/usr/$(get_libdir)" "") \
 		$(multilib_native_use_enable java mpi-java) \
 		$(multilib_native_use_with openmpi_fs_gpfs gpfs /usr) \
 		$(multilib_native_use_with openmpi_fs_ime ime /usr) \
@@ -224,6 +223,8 @@ multilib_src_configure() {
 		$(multilib_native_use_with openmpi_fabrics_knem knem "${EPREFIX}"/usr) \
 		$(multilib_native_use_with openmpi_fabrics_ofi ofi "${EPREFIX}"/usr) \
 		$(multilib_native_use_with openmpi_fabrics_psm psm2 "${EPREFIX}"/usr) \
+		$(multilib_native_use_with openmpi_fabrics_ucx ucx "${EPREFIX}"/usr) \
+		$(multilib_native_use_with openmpi_fabrics_ucx ucx-libdir "${EPREFIX}"/usr/$(get_libdir)) \
 		$(multilib_native_use_with openmpi_fabrics_ugni ugni) \
 		${conf_flags[@]}
 }
