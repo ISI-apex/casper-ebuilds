@@ -1,5 +1,7 @@
 virtual/mpi -cxx romio
-sys-cluster/openmpi -cxx heterogeneous romio -pmi -ucx -internal_pmix -internal_prrte -openmpi_fabrics_ofi openmpi_fabrics_ugni -mpi1 -debug
+# disable AVX because of cross-compilation: the build host has AVX (so
+# configure detects it) but target host doesn't so runtime errors are printed
+sys-cluster/openmpi -avx -cxx heterogeneous romio -pmi -ucx -internal_pmix -internal_prrte -openmpi_fabrics_ofi openmpi_fabrics_ugni -mpi1 -debug
 sys-cluster/pmix -debug
 sys-cluster/prrte openmpi_rm_alps -debug
 
