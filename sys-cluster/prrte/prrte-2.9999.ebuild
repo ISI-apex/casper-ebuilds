@@ -134,6 +134,10 @@ multilib_src_configure() {
 		$(multilib_native_use_with openmpi_rm_slurm slurm)
 }
 
+multilib_src_compile() {
+	emake V=1 "$@"
+}
+
 multilib_src_install_all() {
 	default
 
