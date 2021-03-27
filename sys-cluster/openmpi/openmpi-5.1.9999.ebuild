@@ -229,6 +229,10 @@ multilib_src_configure() {
 		${conf_flags[@]}
 }
 
+multilib_src_compile() {
+	emake V=1 "$@"
+}
+
 multilib_src_test() {
 	# Doesn't work with the default src_test as the dry run (-n) fails.
 	emake -j1 check
