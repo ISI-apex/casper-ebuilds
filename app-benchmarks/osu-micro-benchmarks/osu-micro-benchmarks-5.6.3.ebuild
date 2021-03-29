@@ -22,7 +22,8 @@ DEPEND="${RDEPEND}"
 PATCHES=()
 
 src_configure() {
-	CC=mpicc CXX=mpicxx econf \
+	#append-ldflags -pthread # TODO: why no worky?
+	CC=mpicc CXX=mpicxx LDFLAGS="${LDFLAGS} -pthread" econf \
 		$(use_enable cuda) \
 		$(use_enable openacc)
 }
