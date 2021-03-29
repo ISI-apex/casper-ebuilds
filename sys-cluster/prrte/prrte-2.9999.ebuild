@@ -88,7 +88,9 @@ multilib_src_configure() {
 
 	if use openmpi_rm_lsf; then
 		# TODO: fetch these programatically somehow
-		local lsf_dir="/opt/ibm/spectrumcomputing/lsf/10.1.0.9"
+		# Note: these libs are not available on Summit worker nodes, so
+		# to build on worker nodes, we make our own copy (not very nice...)
+		local lsf_dir="$EPREFIX/host/opt/ibm/spectrumcomputing/lsf/10.1.0.9"
 		local lsf_libdir="${lsf_dir}/linux3.10-glibc2.17-ppc64le-csm/lib"
 
 		# Woraround for configure failing to link against -llsf due
