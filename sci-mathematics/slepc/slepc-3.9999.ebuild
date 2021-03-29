@@ -44,7 +44,7 @@ DEPEND="${RDEPEND}
 	"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-3.9999-slepc4py-build-against-self.patch
+	"${FILESDIR}"/${PN}-3.9999-slepc4py-build-against-the-SLEPc-being-built.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
@@ -80,8 +80,8 @@ src_compile() {
 
 src_install() {
 	use python && python_setup
-	#emake DESTDIR="${ED}" SLEPC_INSTALLDIR=/usr/$(get_libdir)/slepc install
-	emake SLEPC_DIR="${S}" DESTDIR="${D}" install
+	local slepc_install_dir="${EPREFIX}"/usr/$(get_libdir)/slepc
+	emake SLEPC_DIR="${S}" SLEPC_INSTALLDIR="${slepc_install_dir}" DESTDIR="${D}" install
 	use python && python_optimize
 
 	# slepc4py installs into SLEPC_DIR, so create shortcut from site dir

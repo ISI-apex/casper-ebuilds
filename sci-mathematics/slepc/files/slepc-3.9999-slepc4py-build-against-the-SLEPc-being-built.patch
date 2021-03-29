@@ -1,0 +1,208 @@
+From 9c12877659342aa77892ebfffa77c7e38fb10277 Mon Sep 17 00:00:00 2001
+From: Alexei Colin <acolin@isi.edu>
+Date: Wed, 24 Mar 2021 23:19:58 +0000
+Subject: [PATCH] slepc4py: build against the SLEPc being built
+
+This fixes an issue with packaging SLEPc+slepc4py. The issue is that the
+slepc4py Python extension builds against SLEPc installed in the system.
+This effectively requires SLEPc to be installed into the system before
+the slepc4py can be built, which is a problem for packaging recipes that
+want to `--with-slepc4py=1`: SLEPc won't be installed into the system at
+the time the top-level build reaches the slepc4py build.
+
+The correct behavior is for the whole build (including slepc4py) to
+succeed without having anything installed into the system; installation
+is a separate step that is done after the build step.
+
+This patch fixes slepc4py to build against the SLEPc that is being being
+built, instead of against the SLEPc installed in the system (which may
+not even exist, and in cases where it does exist, it may be the wrong one
+to build against since we're building SLEPc+slepc4py in one distro package
+build recipe). The main points of the patch are:
+
+1. when overriding SLEPC_DIR and PETSC_ARCH in the make recipe in the
+slepcrules inner makefile with values that point to the final installed
+location, also preserve the old values set by the top-level makefile,
+which point to the source directory with SLEPc sources against which
+the bindings are being built.
+
+2. distinguish between SLEPC_DIR and SLEPC_SRC_DIR when setting the
+compiler arguments for the slepc4py extension shared library (.so).  The
+rpath of the shared library is set to the final path (SLEPC_DIR), but
+the SLEPc headers (with -I) and the SLEPc library (with -L) are used
+from the directory where SLEPc is being built (SLEPC_SRC_DIR).
+
+This patch isn't changing anything about the standalone builds of
+slepc4py built against a SLEPc installed in the system. In that case
+SLEPC_DIR == SLEPC_SRC_DIR and the link command for the extension
+shared library remains unchanged, same as as it was before this patch.
+
+PETSc suffers from the same issue (the patch is similar):
+https://gitlab.com/petsc/petsc/-/issues/862
+https://gitlab.com/petsc/petsc/-/merge_requests/3748
+
+Signed-off-by: Alexei Colin <acolin@isi.edu>
+---
+ config/packages/slepc4py.py            | 12 ++++-
+ src/binding/slepc4py/conf/baseconf.py  | 18 +++----
+ src/binding/slepc4py/conf/slepcconf.py | 65 +++++++++++++++++---------
+ 3 files changed, 63 insertions(+), 32 deletions(-)
+
+diff --git a/config/packages/slepc4py.py b/config/packages/slepc4py.py
+index 70b4dcfb0..65f23742d 100644
+--- a/config/packages/slepc4py.py
++++ b/config/packages/slepc4py.py
+@@ -60,7 +60,17 @@ class Slepc4py(package.Package):
+     destdir  = os.path.join(slepc.prefixdir,'lib')
+ 
+     # add makefile rules
+-    envvars = 'PETSC_ARCH="" PYTHONPATH=%s SLEPC_DIR=${SLEPC_INSTALLDIR}' % pythonpath if slepc.isinstall else 'PYTHONPATH=%s' % pythonpath
++    envvars = 'PYTHONPATH=%s ' % pythonpath
++
++    # When these recipes in the slepcrules makefile are invoked indirecty by
++    # a rule in top-level makefile, the top-level makefile had set
++    # SLPEC_DIR/PETSC_ARCH to the SLEPc source directory against which the
++    # bindings are being built. When building against SLEPc that's not yet
++    # installed into system, this path will differ from the final installation
++    # path. We must pass both paths to the slepc4py build code, and the
++    # final install path needs to be in SLEPC_DIR/PETSC_ARCH.
++    envvars += 'SLEPC_SRC_DIR=$(SLEPC_DIR) SLEPC_DIR=${SLEPC_INSTALLDIR} '
++    envvars += 'PETSC_SRC_ARCH=$(PETSC_ARCH) PETSC_ARCH="" '
+     confdir = os.path.join(destdir,'slepc','conf')
+     rule =  'slepc4pybuild:\n'
+     rule += '\t@echo "*** Building slepc4py ***"\n'
+diff --git a/src/binding/slepc4py/conf/baseconf.py b/src/binding/slepc4py/conf/baseconf.py
+index b0707a65a..94ae805e3 100644
+--- a/src/binding/slepc4py/conf/baseconf.py
++++ b/src/binding/slepc4py/conf/baseconf.py
+@@ -263,15 +263,15 @@ class PetscConfig:
+         language     = self['PETSC_LANGUAGE']
+         compiler     = self['PCC']
+         linker       = self['PCC_LINKER']
+-        log.info('PETSC_DIR:    %s' % PETSC_DIR )
+-        log.info('PETSC_ARCH:   %s' % PETSC_ARCH )
+-        log.info('version:      %s' % version_info)
+-        log.info('integer-size: %s' % integer_size)
+-        log.info('scalar-type:  %s' % scalar_type)
+-        log.info('precision:    %s' % precision)
+-        log.info('language:     %s' % language)
+-        log.info('compiler:     %s' % compiler)
+-        log.info('linker:       %s' % linker)
++        log.info('PETSC_DIR:      %s' % PETSC_DIR )
++        log.info('PETSC_ARCH:     %s' % PETSC_ARCH )
++        log.info('version:        %s' % version_info)
++        log.info('integer-size:   %s' % integer_size)
++        log.info('scalar-type:    %s' % scalar_type)
++        log.info('precision:      %s' % precision)
++        log.info('language:       %s' % language)
++        log.info('compiler:       %s' % compiler)
++        log.info('linker:         %s' % linker)
+ 
+ # --------------------------------------------------------------------
+ 
+diff --git a/src/binding/slepc4py/conf/slepcconf.py b/src/binding/slepc4py/conf/slepcconf.py
+index d6e3ef5cf..11ca167bc 100644
+--- a/src/binding/slepc4py/conf/slepcconf.py
++++ b/src/binding/slepc4py/conf/slepcconf.py
+@@ -37,36 +37,56 @@ class SlepcConfig(PetscConfig):
+ 
+     def __init__(self,  slepc_dir, petsc_dir, petsc_arch):
+         PetscConfig.__init__(self, petsc_dir, petsc_arch)
+-        if not slepc_dir:
+-            raise DistutilsError("SLEPc not found")
+-        if not os.path.isdir(slepc_dir):
+-            raise DistutilsError("invalid SLEPC_DIR")
+-        self.configdict['SLEPC_DIR'] = slepc_dir
+-        self.SLEPC_DIR = self['SLEPC_DIR']
++
++        # When building the bindings against a SLEPc that has not yet been
++        # installed into the system (neither into the /usr prefix nor into a
++        # custom prefix), the SLEPc source directory needs to be specified in
++        # SLEPC_SRC_DIR and the build subdirectory (named after a "pseudoarch"
++        # generated by configure) in PETSC_SRC_ARCH make vars or env vars.
++        slepc_src_dir = os.environ.get('SLEPC_SRC_DIR', slepc_dir)
++        petsc_src_arch = os.environ.get('PETSC_SRC_ARCH', petsc_arch)
++
++        if not slepc_src_dir:
++            raise DistutilsError("SLEPc directory was not specified")
++        if not os.path.isdir(slepc_src_dir):
++            raise DistutilsError("SLEPc directory is invalid: %s" \
++                    % slepc_src_dir)
++
++        # Final installation path
++        self.SLEPC_DIR = slepc_dir
++        self.PETSC_ARCH = petsc_arch if petsc_arch is not None else ''
++
++        # Directory with SLEPc sources against which we're building the bindings
++        self.SLEPC_SRC_DIR = slepc_src_dir
++        self.PETSC_SRC_ARCH = petsc_src_arch \
++            if petsc_src_arch is not None else ''
+ 
+     def configure_extension(self, extension):
+         PetscConfig.configure_extension(self, extension)
+         SLEPC_DIR  = self.SLEPC_DIR
+         PETSC_ARCH = self.PETSC_ARCH
+-        # includes and libraries
+-        SLEPC_INCLUDE = [
+-            os.path.join(SLEPC_DIR, PETSC_ARCH, 'include'),
+-            os.path.join(SLEPC_DIR, 'include'),
+-            ]
+-        SLEPC_LIB_DIR = [
++        SLEPC_SRC_DIR = self.SLEPC_SRC_DIR
++        PETSC_SRC_ARCH = self.PETSC_SRC_ARCH
++
++        slepc_cfg = { }
++        slepc_cfg['include_dirs'] = [
++            os.path.join(SLEPC_SRC_DIR, PETSC_SRC_ARCH, 'include'),
++            os.path.join(SLEPC_SRC_DIR, 'include'),
++        ]
++        slepc_cfg['library_dirs'] = [
++            os.path.join(SLEPC_SRC_DIR, PETSC_SRC_ARCH, 'lib'),
++            os.path.join(SLEPC_SRC_DIR, 'lib'),
++        ]
++        slepc_cfg['runtime_library_dirs'] = [
+             os.path.join(SLEPC_DIR, PETSC_ARCH, 'lib'),
+             os.path.join(SLEPC_DIR, 'lib'),
+-            ]
+-        slepc_cfg = { }
+-        slepc_cfg['include_dirs'] = SLEPC_INCLUDE
+-        slepc_cfg['library_dirs'] = SLEPC_LIB_DIR
++        ]
+         if 'petscvec' in self['PETSC_LIB']:
+             slepc_variables = os.path.join(SLEPC_DIR, 'lib', 'slepc', 'conf', 'slepc_variables')
+             slepc_libs = makefile(open(slepc_variables, 'rt')).get('SHLIBS').replace('lib', '').split()
+         else:
+             slepc_libs = ['slepc']
+         slepc_cfg['libraries'] = slepc_libs
+-        slepc_cfg['runtime_library_dirs'] = slepc_cfg['library_dirs']
+         self._configure_ext(extension, slepc_cfg, preppend=True)
+         if self['BUILDSHAREDLIB'] == 'no':
+             from petsc4py.lib import ImportPETSc
+@@ -80,8 +100,12 @@ class SlepcConfig(PetscConfig):
+         extension.extra_link_args.extend(lflags)
+ 
+     def log_info(self):
+-        if not self.SLEPC_DIR: return
+-        log.info('SLEPC_DIR:    %s' % self.SLEPC_DIR)
++        SLEPC_DIR = self.SLEPC_DIR if self.SLEPC_DIR else ''
++        SLEPC_SRC_DIR = self.SLEPC_SRC_DIR if self.SLEPC_SRC_DIR else ''
++        PETSC_SRC_ARCH = self.PETSC_SRC_ARCH if self.PETSC_SRC_ARCH else ''
++        log.info('SLEPC_DIR:      %s' % SLEPC_DIR)
++        log.info('SLEPC_SRC_DIR:  %s' % SLEPC_SRC_DIR)
++        log.info('PETSC_SRC_ARCH: %s' % PETSC_SRC_ARCH)
+         PetscConfig.log_info(self)
+ 
+ 
+@@ -125,9 +149,6 @@ class config(_config):
+                 return None
+         slepc_dir = os.path.expanduser(slepc_dir)
+         slepc_dir = os.path.abspath(slepc_dir)
+-        if not os.path.isdir(slepc_dir):
+-            log.warn('invalid SLEPC_DIR:  %s' % slepc_dir)
+-            return None
+         return slepc_dir
+     get_slepc_dir = staticmethod(get_slepc_dir)
+ 
+-- 
+2.30.0
+
