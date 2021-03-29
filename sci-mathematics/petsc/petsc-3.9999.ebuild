@@ -184,6 +184,11 @@ petsc_select() {
 	use "$1" && echo "--with-$2=$3" || echo "--with-$2=$4"
 }
 
+my_vrun() {
+	echo "$@"
+	"$@"
+}
+
 src_configure() {
 	# TODO: this is a hack, shouldn't need to change system to build,
 	# but if we want the runtime switching, then we can't link against
@@ -197,7 +202,7 @@ src_configure() {
 	local current_superlu_dist=$(eselect superlu_dist list \
 		| grep '*' | sed -e 's/^\s*//' -e 's/\s\+/,/g' | cut -d, -f2)
 	[ -n "${current_superlu_dist}" ] || die
-	eselect superlu_dist set superlu_dist
+	my_vrun eselect superlu_dist set superlu_dist
 
 	# bug 548498
 	# PETSc runs mpi processes during configure that result in a sandbox
@@ -303,7 +308,8 @@ src_configure() {
 
 		#$(petsc_with hpddm hpddm "${EPREFIX}"/usr/include/hpddm "") 
 
-	eselect superlu_dist set "${current_superlu_dist}"
+	# Can't restore, because need to link against the right lib too!
+	#my_vrun eselect superlu_dist set "${current_superlu_dist}"
 }
 
 src_install() {
