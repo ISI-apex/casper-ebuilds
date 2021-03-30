@@ -1,6 +1,6 @@
-From 87c7d8ac5ba0813e8f71e88666d8b9f9a03dbb7c Mon Sep 17 00:00:00 2001
+From d010dcdf566372bd60e0eca046694af6e9ff5d5a Mon Sep 17 00:00:00 2001
 From: Alexei Colin <acolin@isi.edu>
-Date: Wed, 24 Mar 2021 19:30:16 +0000
+Date: Mon, 29 Mar 2021 19:26:30 -0400
 Subject: [PATCH] petsc4py: build against the PETSc being built
 
 Fixes Issue 862:
@@ -15,25 +15,33 @@ for packaging recipes that want to use `--with-petsc4py=1` but
 won't have PETSc installed into the system at the time the
 one single top-level build gets to building the Python extension.
 
-This patch distinguishes final installation directory of PETSc
-from the build directory, and builds the Python extension against
-the PETSc's build directory. The rpath in the .so is set to
-the final installation path.
+This patch allows petsc4py to be built against PETSc located
+in the staging directory (DESTDIR). This involves four actions:
+
+1. set PETSC_DIR the DESTDIR/PREFIX
+
+2. but still pass DESTDIR to petsc4py build code (for items 3, 4)
+
+3. input paths read from PETSc config files point into the final
+   installation location of PETSc, so need to be prepended with DESTDIR
+
+4. output paths to be used after installation need to be stripped
+   of DESTDIR (they contain DESTDIR because of item 1)
 
 Signed-off-by: Alexei Colin <acolin@isi.edu>
 ---
- .gitlab-ci.yml                                | 35 ++++++++
- .../BuildSystem/config/packages/petsc4py.py   | 19 ++++-
- lib/petsc/bin/maint/validate-petsc4py.sh      | 30 +++++++
- src/binding/petsc4py/conf/baseconf.py         | 80 +++++++++++++------
- 4 files changed, 136 insertions(+), 28 deletions(-)
+ .gitlab-ci.yml                                | 36 +++++++++++++++++++
+ .../BuildSystem/config/packages/petsc4py.py   | 12 ++++---
+ lib/petsc/bin/maint/validate-petsc4py.sh      | 30 ++++++++++++++++
+ src/binding/petsc4py/conf/baseconf.py         | 35 +++++++++++++++---
+ 4 files changed, 104 insertions(+), 9 deletions(-)
  create mode 100755 lib/petsc/bin/maint/validate-petsc4py.sh
 
 diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index f12be507ec..25d8ad3bb0 100644
+index f12be507ec..c80976f4ff 100644
 --- a/.gitlab-ci.yml
 +++ b/.gitlab-ci.yml
-@@ -111,6 +111,41 @@ c99-mlib-static-py2:
+@@ -111,6 +111,42 @@ c99-mlib-static-py2:
      CONFIG_OPTS: --with-mpi-dir=/home/glci/soft/mpich-3.3.2 --with-single-library=0 --with-shared-libraries=0 CFLAGS=-std=c99
      TEST_SEARCH: snes_tutorials-ex19%
  
@@ -47,6 +55,7 @@ index f12be507ec..25d8ad3bb0 100644
 +    T_VALIDATE_CMD: lib/petsc/bin/maint/validate-petsc4py.sh
 +  script:
 +    - printf "PATH:$PATH\n"
++    - mkdir hide
 +    - if [ ! -z ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME+x} ]; then printf "CI_MERGE_REQUEST_SOURCE_BRANCH_NAME:$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME\n" ;fi
 +    - ${PYTHON} ./configure --prefix="${PWD}/${T_PREFIX}" --with-petsc4py=1 --with-debugging=0 --with-mpi-dir=/home/glci/soft/mpich-3.3.2
 +    - make V=1 CFLAGS=-Werror CXXFLAGS="-Werror -Wzero-as-null-pointer-constant" FFLAGS=-Werror
@@ -54,61 +63,54 @@ index f12be507ec..25d8ad3bb0 100644
 +    - make install V=1 DESTDIR="${PWD}/${T_DESTDIR}"
 +    - test "$(find ${PWD}/${T_PREFIX} -mindepth 1 | wc -l)" -eq 0
 +    - test "$(find ${PWD}/${T_DESTDIR} -mindepth 1 | wc -l)" -gt 0
-+    - (cd "${PWD}/${T_DESTDIR}" && find * -type f -exec install -v -D "{}" "/{}" \; )
-+    - PETSC_DIR="${PWD}/${T_PREFIX}" ${T_VALIDATE_CMD}
++    - (cd "${PWD}/${T_DESTDIR}" && find * -exec install -v -D "{}" "/{}" \; )
++    - mv arch-* hide/ && PETSC_DIR="${PWD}/${T_PREFIX}" ${T_VALIDATE_CMD} && mv hide/arch-* ./
 +    - rm -r "${PWD}/${T_PREFIX}" "${PWD}/${T_DESTDIR}" && mkdir "${PWD}/${T_PREFIX}"
 +    - printf "====== Test B. Install directly into prefix directory =====\n"
 +    - make install V=1
 +    - test "$(find ${PWD}/${T_PREFIX} -mindepth 1 | wc -l)" -gt 0
-+    - PETSC_DIR="${PWD}/${T_PREFIX}" ${T_VALIDATE_CMD}
++    - mv arch-* hide/ && PETSC_DIR="${PWD}/${T_PREFIX}" ${T_VALIDATE_CMD} && mv hide/arch-* ./
 +    - rm -r "${PWD}/${T_PREFIX}"/*/petsc4py*
 +    - printf "====== Test C. Install manually with setuptools =====\n"
 +    - PETSC_DIR="${PWD}/${T_PREFIX}" && (cd "${T_PETSC4PY}" && python setup.py build)
 +    - PETSC_DIR="${PWD}/${T_PREFIX}" P="${PWD}"  && (cd "${T_PETSC4PY}" && python setup.py install --install-lib="${P}/${T_PREFIX}/lib")
-+    - PETSC_DIR="${PWD}/${T_PREFIX}" ${T_VALIDATE_CMD}
++    - mv arch-* hide/ && PETSC_DIR="${PWD}/${T_PREFIX}" ${T_VALIDATE_CMD} && mv hide/arch-* ./
 +    - rm -r "${PWD}/${T_PREFIX}"/*/petsc4py*
 +    - printf "====== Test D. Install manually with setuptools with staging =====\n"
 +    - PETSC_DIR="${PWD}/${T_PREFIX}" P="${PWD}" && (cd "${T_PETSC4PY}" && python setup.py install --root="${P}/${T_DESTDIR}" --install-lib="${P}/${T_PREFIX}/lib")
-+    - (cd "${PWD}/${T_DESTDIR}" && find * -type f -exec install -v -D "{}" "/{}" \; )
-+    - PETSC_DIR="${PWD}/${T_PREFIX}" ${T_VALIDATE_CMD}
++    - (cd "${PWD}/${T_DESTDIR}" && find * -exec install -v -D "{}" "/{}" \; )
++    - mv arch-* hide/ && PETSC_DIR="${PWD}/${T_PREFIX}" ${T_VALIDATE_CMD} && mv hide/arch-* ./
 +
  checksource:
    extends: .test
    stage: .pre
 diff --git a/config/BuildSystem/config/packages/petsc4py.py b/config/BuildSystem/config/packages/petsc4py.py
-index b5700023f2..1aa88099f2 100644
+index b5700023f2..b1b17ec285 100644
 --- a/config/BuildSystem/config/packages/petsc4py.py
 +++ b/config/BuildSystem/config/packages/petsc4py.py
-@@ -45,11 +45,22 @@ class Configure(config.package.Package):
+@@ -45,11 +45,15 @@ class Configure(config.package.Package):
        else:
          archflags = "ARCHFLAGS=\'-arch x86_64\' "
  
 -    # if installing prefix location then need to set new value for PETSC_DIR/PETSC_ARCH
-+    newdir = 'MPICC=${PCC} '
-+
-+    # When executing this recipe in petscrules, the PETSC_DIR/PETSC_ARCH had
-+    # been set to the PETSc source directory against which the bindings are
-+    # being built. This source directory may be either the directory where
-+    # PETSc had been installed in the system, or the directory with PETSc
-+    # sources (in case we're building PETSc+petsc4py together). We must pass
-+    # both paths (source dir and final installation path) to petsc4py build
-+    # code; and the installation path must be in PETSC_DIR/PETSC_ARCH, so we
-+    # set the source dir in PETSC_SRC_DIR/PETSC_SRC_ARCH. When building the
-+    # bindings against a PETSc already installed in the system, these two sets
-+    # of variables will be equal.
++    # Set PETSC_DIR/PETSC_ARCH to point at the dir with the PETSc installation:
++    # if DESTDIR is non-empty, then PETSc has been installed into staging dir
++    petsc_dir = '${DESTDIR}'
++    # if prefix has been specified at config time, path to PETSc includes that prefix
      if self.argDB['prefix'] and not 'package-prefix-hash' in self.argDB:
 -       newdir = 'PETSC_DIR='+os.path.abspath(os.path.expanduser(self.argDB['prefix']))+' '+'PETSC_ARCH= MPICC=${PCC} '
 -    else:
 -       newdir = 'MPICC=${PCC} '
-+      newdir += 'PETSC_SRC_DIR=$(PETSC_DIR) PETSC_SRC_ARCH=$(PETSC_ARCH) ' + \
-+        'PETSC_DIR='+os.path.abspath(os.path.expanduser(self.argDB['prefix'])) + \
-+        ' PETSC_ARCH= '
++      petsc_dir += os.path.abspath(os.path.expanduser(self.argDB['prefix']))
++    newdir = 'PETSC_DIR='+petsc_dir + ' PETSC_ARCH= '
++
++    newdir += 'MPICC=${PCC} '
  
      #  if installing as Superuser than want to return to regular user for clean and build
      if self.installSudo:
 diff --git a/lib/petsc/bin/maint/validate-petsc4py.sh b/lib/petsc/bin/maint/validate-petsc4py.sh
 new file mode 100755
-index 0000000000..16e1f332d1
+index 0000000000..0af15c1f3f
 --- /dev/null
 +++ b/lib/petsc/bin/maint/validate-petsc4py.sh
 @@ -0,0 +1,30 @@
@@ -140,144 +142,91 @@ index 0000000000..16e1f332d1
 +	die "invalid PETSC_ARCH value in ${PETSC_CFG}"
 +
 +PYTHONPATH="${PETSC_DIR}/${PY_DIR}:${PYTHONPATH}" \
-+	${PYTHON} -c "import petsc4py" || \
-+	die "failed to import petsc4py"
++	${PYTHON} -m petsc4py -help intro || \
++	die "failed to import and invoke petsc4py"
 diff --git a/src/binding/petsc4py/conf/baseconf.py b/src/binding/petsc4py/conf/baseconf.py
-index b0707a65a8..df3f078509 100644
+index b0707a65a8..8b16b1193d 100644
 --- a/src/binding/petsc4py/conf/baseconf.py
 +++ b/src/binding/petsc4py/conf/baseconf.py
-@@ -98,14 +98,29 @@ class PetscConfig:
+@@ -10,6 +10,7 @@ __all__ = ['PetscConfig',
+ # --------------------------------------------------------------------
  
-     def __init__(self, petsc_dir, petsc_arch):
-         self.configdict = { }
--        if not petsc_dir:
--            raise DistutilsError("PETSc not found")
--        if not os.path.isdir(petsc_dir):
--            raise DistutilsError("invalid PETSC_DIR: %s" % petsc_dir)
--        self.version    = self._get_petsc_version(petsc_dir)
--        self.configdict = self._get_petsc_config(petsc_dir, petsc_arch)
-+
-+        # Top-level makefile may set the paths to the directory where PETSc is
-+        # being built, and the inner makefile (petscrules) preserves them into
-+        # these *_SRC_* variables; we retrieve them here.
-+        petsc_build_dir = os.environ.get('PETSC_SRC_DIR', petsc_dir)
-+        petsc_build_arch = os.environ.get('PETSC_SRC_ARCH', petsc_arch)
-+
-+        if not petsc_build_dir:
-+            raise DistutilsError("PETSc directory was not specified")
-+        if not os.path.isdir(petsc_build_dir):
-+            raise DistutilsError("PETSc directory is invalid: %s" \
-+                    % petsc_build_dir)
-+
-+        # Info is read from the build directory, but the config dict is
-+        # augmented with some values that involve the installation dir.
-+        self.version    = self._get_petsc_version(petsc_build_dir)
-+        self.configdict = self._get_petsc_config( \
-+                petsc_build_dir, petsc_build_arch, \
-+                petsc_dir, petsc_arch)
-+
+ import sys, os
++import re
+ try:
+     import setuptools
+ except ImportError:
+@@ -106,6 +107,7 @@ class PetscConfig:
+         self.configdict = self._get_petsc_config(petsc_dir, petsc_arch)
          self.PETSC_DIR  = self['PETSC_DIR']
          self.PETSC_ARCH = self['PETSC_ARCH']
-+
++        self.DESTDIR = os.environ.get('DESTDIR', '')
          language_map = {'CONLY':'c', 'CXXONLY':'c++'}
          self.language = language_map[self['PETSC_LANGUAGE']]
  
-@@ -137,22 +152,31 @@ class PetscConfig:
-         release = int(version_re['release'].search(data).groups()[0])
-         return  (major, minor, micro), (release == 1)
+@@ -182,12 +184,18 @@ class PetscConfig:
  
--    def _get_petsc_config(self, petsc_dir, petsc_arch):
-+    def _get_petsc_config(self, petsc_build_dir, petsc_build_arch, \
-+            petsc_dir, petsc_arch):
-         from os.path import join, isdir, exists
-         PETSC_DIR  = petsc_dir
-         PETSC_ARCH = petsc_arch
-+        PETSC_SRC_DIR = petsc_build_dir
-+        PETSC_SRC_ARCH = petsc_build_arch
-         #
-         confdir = join('lib', 'petsc', 'conf')
--        if not (PETSC_ARCH and isdir(join(PETSC_DIR, PETSC_ARCH))):
--            petscvars = join(PETSC_DIR, confdir, 'petscvariables')
--            PETSC_ARCH = makefile(open(petscvars, 'rt')).get('PETSC_ARCH')
--        if not (PETSC_ARCH and isdir(join(PETSC_DIR, PETSC_ARCH))):
-+        # If the caller didn't give us PETSC_SRC_ARCH, it is also available as PETSC_ARCH
-+        # in one of the *variables files created by the configure stage.
-+        if not (PETSC_SRC_ARCH and isdir(join(PETSC_SRC_DIR, PETSC_SRC_ARCH))):
-+            petscvars = join(PETSC_SRC_DIR, confdir, 'petscvariables')
-+            PETSC_SRC_ARCH = makefile(open(petscvars, 'rt')).get('PETSC_ARCH')
-+        if not (PETSC_SRC_ARCH and isdir(join(join(PETSC_SRC_DIR, PETSC_SRC_ARCH)))):
-+            PETSC_SRC_ARCH = ''
-+        # The final install PETSC_ARCH is not available in any of the *variables files,
-+        # so it must come from the caller, otherwise we have to assume it's empty
-+        if PETSC_ARCH is None:
-             PETSC_ARCH = ''
-         #
--        variables = join(PETSC_DIR, confdir, 'variables')
-+        variables = join(PETSC_SRC_DIR, confdir, 'variables')
-         if not exists(variables):
--            variables  = join(PETSC_DIR, PETSC_ARCH, confdir, 'variables')
--        petscvariables = join(PETSC_DIR, PETSC_ARCH, confdir, 'petscvariables')
-+            variables  = join(join(PETSC_SRC_DIR, PETSC_SRC_ARCH), confdir, 'variables')
-+        petscvariables = join(join(PETSC_SRC_DIR, PETSC_SRC_ARCH), confdir, 'petscvariables')
-         #
-         with open(variables) as f:
-             contents = f.read()
-@@ -165,6 +189,10 @@ class PetscConfig:
-             from io import StringIO
-         confstr  = 'PETSC_DIR  = %s\n' % PETSC_DIR
-         confstr += 'PETSC_ARCH = %s\n' % PETSC_ARCH
-+        # PETSC_LIB_DIR already in the file
-+        confstr += 'PETSC_SRC_DIR  = %s\n' % PETSC_SRC_DIR
-+        confstr += 'PETSC_SRC_ARCH  = %s\n' % PETSC_SRC_ARCH
-+        confstr += 'PETSC_LIB_SRC_DIR = ${PETSC_SRC_DIR}/${PETSC_SRC_ARCH}/lib\n'
-         confstr += contents
-         confdict = makefile(StringIO(confstr))
-         return confdict
-@@ -184,7 +212,7 @@ class PetscConfig:
+     def configure_extension(self, extension):
          # includes and libraries
-         petsc_inc = flaglist(self['PETSC_CC_INCLUDES'])
-         petsc_lib = flaglist(
+-        petsc_inc = flaglist(self['PETSC_CC_INCLUDES'])
+-        petsc_lib = flaglist(
 -            '-L%s %s' % (self['PETSC_LIB_DIR'], self['PETSC_LIB_BASIC']))
-+            '-L%s %s' % (self['PETSC_LIB_SRC_DIR'], self['PETSC_LIB_BASIC']))
++        # paths in PETSc config files point to final installation location, but
++        # we might be building against PETSc in staging location (DESTDIR) when
++        # DESTDIR is set, so append DESTDIR (if nonempty) to those paths
++        petsc_inc = flaglist(prepend_to_flags(self.DESTDIR, self['PETSC_CC_INCLUDES']))
++        lflags = prepend_to_flags(self.DESTDIR, '-L%s ' % self['PETSC_LIB_DIR'])
++        petsc_lib = flaglist(lflags + self['PETSC_LIB_BASIC'])
          # runtime_library_dirs is not supported on Windows
          if sys.platform != 'win32':
-             petsc_lib['runtime_library_dirs'].append(self['PETSC_LIB_DIR'])
-@@ -254,6 +282,8 @@ class PetscConfig:
-     def log_info(self):
-         PETSC_DIR  = self['PETSC_DIR']
-         PETSC_ARCH = self['PETSC_ARCH']
-+        PETSC_SRC_DIR  = self['PETSC_SRC_DIR']
-+        PETSC_SRC_ARCH = self['PETSC_SRC_ARCH']
-         version = ".".join([str(i) for i in self.version[0]])
-         release = ("development", "release")[self.version[1]]
-         version_info = version + ' ' + release
-@@ -263,15 +293,17 @@ class PetscConfig:
-         language     = self['PETSC_LANGUAGE']
-         compiler     = self['PCC']
-         linker       = self['PCC_LINKER']
--        log.info('PETSC_DIR:    %s' % PETSC_DIR )
--        log.info('PETSC_ARCH:   %s' % PETSC_ARCH )
--        log.info('version:      %s' % version_info)
--        log.info('integer-size: %s' % integer_size)
--        log.info('scalar-type:  %s' % scalar_type)
--        log.info('precision:    %s' % precision)
--        log.info('language:     %s' % language)
--        log.info('compiler:     %s' % compiler)
--        log.info('linker:       %s' % linker)
-+        log.info('PETSC_DIR:            %s' % PETSC_DIR )
-+        log.info('PETSC_ARCH:           %s' % PETSC_ARCH )
-+        log.info('PETSC_SRC_DIR:        %s' % PETSC_SRC_DIR )
-+        log.info('PETSC_SRC_ARCH:       %s' % PETSC_SRC_ARCH )
-+        log.info('version:              %s' % version_info)
-+        log.info('integer-size:         %s' % integer_size)
-+        log.info('scalar-type:          %s' % scalar_type)
-+        log.info('precision:            %s' % precision)
-+        log.info('language:             %s' % language)
-+        log.info('compiler:             %s' % compiler)
-+        log.info('linker:               %s' % linker)
+-            petsc_lib['runtime_library_dirs'].append(self['PETSC_LIB_DIR'])
++            # if DESTDIR is set, then we're building against PETSc in a staging
++            # directory, but rpath needs to point to final install directory.
++            rpath = strip_prefix(self.DESTDIR, self['PETSC_LIB_DIR'])
++            petsc_lib['runtime_library_dirs'].append(rpath)
  
+         # Link in extra libraries on static builds
+         if self['BUILDSHAREDLIB'] != 'yes':
+@@ -495,6 +503,7 @@ class build_ext(_build_ext):
+             ARCH = arch or config['PETSC_ARCH']
+             if ARCH not in self.PETSC_ARCH_LIST:
+                 self.PETSC_ARCH_LIST.append(ARCH)
++            self.DESTDIR = config.DESTDIR
+             ext.language = config.language
+             config.log_info()
+             pkgpath, newext = self._copy_ext(ext)
+@@ -533,7 +542,7 @@ class build_ext(_build_ext):
+ PETSC_DIR  = %(PETSC_DIR)s
+ PETSC_ARCH = %(PETSC_ARCH)s
+ """
+-        variables = {'PETSC_DIR'  : self.petsc_dir,
++        variables = {'PETSC_DIR'  : strip_prefix(self.DESTDIR, self.petsc_dir),
+                      'PETSC_ARCH' : os.path.pathsep.join(arch_list)}
+         return template, variables
+ 
+@@ -701,6 +710,22 @@ def flaglist(flags):
+             pass
+     return conf
+ 
++def prepend_to_flags(path, flags):
++    """Prepend a path to compiler flags with paths"""
++    def append_path(m):
++        switch = m.group(1)
++        open_quote = m.group(2)
++        old_path = m.group(3)
++        close_quote = m.group(4)
++        if os.path.isabs(path):
++            moded_path = os.path.normpath(path + os.path.sep + old_path)
++            return switch + open_quote + moded_path + close_quote
++        return m.group(0)
++    return re.sub(r'(-I|-L)(\s*["\']?)(\S+)(["\']?)', append_path, flags)
++
++def strip_prefix(prefix, string):
++    return re.sub(r'^' + prefix, '', string)
++
  # --------------------------------------------------------------------
  
+ from distutils.text_file import TextFile
 -- 
 2.30.0
 
