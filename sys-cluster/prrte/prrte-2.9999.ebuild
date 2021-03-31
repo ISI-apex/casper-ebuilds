@@ -56,6 +56,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-2-autoconf-alps-cray-release.patch
 	"${FILESDIR}"/${PN}-2.9999-if-addr-match.patch
 	"${FILESDIR}"/${PN}-2-hostfile-max-slots-for-implicit-nodes.patch
+	"${FILESDIR}"/${PN}-2.9999-prun-report-invalid-arg.patch
 )
 MY_OFI_PATCHES=(
 		"${FILESDIR}"/${PN}-2-odls-keep-fds-for-ofi-ugni.patch
