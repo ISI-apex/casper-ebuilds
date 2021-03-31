@@ -48,6 +48,10 @@ src_configure() {
 		--with-libevent=${EPREFIX}/usr
 }
 
+src_compile() {
+	emake V=1 "$@"
+}
+
 src_install() {
 	default
 	conf-overlay_src_install
