@@ -1,4 +1,4 @@
-From d010dcdf566372bd60e0eca046694af6e9ff5d5a Mon Sep 17 00:00:00 2001
+From b4bd76ec9b687cfaa201c77f0d6d9e8bf7cf5cac Mon Sep 17 00:00:00 2001
 From: Alexei Colin <acolin@isi.edu>
 Date: Mon, 29 Mar 2021 19:26:30 -0400
 Subject: [PATCH] petsc4py: build against the PETSc being built
@@ -30,11 +30,11 @@ in the staging directory (DESTDIR). This involves four actions:
 
 Signed-off-by: Alexei Colin <acolin@isi.edu>
 ---
- .gitlab-ci.yml                                | 36 +++++++++++++++++++
- .../BuildSystem/config/packages/petsc4py.py   | 12 ++++---
- lib/petsc/bin/maint/validate-petsc4py.sh      | 30 ++++++++++++++++
- src/binding/petsc4py/conf/baseconf.py         | 35 +++++++++++++++---
- 4 files changed, 104 insertions(+), 9 deletions(-)
+ .gitlab-ci.yml                                | 36 ++++++++++++++++++
+ .../BuildSystem/config/packages/petsc4py.py   | 12 ++++--
+ lib/petsc/bin/maint/validate-petsc4py.sh      | 30 +++++++++++++++
+ src/binding/petsc4py/conf/baseconf.py         | 37 ++++++++++++++++---
+ 4 files changed, 106 insertions(+), 9 deletions(-)
  create mode 100755 lib/petsc/bin/maint/validate-petsc4py.sh
 
 diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
@@ -110,7 +110,7 @@ index b5700023f2..b1b17ec285 100644
      if self.installSudo:
 diff --git a/lib/petsc/bin/maint/validate-petsc4py.sh b/lib/petsc/bin/maint/validate-petsc4py.sh
 new file mode 100755
-index 0000000000..0af15c1f3f
+index 0000000000..e479b3f3ec
 --- /dev/null
 +++ b/lib/petsc/bin/maint/validate-petsc4py.sh
 @@ -0,0 +1,30 @@
@@ -142,10 +142,10 @@ index 0000000000..0af15c1f3f
 +	die "invalid PETSC_ARCH value in ${PETSC_CFG}"
 +
 +PYTHONPATH="${PETSC_DIR}/${PY_DIR}:${PYTHONPATH}" \
-+	${PYTHON} -m petsc4py -help intro || \
++	${PYTHON} -m petsc4py -help || \
 +	die "failed to import and invoke petsc4py"
 diff --git a/src/binding/petsc4py/conf/baseconf.py b/src/binding/petsc4py/conf/baseconf.py
-index b0707a65a8..8b16b1193d 100644
+index b0707a65a8..3fb967c514 100644
 --- a/src/binding/petsc4py/conf/baseconf.py
 +++ b/src/binding/petsc4py/conf/baseconf.py
 @@ -10,6 +10,7 @@ __all__ = ['PetscConfig',
@@ -164,7 +164,7 @@ index b0707a65a8..8b16b1193d 100644
          language_map = {'CONLY':'c', 'CXXONLY':'c++'}
          self.language = language_map[self['PETSC_LANGUAGE']]
  
-@@ -182,12 +184,18 @@ class PetscConfig:
+@@ -182,12 +184,19 @@ class PetscConfig:
  
      def configure_extension(self, extension):
          # includes and libraries
@@ -175,8 +175,9 @@ index b0707a65a8..8b16b1193d 100644
 +        # we might be building against PETSc in staging location (DESTDIR) when
 +        # DESTDIR is set, so append DESTDIR (if nonempty) to those paths
 +        petsc_inc = flaglist(prepend_to_flags(self.DESTDIR, self['PETSC_CC_INCLUDES']))
-+        lflags = prepend_to_flags(self.DESTDIR, '-L%s ' % self['PETSC_LIB_DIR'])
-+        petsc_lib = flaglist(lflags + self['PETSC_LIB_BASIC'])
++        lib_flags = prepend_to_flags(self.DESTDIR, '-L%s %s' % \
++                (self['PETSC_LIB_DIR'], self['PETSC_LIB_BASIC']))
++        petsc_lib = flaglist(lib_flags)
          # runtime_library_dirs is not supported on Windows
          if sys.platform != 'win32':
 -            petsc_lib['runtime_library_dirs'].append(self['PETSC_LIB_DIR'])
@@ -187,7 +188,7 @@ index b0707a65a8..8b16b1193d 100644
  
          # Link in extra libraries on static builds
          if self['BUILDSHAREDLIB'] != 'yes':
-@@ -495,6 +503,7 @@ class build_ext(_build_ext):
+@@ -495,6 +504,7 @@ class build_ext(_build_ext):
              ARCH = arch or config['PETSC_ARCH']
              if ARCH not in self.PETSC_ARCH_LIST:
                  self.PETSC_ARCH_LIST.append(ARCH)
@@ -195,7 +196,7 @@ index b0707a65a8..8b16b1193d 100644
              ext.language = config.language
              config.log_info()
              pkgpath, newext = self._copy_ext(ext)
-@@ -533,7 +542,7 @@ class build_ext(_build_ext):
+@@ -533,7 +543,7 @@ class build_ext(_build_ext):
  PETSC_DIR  = %(PETSC_DIR)s
  PETSC_ARCH = %(PETSC_ARCH)s
  """
@@ -204,22 +205,23 @@ index b0707a65a8..8b16b1193d 100644
                       'PETSC_ARCH' : os.path.pathsep.join(arch_list)}
          return template, variables
  
-@@ -701,6 +710,22 @@ def flaglist(flags):
+@@ -701,6 +711,23 @@ def flaglist(flags):
              pass
      return conf
  
 +def prepend_to_flags(path, flags):
-+    """Prepend a path to compiler flags with paths"""
++    """Prepend a path to compiler flags with absolute paths"""
 +    def append_path(m):
 +        switch = m.group(1)
-+        open_quote = m.group(2)
-+        old_path = m.group(3)
-+        close_quote = m.group(4)
-+        if os.path.isabs(path):
++        open_quote = m.group(4)
++        old_path = m.group(5)
++        close_quote = m.group(6)
++        if os.path.isabs(old_path):
 +            moded_path = os.path.normpath(path + os.path.sep + old_path)
 +            return switch + open_quote + moded_path + close_quote
 +        return m.group(0)
-+    return re.sub(r'(-I|-L)(\s*["\']?)(\S+)(["\']?)', append_path, flags)
++    return re.sub(r'((^|\s+)(-I|-L))(\s*["\']?)(\S+)(["\']?)',
++            append_path, flags)
 +
 +def strip_prefix(prefix, string):
 +    return re.sub(r'^' + prefix, '', string)
