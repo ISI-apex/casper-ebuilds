@@ -54,7 +54,7 @@ DEPEND="
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2-autoconf-alps-cray-release.patch
-	"${FILESDIR}"/${PN}-2-if-addr-match.patch
+	"${FILESDIR}"/${PN}-2.9999-if-addr-match.patch
 	"${FILESDIR}"/${PN}-2-hostfile-max-slots-for-implicit-nodes.patch
 )
 MY_OFI_PATCHES=(
