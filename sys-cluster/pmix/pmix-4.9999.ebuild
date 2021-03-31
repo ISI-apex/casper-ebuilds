@@ -35,6 +35,10 @@ DEPEND="${RDEPEND}"
 
 CONF_OVERLAY_FILES=("etc/pmix-mca-params.conf")
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-3.9999-psec-include.patch
+)
+
 src_prepare() {
 	default
 	./autogen.pl || die
