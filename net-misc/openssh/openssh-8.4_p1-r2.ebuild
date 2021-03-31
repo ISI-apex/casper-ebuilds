@@ -511,4 +511,41 @@ pkg_postinst() {
 		elog "Otherwise you maybe unable to connect to this sshd using any AES CTR cipher."
 		elog ""
 	fi
+
+	# To make ssh work from a prefix, need to use host's setuid variables
+	# as well as host keys and some settings.
+	if use prefix; then
+		local ssh_dir=etc/ssh
+		local ssh_config="${EROOT}"/${ssh_dir}/ssh_config
+		local host_keysign=/usr/libexec/openssh/ssh-keysign
+		local prefix_keysign="${EROOT}"/usr/lib64/misc/ssh-keysign
+
+		declare -A ssh_options
+		ssh_options["EnableSSHKeySign"]="yes"
+		ssh_options["HostbasedAuthentication"]="yes"
+
+		for opt in ${!ssh_options[@]}
+		do
+			val="${ssh_options[${opt}]}"
+			if grep -q "^\s*${opt}\s\+" "${ssh_config}"
+			then
+				sed -i "s/^\s*${opt}\s\+.*/${opt} ${val}/" \
+					"${ssh_config}" || die
+			else
+				echo "${opt} ${val}" >> "${ssh_config}" || die
+			fi
+		done
+
+		for key_file in /${ssh_dir}/ssh_host_*_key.pub
+		do
+			ln -sf ${key_file} "${EROOT}"/${key_file} || die
+		done
+
+		# ssh-keysign is a setuid root executable, so point to host's
+		if [[ -x "${host_keysign}" ]]; then
+			ln -sf "${host_keysign}" "${prefix_keysign}" || die
+		else
+			die "no valid ssh-keysign on host at ${host_keysign}"
+		fi
+	fi
 }
