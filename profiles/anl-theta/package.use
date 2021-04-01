@@ -3,7 +3,12 @@ virtual/mpi -cxx romio
 # configure detects it) but target host doesn't so runtime errors are printed
 sys-cluster/openmpi -avx -cxx heterogeneous romio -pmi -internal_pmix -internal_prrte -openmpi_fabrics_ofi openmpi_fabrics_ugni -mpi1 -debug
 sys-cluster/pmix -debug
-sys-cluster/prrte openmpi_rm_alps -debug
+
+# On ANL Theta, routed mode other than 'direct' breaks (even on debug
+# queue for 8*64 ranks). And, setting the mode at runtime via '--mca
+# routed direct' is insuffcient -- somehow this is overriden when rank
+# count is large, at least when using 'prte --daemonize && prun'.
+sys-cluster/prrte openmpi_rm_alps -debug -routed_binomial -routed_debruijn -routed_radix
 
 # Masked altogether, since using the uGNI transport built-into OpenMPI
 sys-fabric/libfabric gni -debug -tcp -udp -sockets
