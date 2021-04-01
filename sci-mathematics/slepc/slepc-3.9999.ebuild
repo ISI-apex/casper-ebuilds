@@ -6,15 +6,12 @@ EAPI=7
 EGIT_REPO_URI="https://gitlab.com/slepc/slepc.git"
 
 PYTHON_COMPAT=( python3_{6,7,8} )
+SNAPSHOT_POS=4
 
-inherit eutils flag-o-matic git-r3 python-single-r1 toolchain-funcs
+inherit eutils flag-o-matic python-single-r1 snapshot toolchain-funcs
 
-if [[ "$(ver_cut 4 ${PV})" = "p" ]]
+if [[ "${PV}" = *9999 ]]
 then
-	MY_D="$(ver_cut 5 ${PV})"
-	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
-	KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
-else # live
 	KEYWORDS=""
 fi
 
@@ -110,4 +107,5 @@ src_install() {
 		docinto html
 		dodoc -r docs/*.html docs/manualpages
 	fi
+	snapshot_src_install
 }
