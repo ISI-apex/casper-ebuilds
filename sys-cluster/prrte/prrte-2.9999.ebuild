@@ -34,7 +34,15 @@ IUSE_OPENMPI_FABRICS="
 	openmpi_fabrics_ugni
 	"
 
-IUSE="debug ipv6 ltdl +man ${IUSE_OPENMPI_RM} ${IUSE_OPENMPI_FABRICS}"
+IUSE_ROUTED="
+	+routed_binomial
+	+routed_debruijn
+	+routed_direct
+	+routed_radix
+"
+
+IUSE="debug ipv6 ltdl +man ${IUSE_OPENMPI_RM} ${IUSE_OPENMPI_FABRICS}
+	${IUSE_ROUTED}"
 
 REQUIRED_USE="
 	openmpi_rm_slurm? ( !openmpi_rm_pbs )
@@ -80,11 +88,17 @@ src_prepare() {
 multilib_src_configure() {
 	local host_ldflags
 
-	# On ANL Theta, routed mode other than 'directi' breaks (even on debug
-	# queue for 8*64 ranks). And, setting the mode at runtime via '--mca
-	# routed direct' is insuffcient -- somehow this is overriden when rank
-	# count is large, at least when using 'prte --daemonize && prun'.
-	local excluded_components="routed-binomial,routed-debruijn,routed-radix"
+	local excluded_components=""
+	local routed=( binomial debruijn direct radix )
+	local comp
+	for comp in routed; do
+		if ! use routed_${comp}; then
+			if [ -n "${excluded_components}" ]; then
+				excluded_components+=","
+			fi
+			excluded_components+="routed-${comp}"
+		fi
+	done
 
 	if use openmpi_rm_lsf; then
 		# TODO: fetch these programatically somehow
