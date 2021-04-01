@@ -6,15 +6,12 @@ EAPI=7
 EGIT_REPO_URI="https://gitlab.com/petsc/petsc.git"
 
 PYTHON_COMPAT=( python3_{6,7,8} )
+SNAPSHOT_POS=4
 
-inherit flag-o-matic fortran-2 git-r3 python-single-r1 toolchain-funcs
+inherit flag-o-matic fortran-2 python-single-r1 snapshot toolchain-funcs
 
-if [[ "$(ver_cut 4 ${PV})" = "p" ]]
+if [[ "${PV}" = *9999 ]]
 then
-	MY_D="$(ver_cut 5 ${PV})"
-	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
-	KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
-else # live
 	KEYWORDS=""
 fi
 
@@ -344,4 +341,5 @@ src_install() {
 		docinto html
 		dodoc -r docs/*.html docs/changes docs/manualpages
 	fi
+	snapshot_src_install
 }
