@@ -17,6 +17,10 @@
 # The index of the first version component that's part of the snapshot
 # identifier. For example, for version 1.0.0_p20200101, this index is 4.
 
+EXPORT_FUNCTIONS src_install
+
+inherit git-r3
+
 if [[ "$(ver_cut ${SNAPSHOT_POS})" =~ ^(pre|p) ]]
 then
 	SS_TS="$(ver_cut $((SNAPSHOT_POS+1)))"
@@ -28,3 +32,9 @@ then
 		EGIT_COMMIT_DATE="${SS_TS_DATE}T00:00:00+0000"
 	fi
 fi
+
+snapshot_src_install() {
+	local snapshot_dir="${ED}"/etc/snapshot/${CATEGORY}
+	mkdir -p "${snapshot_dir}" || die
+	git -C "${S}" rev-parse HEAD > "${snapshot_dir}"/${PN} || die
+}
