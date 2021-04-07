@@ -149,3 +149,8 @@ multilib_src_install_all() {
 	einstalldocs
 	conf-overlay_src_install
 }
+
+src_install() {
+	multilib-minimal_src_install
+	snapshot_src_install
+}
