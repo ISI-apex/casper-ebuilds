@@ -4,25 +4,19 @@
 EAPI=7
 
 FORTRAN_NEEDED=fortran
+SNAPSHOT_POS=4
 
-inherit conf-overlay cuda flag-o-matic fortran-2 git-r3 java-pkg-opt-2 toolchain-funcs multilib multilib-minimal
+inherit conf-overlay cuda flag-o-matic fortran-2 git-r3 java-pkg-opt-2 toolchain-funcs multilib multilib-minimal snapshot
 
 MY_UPDATE_PRRTE=
 
 EGIT_REPO_URI="https://github.com/open-mpi/ompi.git"
 EGIT_SUBMODULES=()
 
-if [[ "$(ver_cut 4 ${PV})" = "pre" ]]
-then
-	MY_D="$(ver_cut 5 ${PV})"
-	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
-	# TODO: will go away once prrte is separate pkg
-	# TODO: doesn't work anyway.... (acknowledged, but not checked out)
-	# EGIT_OVERRIDE_COMMIT_DATE_OPENPMIX_PRRTE=${EGIT_COMMIT_DATE}
-	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
-else # live
-	#EGIT_OVERRIDE_BRANCH_OPENPMIX_PRRTE=master
+if [[ "${PV}" = *9999 ]]; then
 	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 fi
 
 MY_P=${P/-mpi}
@@ -264,4 +258,9 @@ multilib_src_install_all() {
 	fi
 	einstalldocs
 	conf-overlay_src_install
+}
+
+src_install() {
+	multilib-minimal_src_install
+	snapshot_src_install
 }
