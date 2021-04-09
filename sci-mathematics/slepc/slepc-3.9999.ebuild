@@ -43,7 +43,6 @@ DEPEND="${RDEPEND}
 	"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-3.9999-slepc4py-build-against-the-SLEPc-being-built.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
