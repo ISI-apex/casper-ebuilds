@@ -13,6 +13,8 @@ inherit eutils flag-o-matic python-single-r1 snapshot toolchain-funcs
 if [[ "${PV}" = *9999 ]]
 then
 	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 fi
 
 DESCRIPTION="Scalable Library for Eigenvalue Problem Computations"
