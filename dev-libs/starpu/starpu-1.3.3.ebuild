@@ -26,9 +26,7 @@ RDEPEND="
 	sci-mathematics/glpk:0=
 	sys-apps/hwloc:0=
 	blas? ( virtual/blas )
-	cuda? ( dev-util/nvidia-cuda-toolkit
-			x11-drivers/nvidia-drivers
-			)
+	cuda? ( dev-util/nvidia-cuda-toolkit )
 	fftw? ( sci-libs/fftw:3.0= )
 	hdf5? ( sci-libs/hdf5 )
 	mpi? ( virtual/mpi )
