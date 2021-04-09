@@ -13,7 +13,7 @@ sci-libs/superlu_dist:cuda
 # sci-libs/tensorflow : listed in casper-CLUSTER/packages (doesn't build on all)
 dev-python/pandas
 dev-python/seaborn
-sci-libs/scikits_learn
+sci-libs/scikit-learn
 
 # For Firedrake benchmarks
 dev-python/pybench
