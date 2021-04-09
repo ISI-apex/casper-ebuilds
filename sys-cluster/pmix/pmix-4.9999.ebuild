@@ -5,19 +5,18 @@
 
 EAPI=7
 
-inherit git-r3 conf-overlay
+EGIT_REPO_URI="https://github.com/openpmix/openpmix.git"
+SNAPSHOT_POS=4
+
+inherit git-r3 conf-overlay snapshot
 
 DESCRIPTION="Reference implementation of the Process Management Interface Exascale (PMIx)"
 HOMEPAGE="https://openpmix.org/"
-EGIT_REPO_URI="https://github.com/openpmix/openpmix.git"
 
-if [[ "$(ver_cut 4 ${PV})" = "pre" ]]
-then
-	MY_D="$(ver_cut 5 ${PV})"
-	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
-	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
-else # live
+if [[ "${PV}" = *9999 ]]; then
 	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 fi
 
 # TODO: confirm that openmpi complains, and needs rebuild
@@ -51,4 +50,5 @@ src_configure() {
 src_install() {
 	default
 	conf-overlay_src_install
+	snapshot_src_install
 }
