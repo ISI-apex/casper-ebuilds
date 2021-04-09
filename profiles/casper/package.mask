@@ -53,3 +53,11 @@ x11-drivers/nvidia-drivers
 >media-libs/glu-9.0.1
 >media-libs/libglvnd-1.3.1
 >virtual/opengl-7.0-r2
+
+# TODO: pending update
+>sci-mathematics/glpk-4.65
+>sci-libs/arpack-3.7.0
+>sci-libs/lapack-3.8.0-r1
+>sci-libs/superlu-5.2.1-r1
+>dev-libs/isl-0.22.1
+>dev-python/islpy-2019.1.2
