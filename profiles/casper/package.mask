@@ -47,3 +47,9 @@ x11-drivers/nvidia-drivers
 # For uniformity, limit the version on all our platforms, but alternatively
 # could make a separate profile.
 >=sys-libs/libseccomp-2.5
+
+# Pin this OpenGL nonsense, heavily patched to build without X
+>media-libs/mesa-20.1.0
+>media-libs/glu-9.0.1
+>media-libs/libglvnd-1.3.1
+>virtual/opengl-7.0-r2
