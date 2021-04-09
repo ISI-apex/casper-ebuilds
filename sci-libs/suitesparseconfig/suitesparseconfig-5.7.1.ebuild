@@ -22,6 +22,7 @@ KEYWORDS="~alpha ~amd64 ~arm ~arm64 ~hppa ~ia64 ~mips ~ppc ~ppc64 ~sparc ~x86 ~a
 
 PATCHES=(
 	"${FILESDIR}/${P}-rpath.patch"
+	"${FILESDIR}/${P}-gpu-deprecated-arches.patch"
 	)
 #"${FILESDIR}/${P}-eselect-blas.patch"
 
