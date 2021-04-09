@@ -9,6 +9,9 @@ dev-lang/halide
 # The CUDA slot is not a hard dep of anything, so list here
 sci-libs/superlu_dist:cuda
 
+# Dolfin / Older Firedrake
+dev-python/dolfin
+
 # CASPER auto-scheduling predictor
 # sci-libs/tensorflow : listed in casper-CLUSTER/packages (doesn't build on all)
 dev-python/pandas
