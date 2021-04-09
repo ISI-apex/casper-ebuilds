@@ -1,4 +1,4 @@
-gentoo:default/linux/ppc64le/17.0/prefix/kernel-3.2+
+gentoo:default/linux/ppc64le/17.1/prefix/kernel-3.2+
 ../olcf-summit
 ../casper
 ../cpu-native
