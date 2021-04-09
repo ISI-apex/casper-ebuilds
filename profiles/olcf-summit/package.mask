@@ -13,13 +13,6 @@ sys-fabric/libmlx4
 sys-fabric/libmlx5
 sys-fabric/libibverbs
 
-# This is the latest version for which ghc bootstrap binaries are available
-# from Gentoo, (and bootstrap using host's ghc is not desirable due to
-# dependency on stuff installed into host OS, and it is not working anyway, due
-# to error finding some modules, and host's ghc is also very old (7.6, allows
-# building <=7.10)).
->dev-lang/ghc-8.8.1
-
 # TODO: pin versions until we explicitly choose to update these
 >media-libs/mesa-20.1.0
 >media-libs/libglvnd-1.3.1

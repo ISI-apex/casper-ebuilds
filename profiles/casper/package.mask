@@ -34,3 +34,11 @@ dev-java/oracle-jdk-bin
 
 # nvidia-cuda-toolkit can be installed without it (false dep)
 x11-drivers/nvidia-drivers
+
+# This is the latest version for which ghc bootstrap binaries are available
+# from Gentoo for ppc64le, (and bootstrap using host's ghc (outside of prefix)
+# is not desirable due to dependency on stuff installed into host OS, and it is
+# not working anyway, due to error finding some modules, and host's ghc is also
+# very old (7.6, allows building only <=7.10)).
+# TODO: other versions 8.8.x need eprefixify patch (that's applied to 8.8.1)
+>dev-lang/ghc-8.8.1
