@@ -3,19 +3,18 @@
 
 EAPI=7
 
-inherit git-r3
+EGIT_REPO_URI="https://github.com/openucx/ucx.git"
+SNAPSHOT_POS=4
+
+inherit git-r3 snapshot
 
 DESCRIPTION="Unified Communication X"
 HOMEPAGE="http://www.openucx.org"
-EGIT_REPO_URI="https://github.com/openucx/ucx.git"
 
-if [[ "$(ver_cut 4 ${PV})" = "p" ]]
-then
-	MY_D="$(ver_cut 5 ${PV})"
-	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
-	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
-else # live
+if [[ "${PV}" = *9999 ]]; then
 	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 fi
 
 # subslotted because openmpi needs to be rebuilt when UCX minor changes
@@ -86,4 +85,9 @@ src_configure() {
 
 src_compile() {
 	BASE_CFLAGS="" emake
+}
+
+src_install() {
+	default
+	snapshot_src_install
 }
