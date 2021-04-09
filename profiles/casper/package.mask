@@ -42,3 +42,8 @@ x11-drivers/nvidia-drivers
 # very old (7.6, allows building only <=7.10)).
 # TODO: other versions 8.8.x need eprefixify patch (that's applied to 8.8.1)
 >dev-lang/ghc-8.8.1
+
+# v2.4 is the last one that builds on 3.10 kernel (on our gpuk40 machine)
+# For uniformity, limit the version on all our platforms, but alternatively
+# could make a separate profile.
+>=sys-libs/libseccomp-2.5
