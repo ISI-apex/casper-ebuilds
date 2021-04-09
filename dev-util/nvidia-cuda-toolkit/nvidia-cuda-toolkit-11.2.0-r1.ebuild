@@ -10,25 +10,10 @@ DRIVER_PV="460.27.04"
 DESCRIPTION="NVIDIA CUDA Toolkit (compiler and friends)"
 HOMEPAGE="https://developer.nvidia.com/cuda-zone"
 
-case "${ARCH}" in
-	ppc64)
-		# TODO: how to check endianness here?
-		MY_ARCH=ppc64le
-		MY_TARGET=ppc64le-linux
-		MY_ARCH_SUFFIX=_${MY_ARCH}
-		;;
-	amd64)
-		MY_ARCH=
-		MY_TARGET=x86_64-linux
-		MY_ARCH_SUFFIX=
-		;;
-	*)
-		echo "Unsupported ARCH: ${ARCH}" 1>&2
-		exit 1
-	;;
-esac
-
-SRC_URI="https://developer.download.nvidia.com/compute/cuda/${PV}/local_installers/cuda_${PV}_${DRIVER_PV}_linux${MY_ARCH_SUFFIX}.run"
+SRC_URI="
+	amd64? ( https://developer.download.nvidia.com/compute/cuda/${PV}/local_installers/cuda_${PV}_${DRIVER_PV}_linux.run )
+	ppc64? ( https://developer.download.nvidia.com/compute/cuda/${PV}/local_installers/cuda_${PV}_${DRIVER_PV}_linux_ppc64le.run )
+	"
 
 LICENSE="NVIDIA-CUDA"
 SLOT="0/${PV}"
@@ -218,9 +203,16 @@ src_install() {
 		# TODO: unbundle libpfm ?
 	fi
 
+	local target
+	case "${ARCH}" in
+		ppc64) target=ppc64le-linux ;;
+		amd64) target=x86_64-linux ;;
+		*) die "Unsupported ARCH: ${ARCH}" ;;
+	esac
+
 	# Add include and lib symlinks
-	dosym targets/${TARGET}/include ${cudadir}/include
-	dosym targets/${TARGET}/lib ${cudadir}/lib64
+	dosym targets/${target}/include ${cudadir}/include
+	dosym targets/${target}/lib ${cudadir}/lib64
 
 	newenvd - 99cuda <<-EOF
 		PATH=${ecudadir}/bin${pathextradirs}
