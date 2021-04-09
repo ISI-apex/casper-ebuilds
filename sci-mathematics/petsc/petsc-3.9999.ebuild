@@ -13,6 +13,8 @@ inherit flag-o-matic fortran-2 python-single-r1 snapshot toolchain-funcs
 if [[ "${PV}" = *9999 ]]
 then
 	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux ~x86 ~ppc64 ~ppc64-linux"
 fi
 
 LICENSE="BSD-2"
