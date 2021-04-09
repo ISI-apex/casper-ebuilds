@@ -21,7 +21,7 @@ DEPEND=">=sci-libs/suitesparseconfig-${SUITESPARSE_VER}
 	>=sci-libs/colamd-2.9.6-r1
 	virtual/blas
 	virtual/lapack
-	cuda? ( x11-drivers/nvidia-drivers dev-util/nvidia-cuda-toolkit )
+	cuda? ( dev-util/nvidia-cuda-toolkit )
 	partition? (
 		>=sci-libs/camd-2.4.6-r1
 		>=sci-libs/ccolamd-2.9.6-r1
