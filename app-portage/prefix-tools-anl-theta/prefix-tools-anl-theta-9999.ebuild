@@ -6,6 +6,8 @@ EAPI=7
 PREFIX_TOOLS_CLUSTER="anl-theta"
 inherit prefix-tools conf-overlay
 
+DEPEND="$(prefix-tools_get_conflicts)"
+
 CONF_OVERLAY_FILES=(
 	"etc/openmpi-mca-params.conf"
 )
@@ -19,4 +21,3 @@ src_install() {
 	insinto /usr/share/prefix-tools/clusters/${PREFIX_TOOLS_CLUSTER}
 	doins -r ${PREFIX_TOOLS_CLUSTER}/make
 }
-

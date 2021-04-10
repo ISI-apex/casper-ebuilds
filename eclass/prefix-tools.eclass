@@ -106,5 +106,3 @@ prefix-tools_src_install() {
 		doins -r "${PREFIX_TOOLS_CLUSTER}/make"
 	fi
 }
-
-DEPEND="$(prefix-tools_get_conflicts)"

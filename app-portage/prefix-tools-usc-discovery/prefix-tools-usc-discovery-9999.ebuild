@@ -5,3 +5,5 @@ EAPI=7
 
 PREFIX_TOOLS_CLUSTER="usc-discovery"
 inherit prefix-tools
+
+DEPEND="$(prefix-tools_get_conflicts)"

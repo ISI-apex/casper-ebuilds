@@ -6,6 +6,8 @@ EAPI=7
 PREFIX_TOOLS_CLUSTER="olcf-summit"
 inherit prefix-tools conf-overlay
 
+DEPEND="$(prefix-tools_get_conflicts)"
+
 CONF_OVERLAY_FILES=()
 
 src_install() {
