@@ -13,7 +13,7 @@
 # @ECLASS-VARIABLE: PREFIX_TOOLS_CLUSTERS
 # @INTERNAL
 # @DESCRIPTION: List of supported clusters (suffixes of package names)
-PREFIX_TOOLS_CLUSTERS=(usc-discovery anl-theta)
+PREFIX_TOOLS_CLUSTERS=(usc-discovery anl-theta olcf-summit)
 
 # @ECLASS-VARIABLE: PREFIX_TOOLS_HOST_DIR
 # @INTERNAL
