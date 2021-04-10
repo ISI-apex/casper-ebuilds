@@ -54,6 +54,9 @@ x11-drivers/nvidia-drivers
 >media-libs/libglvnd-1.3.1
 >virtual/opengl-7.0-r2
 
+# Pin randomgen, because firedrake is incompatible
+>=dev-python/randomgen-1.18
+
 # Pin the packages that depend on linux-info.eclass (since we patched it)
 >sys-apps/util-linux-2.36.1-r1
 # Portage is overriden too, but don't pin it -- seems too dangerous
