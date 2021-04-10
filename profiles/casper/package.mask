@@ -61,3 +61,4 @@ x11-drivers/nvidia-drivers
 >sci-libs/superlu-5.2.1-r1
 >dev-libs/isl-0.22.1
 >dev-python/islpy-2019.1.2
+>sci-libs/taucs-2.2
