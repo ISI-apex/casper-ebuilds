@@ -3,7 +3,7 @@
 
 EAPI=7
 
-PYTHON_COMPAT=( python3_{6,7,8} )
+PYTHON_COMPAT=( python3_{6,7,8,9} )
 
 inherit toolchain-funcs libtool flag-o-matic bash-completion-r1 usr-ldscript \
 	pam python-r1 multilib-minimal multiprocessing systemd
@@ -76,7 +76,8 @@ RESTRICT="!test? ( test )"
 S="${WORKDIR}/${MY_P}"
 
 PATCHES=(
-	"${FILESDIR}"/util-linux-2.35.1-cleanup-pidfd-include.patch
+	"${FILESDIR}/${P}-libmount_dont_use_symfollow.patch" #755878
+	"${FILESDIR}/${P}-riscv32.patch"
 )
 
 src_prepare() {
