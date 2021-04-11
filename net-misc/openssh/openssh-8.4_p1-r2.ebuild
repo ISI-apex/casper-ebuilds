@@ -517,7 +517,10 @@ pkg_postinst() {
 	if use prefix; then
 		local ssh_dir=etc/ssh
 		local ssh_config="${EROOT}"/${ssh_dir}/ssh_config
-		local host_keysign=/usr/libexec/openssh/ssh-keysign
+		local host_keysign=(
+			/usr/libexec/openssh/ssh-keysign
+			/usr/lib/ssh/ssh-keysign
+		)
 		local prefix_keysign="${EROOT}"/usr/lib64/misc/ssh-keysign
 
 		declare -A ssh_options
@@ -542,10 +545,17 @@ pkg_postinst() {
 		done
 
 		# ssh-keysign is a setuid root executable, so point to host's
-		if [[ -x "${host_keysign}" ]]; then
-			ln -sf "${host_keysign}" "${prefix_keysign}" || die
-		else
-			die "no valid ssh-keysign on host at ${host_keysign}"
-		fi
+		local found_keysign=""
+		local keysign
+		for keysign in "${host_keysign[@]}"
+		do
+			if [[ -x "${keysign}" ]]; then
+				ln -sf "${keysign}" "${prefix_keysign}" || die
+				found_keysign="1"
+				break
+			fi
+		done
+		[[ -n "${found_keysign}" ]] || \
+			ewarn "No ssh-keysign executable found on host (ignored)"
 	fi
 }
