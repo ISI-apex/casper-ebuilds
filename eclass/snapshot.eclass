@@ -8,8 +8,20 @@
 # @BLURB:Fetch specific snapshot versions from VCS.
 # @DESCRIPTION
 # Supports fetching specific commit from VCS based on package version.
+# of the form:
+#  * 1.0.0_pYYYYMMDDHHmmSS  : the commit after release 1.0.0 before the timestamp
+#  * 2.0.0_preYYYYMMDDHHmmSS: the commit of unreleased 2.0.0 before the timestamp
+#
+# If HHMMSS is ommitted, then 00:00:00+0000 is assumed, to make the resolving
+# deterministic (as long as you don't pick a date that's in the future), since
+# it's unclear how exactly git interprets `--before=YYYY-MM-DD` without a time.
+#
 # Timestamps are interpreted in UTC, so when viewing the log, use:
 # 	TZ=UTC git log --date=iso8601-local
+#
+# To check what commit a timestamp corresponds to use:
+# 	git rev-list HEAD --first-parent --max-count 1 \
+#		--before=YYYY-MM-DDTHH:mm:SS+0000
 
 # @ECLASS-VARIABLE: SNAPSHOT_POS
 # @REQUIRED
@@ -26,7 +38,7 @@ then
 	SS_TS="$(ver_cut $((SNAPSHOT_POS+1)))"
 	SS_TS_DATE="${SS_TS:0:4}-${SS_TS:4:2}-${SS_TS:6:2}"
 	SS_TS_TIME="${SS_TS:8:2}:${SS_TS:10:2}:${SS_TS:12:2}"
-	if [[ -n "${SS_TS_TIME}" ]]; then
+	if [[ "${SS_TS_TIME}" != "::" ]]; then
 		EGIT_COMMIT_DATE="${SS_TS_DATE}T${SS_TS_TIME}+0000"
 	else
 		EGIT_COMMIT_DATE="${SS_TS_DATE}T00:00:00+0000"
