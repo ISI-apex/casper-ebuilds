@@ -34,16 +34,8 @@ DEPEND="
 			>=dev-python/pybind11-2.2.3-r1[${PYTHON_MULTI_USEDEP}]
 			dev-python/mpi4py[${PYTHON_MULTI_USEDEP}]
 		)
-		petsc? ( || (
-				sci-mathematics/petsc[python]
-				dev-python/petsc4py[${PYTHON_MULTI_USEDEP}]
-			    )
-		       )
-		slepc? ( || (
-				sci-mathematics/slepc[python]
-				dev-python/slepc4py[${PYTHON_MULTI_USEDEP}]
-			    )
-		       )
+		petsc? ( sci-mathematics/petsc[python] )
+		slepc? ( sci-mathematics/slepc[python] )
 	')"
 # Depend on slot 0 ("mainline"), to forbid slot 'fd' (Firedrake fork)
 RDEPEND="
