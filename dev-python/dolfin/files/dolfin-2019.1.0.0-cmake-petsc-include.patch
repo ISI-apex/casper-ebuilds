@@ -1,0 +1,12 @@
+--- a/cmake/FindPETSc4py.cmake	2021-04-11 20:08:25.000000000 -0000
++++ b/cmake/FindPETSc4py.cmake	2021-04-11 20:08:26.000000000 -0000
+@@ -46,7 +46,8 @@
+ endif(PETSC4PY_INCLUDE_DIRS)
+ 
+ execute_process(
+-  COMMAND ${PYTHON_EXECUTABLE} -c "import petsc4py; print(petsc4py.get_include())"
++  COMMAND ${PYTHON_EXECUTABLE} -c 
++    "import os, petsc4py; print(';'.join([petsc4py.get_include(), os.path.join(petsc4py.get_config()['PETSC_DIR'], 'include')]))"
+   OUTPUT_VARIABLE PETSC4PY_INCLUDE_DIRS
+   RESULT_VARIABLE PETSC4PY_NOT_FOUND
+   ERROR_QUIET
