@@ -96,10 +96,10 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
 )
 
-if ver_test  -gt "5.1.0_pre20210326"
+if ver_test  -ge "5.1.0.20210401.182437_pre"
 then
 	PATCHES+=("${FILESDIR}"/${PN}-5-autogen-fix-enable-mca-dso-arg.patch)
-elif ver_test -le "5.1.0_pre20210326"
+elif ver_test -lt "5.1.0.20210326.141212_pre"
 then
 	PATCHES+=("${FILESDIR}"/${PN}-5-autogen-build-Fix-typo-that-disabled-shared-components.patch)
 fi
