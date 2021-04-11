@@ -61,6 +61,7 @@ sci-mathematics/petsc -complex-scalars cxx boost eigen -index-64bit hwloc thread
 sci-mathematics/slepc mpi -complex-scalars -index-64bit python
 # TODO: hdf5, -trilinos, -sundials fails to compile, 
 sci-mathematics/dolfin mpi -hdf5 parmetis petsc scotch -trilinos umfpack -vtk zlib -sundials python
+dev-python/dolfin mpi petsc slepc
 sci-mathematics/glpk gmp examples
 sci-libs/vtk -X offscreen mpi python -video_cards_nvidia
 sci-libs/libsupermesh judy double
