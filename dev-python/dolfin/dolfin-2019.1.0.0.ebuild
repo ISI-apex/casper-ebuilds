@@ -39,7 +39,7 @@ DEPEND="
 				dev-python/petsc4py[${PYTHON_MULTI_USEDEP}]
 			    )
 		       )
-		petsc? ( || (
+		slepc? ( || (
 				sci-mathematics/slepc[python]
 				dev-python/slepc4py[${PYTHON_MULTI_USEDEP}]
 			    )
