@@ -9,16 +9,13 @@ DISTUTILS_SINGLE_IMPL=1
 EGIT_REPO_URI="https://github.com/ISI-apex/casper-utils.git"
 EGIT_SUBMODULES=()
 
-if [[ "$(ver_cut 2 ${PV})" = "pre" ]]
-then
-	MY_D="$(ver_cut 3 ${PV})"
-	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
-	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
-else # live
+if [[ ${PV} == *9999 ]]; then
 	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 fi
 
-inherit conf-overlay distutils-r1 git-r3 prefix-tools
+inherit conf-overlay distutils-r1 git-r3 prefix-tools snapshot
 
 DESCRIPTION="Tools for running commands within Gentoo Prefix"
 HOMEPAGE="https://github.com/ISI-apex/casper-utils"

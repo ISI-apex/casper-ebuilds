@@ -4,6 +4,12 @@
 EAPI=7
 
 PREFIX_TOOLS_CLUSTER="usc-discovery"
-inherit prefix-tools
+inherit prefix-tools snapshot
+
+if [[ ${PV} == *9999 ]]; then
+	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux"
+fi
 
 DEPEND="$(prefix-tools_get_conflicts)"

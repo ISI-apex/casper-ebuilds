@@ -4,7 +4,13 @@
 EAPI=7
 
 PREFIX_TOOLS_CLUSTER="anl-theta"
-inherit prefix-tools conf-overlay
+inherit prefix-tools conf-overlay snapshot
+
+if [[ ${PV} == *9999 ]]; then
+	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux"
+fi
 
 DEPEND="$(prefix-tools_get_conflicts)"
 
