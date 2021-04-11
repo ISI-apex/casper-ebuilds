@@ -17,7 +17,3 @@ DEPEND="$(prefix-tools_get_conflicts)"
 CONF_OVERLAY_FILES=(
 	"etc/openmpi-mca-params.conf"
 )
-
-src_install() {
-	prefix-tools_src_install
-}
