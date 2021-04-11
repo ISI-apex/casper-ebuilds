@@ -119,7 +119,7 @@ multilib_src_configure() {
 		--enable-pretty-print-stacktrace \
 		--enable-prte-prefix-by-default \
 		--enable-mca-no-build="${excluded_components}" \
-		--enable-mca-dso=plm-lsf,ess-lsf,ras-lsf \
+		--enable-mca-dso=plm-lsf,plm-alps,ess-lsf,ess-alps,ras-lsf,ras-alps, \
 		--with-hwloc="${EPREFIX}/usr" \
 		--with-hwloc-libdir="${EPREFIX}/usr/$(get_libdir)" \
 		--with-libevent="${EPREFIX}/usr" \
