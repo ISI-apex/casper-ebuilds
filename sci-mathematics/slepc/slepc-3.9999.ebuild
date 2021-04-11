@@ -68,7 +68,7 @@ src_configure() {
 	# configure is a custom python script and doesn't want to have default
 	# configure arguments that we set with econf
 	echo ./configure "${conf_args[@]}"
-	./configure "${conf_args[@]}"
+	./configure "${conf_args[@]}" || die
 }
 
 src_compile() {
