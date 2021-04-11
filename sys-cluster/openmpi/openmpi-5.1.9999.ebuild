@@ -28,6 +28,7 @@ IUSE_OPENMPI_FABRICS="
 	openmpi_fabrics_psm
 	openmpi_fabrics_ucx
 	openmpi_fabrics_ugni
+	openmpi_fabrics_xpmem
 	"
 
 IUSE_OPENMPI_RM="
@@ -49,7 +50,7 @@ LICENSE="BSD"
 SLOT="0"
 # TODO: ltdl: looks for nonexistant ltprtedl.h header
 IUSE="+avx cma cuda debug fortran heterogeneous ipv6 java ltdl +man
-	mpi1 romio
+	mpi1 romio udreg
 	${IUSE_OPENMPI_FABRICS} ${IUSE_OPENMPI_FS} ${IUSE_OPENMPI_RM}
 	${IUSE_OPENMPI_OFED_FEATURES}"
 
@@ -70,11 +71,13 @@ CDEPEND="
 	>=sys-apps/hwloc-2.0.2[${MULTILIB_USEDEP}]
 	>=sys-libs/zlib-1.2.8-r1[${MULTILIB_USEDEP}]
 	cuda? ( >=dev-util/nvidia-cuda-toolkit-6.5.19-r1:= )
+	udreg? ( sys-cluster/cray-libs )
 	openmpi_fabrics_knem? ( sys-cluster/knem )
 	openmpi_fabrics_ofi? ( sys-fabric/libfabric )
 	openmpi_fabrics_psm? ( sys-fabric/infinipath-psm:* )
 	openmpi_fabrics_ucx? ( sys-cluster/ucx:= )
 	openmpi_fabrics_ugni? ( sys-cluster/cray-libs )
+	openmpi_fabrics_xpmem? ( sys-cluster/cray-libs )
 	openmpi_rm_pbs? ( sys-cluster/torque )
 	openmpi_rm_alps? ( sys-cluster/cray-libs )
 	"
@@ -221,6 +224,8 @@ multilib_src_configure() {
 		$(multilib_native_use_with openmpi_fabrics_ucx ucx "${EPREFIX}"/usr) \
 		$(multilib_native_use_with openmpi_fabrics_ucx ucx-libdir "${EPREFIX}"/usr/$(get_libdir)) \
 		$(multilib_native_use_with openmpi_fabrics_ugni ugni) \
+		$(multilib_native_use_with openmpi_fabrics_xpmem xpmem) \
+		$(multilib_native_use_with udreg udreg) \
 		${conf_flags[@]}
 }
 
