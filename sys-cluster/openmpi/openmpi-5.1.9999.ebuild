@@ -157,6 +157,10 @@ src_prepare() {
 	my_vrun ./autogen.pl --no-3rdparty "${excluded_pkgs}"
 }
 
+my_join() {
+	local IFS="$1"; shift; echo "$*";
+}
+
 multilib_src_configure() {
 	if use java; then
 		# We must always build with the right -source and -target
@@ -184,6 +188,19 @@ multilib_src_configure() {
 			| sed 's/-L\(\S\+\)/-Wl,-rpath-link -Wl,\1/g')"
 	fi
 
+	# These components need to be built as shared libs because they depend
+	# on external shared libs and we don't want a direct dependency on
+	# those external libs from all binaries (e.g. mpicc). See PRRTE #871.
+	local dso_components=(
+		$(usex openmpi_fabrics_ugni btl-ugni)
+		$(usex openmpi_fabrics_xpmem btl-sm)
+		$(usex udreg rcache-udreg)
+	)
+	local enable_mca_dso=""
+	if [[ "${#dso_components[@]}" -gt 0 ]]; then
+		enable_mca_dso=--enable-mca-dso="$(my_join , ${dso_components[@]})"
+	fi
+
 	unset F77 FFLAGS # configure warns that unused, FC, FCFLAGS is used
 
 	local final_ldflags
@@ -195,6 +212,7 @@ multilib_src_configure() {
 	echo LDFLAGS="${final_ldflags}"
 	export LDFLAGS="${final_ldflags}"
 	ECONF_SOURCE=${S} econf \
+		${enable_mca_dso} \
 		--enable-pretty-print-stacktrace \
 		--enable-mca-no-build="${excluded_components}" \
 		--with-hwloc="${EPREFIX}/usr" \
