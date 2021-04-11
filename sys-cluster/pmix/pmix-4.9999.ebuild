@@ -13,7 +13,7 @@ inherit git-r3 conf-overlay snapshot
 DESCRIPTION="Reference implementation of the Process Management Interface Exascale (PMIx)"
 HOMEPAGE="https://openpmix.org/"
 
-if [[ "${PV}" = *9999 ]]; then
+if [[ ${PV} == *9999 ]]; then
 	KEYWORDS=""
 else
 	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"

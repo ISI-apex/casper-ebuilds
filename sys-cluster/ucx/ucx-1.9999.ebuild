@@ -11,7 +11,7 @@ inherit git-r3 snapshot
 DESCRIPTION="Unified Communication X"
 HOMEPAGE="http://www.openucx.org"
 
-if [[ "${PV}" = *9999 ]]; then
+if [[ ${PV} = *9999 ]]; then
 	KEYWORDS=""
 else
 	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"

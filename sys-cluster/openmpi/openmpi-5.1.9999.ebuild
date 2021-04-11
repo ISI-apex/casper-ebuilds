@@ -13,7 +13,7 @@ MY_UPDATE_PRRTE=
 EGIT_REPO_URI="https://github.com/open-mpi/ompi.git"
 EGIT_SUBMODULES=()
 
-if [[ "${PV}" = *9999 ]]; then
+if [[ ${PV} == *9999 ]]; then
 	KEYWORDS=""
 else
 	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"

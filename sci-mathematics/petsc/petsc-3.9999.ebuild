@@ -10,7 +10,7 @@ SNAPSHOT_POS=4
 
 inherit flag-o-matic fortran-2 python-single-r1 snapshot toolchain-funcs
 
-if [[ "${PV}" = *9999 ]]
+if [[ ${PV} == *9999 ]]
 then
 	KEYWORDS=""
 else
