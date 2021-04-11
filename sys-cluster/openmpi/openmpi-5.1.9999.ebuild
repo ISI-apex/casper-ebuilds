@@ -4,7 +4,6 @@
 EAPI=7
 
 FORTRAN_NEEDED=fortran
-SNAPSHOT_POS=4
 
 inherit conf-overlay cuda flag-o-matic fortran-2 git-r3 java-pkg-opt-2 toolchain-funcs multilib multilib-minimal snapshot
 

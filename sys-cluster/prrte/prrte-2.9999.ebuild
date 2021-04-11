@@ -5,7 +5,6 @@ EAPI=7
 
 EGIT_REPO_URI="https://github.com/openpmix/prrte.git"
 EGIT_SUBMODULES=()
-SNAPSHOT_POS=4
 
 inherit conf-overlay cuda flag-o-matic git-r3 toolchain-funcs multilib multilib-minimal snapshot
 

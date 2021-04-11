@@ -4,7 +4,6 @@
 EAPI=7
 
 EGIT_REPO_URI="https://github.com/openucx/ucx.git"
-SNAPSHOT_POS=4
 
 inherit git-r3 snapshot
 

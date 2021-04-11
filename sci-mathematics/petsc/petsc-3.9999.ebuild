@@ -6,7 +6,6 @@ EAPI=7
 EGIT_REPO_URI="https://gitlab.com/petsc/petsc.git"
 
 PYTHON_COMPAT=( python3_{6,7,8} )
-SNAPSHOT_POS=4
 
 inherit flag-o-matic fortran-2 python-single-r1 snapshot toolchain-funcs
 
