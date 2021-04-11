@@ -1,0 +1,31 @@
+From cbcb57096dfc417e329284bfa2008ca77b5f9209 Mon Sep 17 00:00:00 2001
+From: Brian Barrett <bbarrett@amazon.com>
+Date: Thu, 25 Mar 2021 16:29:12 -0700
+Subject: [PATCH] build: Fix typo that disabled shared components
+
+Fix a typo in the MCA configure framework which meant that
+users could not specify individual components to be build
+as shared objects (only all components or all components in
+a framework).
+
+Signed-off-by: Brian Barrett <bbarrett@amazon.com>
+---
+ config/opal_mca.m4 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/config/opal_mca.m4 b/config/opal_mca.m4
+index a8ded9c428..6b7345c442 100644
+--- a/config/opal_mca.m4
++++ b/config/opal_mca.m4
+@@ -719,7 +719,7 @@ AC_DEFUN([MCA_COMPONENT_COMPILE_MODE],[
+     # static.
+     if test "$STATIC_COMPONENT" = "1"; then
+         $4=static
+-    elif test "SHARED_COMPONENT" = "1"; then
++    elif test "$SHARED_COMPONENT" = "1"; then
+         $4=dso
+     elif test "$STATIC_FRAMEWORK" = "1"; then
+         $4=static
+-- 
+2.26.2
+

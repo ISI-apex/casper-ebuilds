@@ -94,6 +94,14 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
 )
 
+if ver_test  -gt "5.1.0_pre20210326"
+then
+	PATCHES+=("${FILESDIR}"/${PN}-5-autogen-fix-enable-mca-dso-arg.patch)
+elif ver_test -le "5.1.0_pre20210326"
+then
+	PATCHES+=("${FILESDIR}"/${PN}-5-autogen-build-Fix-typo-that-disabled-shared-components.patch)
+fi
+
 CONF_OVERLAY_FILES=(
 	"etc/openmpi-mca-params.conf"
 )
