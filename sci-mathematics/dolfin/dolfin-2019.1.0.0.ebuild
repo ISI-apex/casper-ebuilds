@@ -78,6 +78,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-include-alg.patch
 	"${FILESDIR}"/${P}-boost-endian.patch
 	"${FILESDIR}"/${P}-cmake-cross-compile.patch
+	"${FILESDIR}"/${P}-cmake-ffc-verbose.patch
 )
 
 #pkg_setup() {
