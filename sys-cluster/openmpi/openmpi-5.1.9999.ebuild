@@ -89,6 +89,7 @@ DEPEND="${CDEPEND}
 PATCHES=(
 	"${FILESDIR}"/${PN}-5-autogen-disabled-submodules.patch
 	"${FILESDIR}"/${PN}-5-autogen-forward-args.patch
+	"${FILESDIR}"/${PN}-5-autogen-default-to-shared-btl-ugni.patch
 	"${FILESDIR}"/${PN}-5-rte-check-argc.patch
 	"${FILESDIR}"/${PN}-5-pml-ob1-assert.patch
 )
