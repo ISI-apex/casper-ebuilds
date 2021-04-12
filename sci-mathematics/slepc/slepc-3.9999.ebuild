@@ -31,7 +31,7 @@ BDEPEND="
 	dev-util/cmake
 	"
 RDEPEND="
-	=sci-mathematics/petsc-$(ver_cut 1-2)*:=[mpi=,complex-scalars=,index-64bit=]
+	=sci-mathematics/petsc-$(ver_cut 1-2)*:=[mpi=,complex-scalars=,index-64bit=,python=]
 	arpack? ( sci-libs/arpack[mpi=] )
 	scalapack? ( sci-libs/scalapack )
 	mpi? ( virtual/mpi )
