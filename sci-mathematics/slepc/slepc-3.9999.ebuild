@@ -22,9 +22,8 @@ HOMEPAGE="http://slepc.upv.es/"
 LICENSE="LGPL-3"
 SLOT="0"
 
-IUSE="complex-scalars index-64bit doc mpi python"
+IUSE="arpack complex-scalars index-64bit doc mpi python scalapack"
 
-# TODO: SOWING: BLOPEX: BLZPACK: HPDDM: PRIMME: SLICOT:
 #TODO: QA about gmake job server: this is due to custom variable instead of $(MAKE)
 
 BDEPEND="
@@ -33,7 +32,8 @@ BDEPEND="
 	"
 RDEPEND="
 	=sci-mathematics/petsc-$(ver_cut 1-2)*:=[mpi=,complex-scalars=,index-64bit=]
-	sci-libs/arpack[mpi=]
+	arpack? ( sci-libs/arpack[mpi=] )
+	scalapack? ( sci-libs/scalapack )
 	mpi? ( virtual/mpi )
 "
 
@@ -46,6 +46,12 @@ PATCHES=(
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
+
+slepc_use_with() {
+	local flag=$1
+	local arg=${2:-${flag}}
+	echo --with-${arg}=$(usex ${flag} 1 0)
+}
 
 src_configure() {
 	# *sigh*
@@ -62,10 +68,22 @@ src_configure() {
 		--prefix="${EPREFIX}/usr/$(get_libdir)/slepc"
 		# CROSS_COMPILING set by profile (see comments there)
 		--cross-compile=${CROSS_COMPILING}
-		--with-arpack=1
-		--with-slepc4py=$(usex python 1 0)
-		#--with-arpack-dir="${EPREFIX}/usr/$(get_libdir)"
-		#--with-arpack-flags="$(usex mpi "-lparpack,-larpack" "-larpack")"
+		$(slepc_use_with arpack)
+		$(slepc_use_with scalapack)
+		$(slepc_use_with python slepc4py)
+		# TODO: not packaged
+		--with-elemental=0
+		--with-feast=0
+		--with-blopex=0
+		--with-blzpack=0
+		--with-elpa=0
+		--with-evsl=0
+		--with-primme=0
+		--with-slicot=0
+		--with-trlan=0
+		# TODO: packaged, but don't have normal --with-X args
+		# hpddm: off by default, but no --with-hpddm flag
+		# sowing: off by default, but no --with-sowing flag
 	)
 
 	# configure is a custom python script and doesn't want to have default
