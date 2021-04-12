@@ -42,6 +42,7 @@ DEPEND="${RDEPEND}
 	"
 
 PATCHES=(
+	"${FILESDIR}"/${PN}-3.9999-conf-cross-compile.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
@@ -59,6 +60,8 @@ src_configure() {
 
 	local conf_args=(
 		--prefix="${EPREFIX}/usr/$(get_libdir)/slepc"
+		# CROSS_COMPILING set by profile (see comments there)
+		--cross-compile=${CROSS_COMPILING}
 		--with-arpack=1
 		--with-slepc4py=$(usex python 1 0)
 		#--with-arpack-dir="${EPREFIX}/usr/$(get_libdir)"

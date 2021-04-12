@@ -1,0 +1,58 @@
+--- a/config/packages/slepc.py	2021-04-12 16:55:33.000000000 -0000
++++ b/config/packages/slepc.py	2021-04-12 16:56:20.000000000 -0000
+@@ -27,9 +27,11 @@
+     print('\nSLEPc:')
+     print('  --prefix=<dir>'.ljust(wd)+': Specify location to install SLEPc (e.g., /usr/local)')
+     print('  --DATAFILESPATH=<dir>'.ljust(wd)+': Location of datafiles (available at https://slepc.upv.es/datafiles)')
++    print('  --cross-compile=<bool>'.ljust(wd)+': Whether building for an architecture different from the build host')
+ 
+   def ProcessArgs(self,argdb):
+     self.clean       = argdb.PopBool('with-clean')[0]
++    self.cross_compile = argdb.PopBool('cross-compile')[0]
+     self.datadir     = argdb.PopPath('DATAFILESPATH',exist=True)[0]
+     self.downloaddir = argdb.PopPath('with-packages-download-dir',exist=True)[0]
+     self.prefixdir   = argdb.PopPath('prefix')[0]
+--- a/config/packages/slepc4py.py	2021-04-12 16:55:31.000000000 -0000
++++ b/config/packages/slepc4py.py	2021-04-12 16:56:20.000000000 -0000
+@@ -41,16 +41,18 @@
+       return
+     self.log.NewSection('Processing slepc4py...')
+ 
+-    # Check petsc4py module
+-    try:
+-      if not 'PYTHONPATH' in os.environ:
+-        pythonpath = os.path.join(petsc.dir,'lib') if petsc.isinstall else os.path.join(petsc.dir,petsc.arch,'lib')
+-        sys.path.insert(0,pythonpath)
+-      else:
+-        pythonpath = os.environ['PYTHONPATH']
+-      from petsc4py import PETSc
+-    except ImportError:
+-      self.log.Exit('Cannot import petsc4py, make sure your PYTHONPATH is set correctly')
++    pythonpath = get_python_path(petsc)
++    sys.path.insert(0,pythonpath)
++
++    # Check for pestc4py when not cross-compiling
++    if not slepc.cross_compile:
++      try:
++        from petsc4py import PETSc
++      except ImportError:
++        self.log.Exit('Cannot import petsc4py, make sure your PYTHONPATH is set correctly')
++    else: 
++      self.log.Println('assuming petsc4py is installed (cannot check while cross-compiling)')
++
+     # Check for cython
+     try:
+       import Cython
+@@ -118,3 +120,12 @@
+     slepcrules.write('slepc4py-install:\n')
+     slepcrules.write('slepc4pytest:\n')
+ 
++def get_python_path(petsc):
++  """Return the path to python packages from environment or PETSc"""
++  if 'PYTHONPATH' in os.environ:
++    return os.environ['PYTHONPATH']
++  else:
++    if petsc.isinstall:
++      return os.path.join(petsc.dir,'lib')
++    else:
++      return os.path.join(petsc.dir,petsc.arch,'lib')
