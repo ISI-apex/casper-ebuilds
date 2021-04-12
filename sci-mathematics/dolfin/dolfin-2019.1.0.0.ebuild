@@ -79,6 +79,7 @@ PATCHES=(
 	"${FILESDIR}"/${P}-boost-endian.patch
 	"${FILESDIR}"/${P}-cmake-cross-compile.patch
 	"${FILESDIR}"/${P}-cmake-ffc-verbose.patch
+	"${FILESDIR}"/${P}-cmake-petsc-slepc-pkg-config-file-case.patch
 )
 
 #pkg_setup() {
