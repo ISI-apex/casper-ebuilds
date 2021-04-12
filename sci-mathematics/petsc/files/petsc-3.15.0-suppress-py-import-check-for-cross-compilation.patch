@@ -1,0 +1,78 @@
+--- a/config/BuildSystem/config/packages/python.py	2021-04-12 22:47:02.000000000 -0000
++++ b/config/BuildSystem/config/packages/python.py	2021-04-12 22:47:43.000000000 -0000
+@@ -14,6 +14,7 @@
+   def setupHelp(self,help):
+     import nargs
+     help.addArgument('PETSc', '-with-python-exec=<executable>', nargs.Arg(None, None, 'Alternate Python executable to use for mpi4py/petsc4py'))
++    help.addArgument('PETSc', '-have-numpy=<bool>', nargs.ArgBool(None, None, 'Whether numpy python module is installed (default: autodetect)'))
+     return
+ 
+   def configure(self):
+@@ -24,12 +25,18 @@
+       import sys
+       self.pyexe = sys.executable
+     self.addDefine('PYTHON_EXE','"'+self.pyexe+'"')
++
+     try:
+       output1,err1,ret1  = config.package.Package.executeShellCommand(self.pyexe + ' -c "import Cython"',timeout=60, log = self.log)
+       self.cython = 1
+     except: pass
+-    try:
+-      output1,err1,ret1  = config.package.Package.executeShellCommand(self.pyexe + ' -c "import numpy"',timeout=60, log = self.log)
+-      self.numpy = 1
+-    except: pass
++
++    have_numpy = self.argDB.get('have-numpy', None)
++    if have_numpy is not None:
++      self.numpy = int(have_numpy)
++    else:
++      try:
++        output1,err1,ret1  = config.package.Package.executeShellCommand(self.pyexe + ' -c "import numpy"',timeout=60, log = self.log)
++        self.numpy = 1
++      except: pass
+     return
+--- a/config/BuildSystem/config/packages/petsc4py.py	2021-04-12 22:46:58.000000000 -0000
++++ b/config/BuildSystem/config/packages/petsc4py.py	2021-04-12 22:47:18.000000000 -0000
+@@ -16,6 +16,7 @@
+     import nargs
+     help.addArgument('PETSc', '-with-petsc4py=<bool>', nargs.ArgBool(None, False, 'Build PETSc Python bindings (petsc4py)'))
+     help.addArgument('PETSc', '-with-petsc4py-test-np=<np>',nargs.ArgInt(None, None, min=1, help='Number of processes to use for petsc4py tests'))
++    help.addArgument('PETSc', '-with-numpy-include=<dir>', nargs.Arg(None, None, 'Path to numpy headers from numpy.get_include() (default: autodetect)'))
+     return
+ 
+   def setupDependencies(self, framework):
+@@ -56,6 +57,11 @@
+ 
+     newdir += 'MPICC=${PCC} '
+ 
++    # Pass to setup.py if given, otherwise setup.py will autodetect
++    numpy_include = self.argDB.get('with-numpy-include')
++    if numpy_include is not None:
++      newdir += 'NUMPY_INCLUDE="'+numpy_include+'" '
++
+     #  if installing as Superuser than want to return to regular user for clean and build
+     if self.installSudo:
+        newuser = self.installSudo+' -u $${SUDO_USER} '
+--- a/src/binding/petsc4py/setup.py	2021-04-12 22:47:06.000000000 -0000
++++ b/src/binding/petsc4py/setup.py	2021-04-12 22:47:18.000000000 -0000
+@@ -84,11 +84,15 @@
+         depends += glob_join(pd, 'include', '*.h')
+         depends += glob_join(pd, 'include', 'petsc', 'private', '*.h')
+         depends += glob_join(pd, pa, 'include', 'petscconf.h')
+-    try:
+-        import numpy
+-        numpy_includes = [numpy.get_include()]
+-    except ImportError:
+-        numpy_includes = []
++    numpy_include = os.environ.get('NUMPY_INCLUDE')
++    if numpy_include is not None:
++        numpy_includes = [numpy_include]
++    else:
++        try:
++            import numpy
++            numpy_includes = [numpy.get_include()]
++        except ImportError:
++            numpy_includes = []
+     return [Extension('petsc4py.lib.PETSc',
+                       sources=['src/PETSc.c',
+                                'src/libpetsc4py.c',

@@ -61,7 +61,11 @@ RDEPEND="
 	hypre? ( >=sci-libs/hypre-2.18.0[mpi?,index-64bit=] )
 	parmetis? ( >=sci-libs/parmetis-4[index-64bit=] )
 	!parmetis? ( metis? ( sci-libs/metis ) )
-	python? ( ${PYTHON_DEPS} )
+	python? ( ${PYTHON_DEPS}
+		$(python_gen_cond_dep '
+			dev-python/numpy[${PYTHON_MULTI_USEDEP}]
+		')
+	)
 	mpi? ( virtual/mpi[fortran?] )
 	mumps? ( >=sci-libs/mumps-5.2.1[mpi?] sci-libs/scalapack )
 	pastix? ( >=sci-libs/pastix-5[index-64bit=] )
@@ -78,6 +82,11 @@ BDEPEND="
 	virtual/pkgconfig
 	dev-util/cmake
 	dev-util/sowing
+	python? ( ${PYTHON_DEPS}
+		$(python_gen_cond_dep '
+			dev-python/cython[${PYTHON_MULTI_USEDEP}]
+		')
+	)
 	"
 DEPEND="${RDEPEND}
 	${PYTHON_DEPS}
@@ -93,6 +102,7 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.13.0-pastix-params.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-comm-type.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-refine.patch
+	"${FILESDIR}"/${PN}-3.15.0-suppress-py-import-check-for-cross-compilation.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
@@ -225,6 +235,14 @@ src_configure() {
 	export PETSC_DIR="${S}"
 	export PETSC_ARCH="linux-gnu-${mylang}-${myopt}"
 
+	# When numpy was cross-compiled, we can't load it, so set path explicitly;
+	# (this could be done conditionally only if cross-compiling).
+	#   python -c 'import numpy; print(numpy.get_include())'
+	if use python; then
+		python_setup
+		local numpy_include="$(python_get_sitedir)/numpy/core/include"
+	fi
+
 	if use debug; then
 		strip-flags
 		filter-flags -O*
@@ -274,6 +292,8 @@ src_configure() {
 		$(use fortran && echo "$(petsc_select mpi fc mpif77 $(tc-getF77))") \
 		$(petsc_enable mpi mpi-compilers) \
 		$(petsc_select complex-scalars scalar-type complex real) \
+		$(usex python --have-numpy=1) \
+		$(usex python --with-numpy-include=${numpy_include}) \
 		--with-windows-graphics=0 \
 		--with-matlab=0 \
 		--with-cmake:BOOL=1 \
