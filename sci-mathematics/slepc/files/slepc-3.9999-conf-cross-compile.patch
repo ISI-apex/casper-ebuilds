@@ -1,20 +1,51 @@
---- a/config/packages/slepc.py	2021-04-12 16:55:33.000000000 -0000
-+++ b/config/packages/slepc.py	2021-04-12 16:56:20.000000000 -0000
-@@ -27,9 +27,11 @@
-     print('\nSLEPc:')
-     print('  --prefix=<dir>'.ljust(wd)+': Specify location to install SLEPc (e.g., /usr/local)')
-     print('  --DATAFILESPATH=<dir>'.ljust(wd)+': Location of datafiles (available at https://slepc.upv.es/datafiles)')
-+    print('  --cross-compile=<bool>'.ljust(wd)+': Whether building for an architecture different from the build host')
+From dbec15b78e85eeaffdb48c3ce4bc468cce2edbce Mon Sep 17 00:00:00 2001
+From: Alexei Colin <acolin@isi.edu>
+Date: Mon, 12 Apr 2021 23:12:22 +0000
+Subject: [PATCH] config: slepc4py: option to suppress numpy check for
+ cross-compilation
+
+On some HPC clusters it is necessary to cross-compile because the build hosts
+(login nodes) have a different architecture (or CPU family) from worker ndoes,
+for example on ALCF Theta HPC cluster workers are Xeon Phi, so turning on
+cpu-family optimizations turns the build into a cross-compilation. The current
+./configure fails with SIGILL (Illegal instruction) when it tries to import
+petsc4py, which had been cross-compiled and cannot run on the build host.
+
+This patch simply adds to `./configure` a flag to suppress autodetection/check
+operations that involve loading dependencies on the build host.
+
+Tested that SLEPc builds fine with `--have-petsc4py=1` and `--with-arpack=1
+--with-scalapack=1 --with-slepc4py=1` on a system where PETSc, petsc4py, numpy,
+arpack, scalapack had all been cross-compiled, i.e. where these fail with
+SIGILL:
+
+	python -c 'from petsc4py import PETSc`
+	python -c 'import numpy`
+
+Signed-off-by: Alexei Colin <acolin@isi.edu>
+---
+ config/packages/slepc4py.py | 34 ++++++++++++++++++++++++----------
+ 1 file changed, 24 insertions(+), 10 deletions(-)
+
+diff --git a/config/packages/slepc4py.py b/config/packages/slepc4py.py
+index 6660eef42..c435585a5 100644
+--- a/config/packages/slepc4py.py
++++ b/config/packages/slepc4py.py
+@@ -26,10 +26,13 @@ class Slepc4py(package.Package):
+     value,found = argdb.PopBool('with-'+self.packagename)
+     if found:
+       self.requested = value
++    have_petsc4py, have_petsc4py_cnt = argdb.PopBool('have-petsc4py')
++    self.have_petsc4py = have_petsc4py if have_petsc4py_cnt > 0 else None
  
-   def ProcessArgs(self,argdb):
-     self.clean       = argdb.PopBool('with-clean')[0]
-+    self.cross_compile = argdb.PopBool('cross-compile')[0]
-     self.datadir     = argdb.PopPath('DATAFILESPATH',exist=True)[0]
-     self.downloaddir = argdb.PopPath('with-packages-download-dir',exist=True)[0]
-     self.prefixdir   = argdb.PopPath('prefix')[0]
---- a/config/packages/slepc4py.py	2021-04-12 16:55:31.000000000 -0000
-+++ b/config/packages/slepc4py.py	2021-04-12 16:56:20.000000000 -0000
-@@ -41,16 +41,18 @@
+   def ShowHelp(self):
+     wd = package.Package.wd
+     print('  --with-slepc4py=<bool>'.ljust(wd)+': Build Python bindings (default: no)')
++    print('  --have-petsc4py=<bool>'.ljust(wd)+': Whether petsc4py is installed (default: autodetect)')
+ 
+   def ShowInfo(self):
+     if self.havepackage:
+@@ -41,16 +44,18 @@ class Slepc4py(package.Package):
        return
      self.log.NewSection('Processing slepc4py...')
  
@@ -31,19 +62,19 @@
 +    pythonpath = get_python_path(petsc)
 +    sys.path.insert(0,pythonpath)
 +
-+    # Check for pestc4py when not cross-compiling
-+    if not slepc.cross_compile:
++    # Check for pestc4py unless user suppressed this
++    if self.have_petsc4py is None:
 +      try:
 +        from petsc4py import PETSc
 +      except ImportError:
 +        self.log.Exit('Cannot import petsc4py, make sure your PYTHONPATH is set correctly')
-+    else: 
-+      self.log.Println('assuming petsc4py is installed (cannot check while cross-compiling)')
++    elif not self.have_petsc4py:
++      self.log.Exit('petsc4py is required but had been marked as not installed')
 +
      # Check for cython
      try:
        import Cython
-@@ -118,3 +120,12 @@
+@@ -116,3 +121,12 @@ class Slepc4py(package.Package):
      slepcrules.write('slepc4py-install:\n')
      slepcrules.write('slepc4pytest:\n')
  
@@ -56,3 +87,6 @@
 +      return os.path.join(petsc.dir,'lib')
 +    else:
 +      return os.path.join(petsc.dir,petsc.arch,'lib')
+-- 
+2.30.0
+

@@ -1,0 +1,29 @@
+From 82dd7c9afb04d911cd793cc9c1e6676972111ba8 Mon Sep 17 00:00:00 2001
+From: Alexei Colin <acolin@isi.edu>
+Date: Mon, 12 Apr 2021 23:28:35 +0000
+Subject: [PATCH] config/argdb: restrict help to --help, -h, -?
+
+Allow us to use arguments that happen to start with `--h`.
+
+Signed-off-by: Alexei Colin <acolin@isi.edu>
+---
+ config/argdb.py | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/config/argdb.py b/config/argdb.py
+index 3718c54de..4d2afb2c9 100644
+--- a/config/argdb.py
++++ b/config/argdb.py
+@@ -114,7 +114,8 @@ class ArgDB:
+     while True:
+       found = 0
+       for i, s in enumerate(self.argdb):
+-        if s.startswith('--h') or s.startswith('-h') or s.startswith('-?'):
++        s = s.strip()
++        if s in ['--help', '-h', '-?']:
+           value = True
+           found = 1
+           numhits = numhits + 1
+-- 
+2.30.0
+

@@ -42,6 +42,7 @@ DEPEND="${RDEPEND}
 	"
 
 PATCHES=(
+	"${FILESDIR}"/${PN}-3.9999-conf-help-arg.patch
 	"${FILESDIR}"/${PN}-3.9999-conf-cross-compile.patch
 )
 
@@ -66,8 +67,7 @@ src_configure() {
 
 	local conf_args=(
 		--prefix="${EPREFIX}/usr/$(get_libdir)/slepc"
-		# CROSS_COMPILING set by profile (see comments there)
-		--cross-compile=${CROSS_COMPILING}
+		--have-petsc4py=1
 		$(slepc_use_with arpack)
 		$(slepc_use_with scalapack)
 		$(slepc_use_with python slepc4py)
