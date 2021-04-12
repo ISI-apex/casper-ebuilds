@@ -53,7 +53,6 @@ S="${WORKDIR}/${MYP}/python"
 PATCHES=(
 	"${FILESDIR}/${P}-verbose.patch"
 	"${FILESDIR}/${P}-no-strip.patch"
-	"${FILESDIR}/${P}-cmake-petsc-include.patch"
 )
 
 src_unpack() {
