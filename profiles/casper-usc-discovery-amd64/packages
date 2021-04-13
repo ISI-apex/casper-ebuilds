@@ -1,2 +1,4 @@
 # For CASPER auto-scheduling predictor
 sci-libs/tensorflow
+
+dev-python/dolfin

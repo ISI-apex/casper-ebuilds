@@ -1,3 +1,5 @@
 # For CASPER auto-scheduling predictor
 # TODO: does not bulid on Summit (bazel simply hangs)
 # sci-libs/tensorflow
+
+dev-python/dolfin

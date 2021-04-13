@@ -10,7 +10,8 @@ dev-lang/halide
 sci-libs/superlu_dist:cuda
 
 # Dolfin / Older Firedrake
-dev-python/dolfin
+# TODO: doesn't build against cross-compiled PETSc on Theta
+# dev-python/dolfin : listed in casper-CLUSTER/packages
 
 # CASPER auto-scheduling predictor
 # sci-libs/tensorflow : listed in casper-CLUSTER/packages (doesn't build on all)
