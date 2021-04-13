@@ -75,4 +75,5 @@ src_install() {
 		distutils-r1_python_install
 		popd
 	done
+	snapshot_src_install
 }
