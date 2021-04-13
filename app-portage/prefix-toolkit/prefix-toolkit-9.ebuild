@@ -252,7 +252,7 @@ export SHELL
 # give a small notice
 echo "Entering Gentoo Prefix ${EPREFIX}"
 # start the login shell, clean the entire environment but what's needed
-RETAIN=(HOME=$HOME TERM=$TERM USER=$USER SHELL=$SHELL)
+RETAIN=(HOME=$HOME TERM=$TERM USER=$USER SHELL=$SHELL HOST_PATH=$PATH)
 # PROFILEREAD is necessary on SUSE not to wipe the env on shell start
 [[ -n ${PROFILEREAD} ]] && RETAIN+=(PROFILEREAD=$PROFILEREAD)
 # ssh-agent is handy to keep, of if set, inherit it
