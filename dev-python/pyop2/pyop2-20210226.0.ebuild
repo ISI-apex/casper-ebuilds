@@ -70,14 +70,10 @@ pyop2_export_includes() {
 	export NUMPY_INCLUDE=$(python_get_sitedir)/numpy/core/include
 }
 
-python_configure_all() {
+python_compile()
+{
 	pyop2_export_includes
-	distutils-r1_python_configure_all
-}
-
-python_compile_all() {
-	pyop2_export_includes
-	distutils-r1_python_compile_all
+	distutils-r1_python_compile
 }
 
 python_test()
@@ -87,9 +83,14 @@ python_test()
 	popd
 }
 
-python_install_all()
+python_install()
 {
 	pyop2_export_includes
+	distutils-r1_python_install
+}
+
+python_install_all()
+{
 	distutils-r1_python_install_all
 	firedrake_install
 }
