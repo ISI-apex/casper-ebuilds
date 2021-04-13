@@ -1,0 +1,8 @@
+# Dependencies of CASPER auto-scheduling predictor
+
+sci-libs/tensorflow
+sci-libs/scikit-learn
+
+# TODO: are these really deps of autotuner
+dev-python/pandas
+dev-python/seaborn

@@ -1,0 +1,6 @@
+# Dependencies needed to run the DOLFIN FEM framework
+
+dev-python/dolfin
+
+# The CUDA slot is not a hard dep of anything, so list here
+sci-libs/superlu_dist:cuda

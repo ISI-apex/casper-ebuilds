@@ -1,30 +1,5 @@
-# Casper's deps
-# Note: these pull in a lot of dependencies, which are not 'selected'
-# explicitly, so if you remove these, those deps will be gone too.
-dev-python/firedrake
-# TODO: disabled because build broken when cross-compiling
-#dev-python/dolfin
-dev-libs/boost
-dev-lang/halide
-# The CUDA slot is not a hard dep of anything, so list here
-sci-libs/superlu_dist:cuda
-
-# Dolfin / Older Firedrake
-# TODO: doesn't build against cross-compiled PETSc on Theta
-# dev-python/dolfin : listed in casper-CLUSTER/packages
-
-# CASPER auto-scheduling predictor
-# sci-libs/tensorflow : listed in casper-CLUSTER/packages (doesn't build on all)
-dev-python/pandas
-dev-python/seaborn
-sci-libs/scikit-learn
-
-# For Firedrake benchmarks
-dev-python/pybench
-
-# For SAR app
-sci-libs/fftw
-sci-libs/cnpy
+# System-ish dependencies for using CASPER
+# (does not include the DSLs, see separate profiles)
 
 # For testing OpenMPI transports
 app-benchmarks/osu-micro-benchmarks

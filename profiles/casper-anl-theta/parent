@@ -1,4 +1,7 @@
 gentoo:default/linux/amd64/17.1/no-multilib/prefix/kernel-3.2+
 ../anl-theta
 ../casper
+../casper-halide
+../casper-firedrake
+../casper-autotuner
 ../casper-cross
