@@ -4,4 +4,3 @@ gentoo:default/linux/amd64/17.1/no-multilib/prefix/kernel-3.2+
 ../casper
 ../casper-halide
 ../casper-firedrake
-../casper-dolfin
