@@ -33,3 +33,60 @@ add github ids to metadata.xml
 
 idea: when depending on virtual/* package, trigger rebuild of dependees if the
 concrete package that  satisfies the virtual changes.
+
+
+Cross-compilation
+=================
+
+Status of building against dev-python/numpy that had been cross-compiled (on
+Theta):
+
+# FAILS
+dev-python/tsfc
+dev-python/loopy
+dev-python/randomgen
+dev-python/numexpr
+dev-python/h5py
+
+# FAILS
+sci-mathematics/dolfin
+dev-python/dolfin
+
+# FAILS
+sci-libs/scikit-learn
+sci-libs/tensorflow
+
+# FAILS
+dev-python/bottleneck
+dev-python/statsmodels
+dev-python/matplotlib
+dev-python/pandas
+dev-python/scipy # cython fails?
+
+
+# GOOD
+dev-python/pyop2
+dev-python/pyopencl
+dev-python/toml
+dev-python/opt-einsum
+dev-python/loky
+dev-python/ffc
+dev-python/genpy
+dev-python/finat
+dev-python/cgen
+dev-python/codepy
+dev-python/coffee
+dev-python/fiat
+dev-python/pytools
+dev-python/dijitso
+dev-python/patsy
+dev-python/symengine
+dev-python/ufl
+
+# GOOD
+sci-libs/keras-applications
+sci-libs/keras-preprocessing
+sci-visualization/tensorboard
+
+GOOD:
+dev-python/seaborn
