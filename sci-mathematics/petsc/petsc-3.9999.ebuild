@@ -7,7 +7,7 @@ EGIT_REPO_URI="https://gitlab.com/petsc/petsc.git"
 
 PYTHON_COMPAT=( python3_{6,7,8} )
 
-inherit flag-o-matic fortran-2 python-single-r1 snapshot toolchain-funcs
+inherit flag-o-matic fortran-2 python-info python-single-r1 snapshot toolchain-funcs
 
 if [[ ${PV} == *9999 ]]
 then
@@ -235,14 +235,6 @@ src_configure() {
 	export PETSC_DIR="${S}"
 	export PETSC_ARCH="linux-gnu-${mylang}-${myopt}"
 
-	# When numpy was cross-compiled, we can't load it, so set path explicitly;
-	# (this could be done conditionally only if cross-compiling).
-	#   python -c 'import numpy; print(numpy.get_include())'
-	if use python; then
-		python_setup
-		local numpy_include="$(python_get_sitedir)/numpy/core/include"
-	fi
-
 	if use debug; then
 		strip-flags
 		filter-flags -O*
@@ -293,7 +285,7 @@ src_configure() {
 		$(petsc_enable mpi mpi-compilers) \
 		$(petsc_select complex-scalars scalar-type complex real) \
 		$(usex python --have-numpy=1) \
-		$(usex python --with-numpy-include=${numpy_include}) \
+		$(usex python --with-numpy-include=$(python-info_get_include numpy)) \
 		--with-windows-graphics=0 \
 		--with-matlab=0 \
 		--with-cmake:BOOL=1 \
