@@ -30,16 +30,14 @@ KEYWORDS="amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 IUSE="complex-scalars index-64bit"
 
 BDEPEND="
- 	$(python_gen_cond_dep \
-	'
-	>=dev-python/pytest-2.3[${PYTHON_MULTI_USEDEP}]
-	>=dev-python/flake8-2.1.0[${PYTHON_MULTI_USEDEP}]
+	$(python_gen_cond_dep '
+		>=dev-python/pytest-2.3[${PYTHON_MULTI_USEDEP}]
+		>=dev-python/flake8-2.1.0[${PYTHON_MULTI_USEDEP}]
+		>=dev-python/cython-0.22[${PYTHON_MULTI_USEDEP}]
 	')
 	"
 DEPEND="
 	sci-mathematics/petsc[complex-scalars=,index-64bit=,python]
- 	$(python_gen_cond_dep \
-		'>=dev-python/cython-0.22[${PYTHON_MULTI_USEDEP}]')
 	"
 # TODO: mpi use flag?
 RDEPEND="${DEPEND}
