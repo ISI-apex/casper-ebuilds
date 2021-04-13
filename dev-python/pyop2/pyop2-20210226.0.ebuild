@@ -62,7 +62,25 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-20210225.0-CCVER-var.patch
 	"${FILESDIR}"/${PN}-20200204.0-no-march-native.patch
 	"${FILESDIR}"/${PN}-20210225.0-no-jit.patch
+	"${FILESDIR}"/${PN}-20210225.0-setup-cross-compile.patch
 )
+
+# To support cross-compilation, we need to suppress autodetection of these
+pyop2_export_includes() {
+	[[ -n "${PETSC_DIR}" ]] || die "PETSC_DIR must be set"
+	export PETSC4PY_INCLUDE=${PETSC_DIR}/lib/petsc4py/include
+	export NUMPY_INCLUDE=$(python_get_sitedir)/numpy/core/include
+}
+
+python_configure_all() {
+	pyop2_export_includes
+	distutils-r1_python_configure_all
+}
+
+python_compile_all() {
+	pyop2_export_includes
+	distutils-r1_python_compile_all
+}
 
 python_test()
 {
@@ -73,6 +91,7 @@ python_test()
 
 python_install_all()
 {
+	pyop2_export_includes
 	distutils-r1_python_install_all
 	firedrake_install
 }

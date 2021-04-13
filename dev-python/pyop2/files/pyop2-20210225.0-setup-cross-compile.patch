@@ -1,0 +1,37 @@
+--- a/setup.py	2021-04-13 00:39:22.000000000 -0000
++++ b/setup.py	2021-04-13 00:48:21.000000000 -0000
+@@ -41,8 +41,6 @@
+ from glob import glob
+ from os import environ as env
+ import sys
+-import numpy as np
+-import petsc4py
+ import versioneer
+ import os
+ 
+@@ -108,9 +106,23 @@
+     'pytest>=2.3',
+ ]
+ 
++numpy_include = os.environ.get('NUMPY_INCLUDE')
++if numpy_include is None:
++    try:
++        import numpy
++        numpy_include = numpy.get_include()
++    except ImportError:
++        sys.exit("Error: required dependency not found: numpy")
++petsc4py_include = os.environ.get('PETSC4PY_INCLUDE')
++if petsc4py_include is None:
++    try:
++        import petsc4py
++        petsc4py.get_include()
++    except ImportError:
++        sys.exit("Error: required dependency not found: petsc4py")
++
+ petsc_dirs = get_petsc_dir()
+-numpy_includes = [np.get_include()]
+-includes = numpy_includes + [petsc4py.get_include()]
++includes = [numpy_include, petsc4py_include]
+ includes += ["%s/include" % d for d in petsc_dirs]
+ 
+ if 'CC' not in env:
