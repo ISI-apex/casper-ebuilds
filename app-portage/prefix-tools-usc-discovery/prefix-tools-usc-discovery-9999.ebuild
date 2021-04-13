@@ -13,3 +13,8 @@ else
 fi
 
 DEPEND="$(prefix-tools_get_conflicts)"
+
+src_install() {
+	prefix-tools_src_install
+	snapshot_src_install
+}
