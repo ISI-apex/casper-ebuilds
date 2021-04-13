@@ -67,6 +67,12 @@ RDEPEND="
 	sci-libs/vtk[python]
 	"
 
+BDEPEND="
+	$(python_gen_cond_dep '
+		dev-python/cython[${PYTHON_MULTI_USEDEP}]
+	')
+"
+
 PATCHES=(
 	"${FILESDIR}/${PN}-20210225.0-vtk-8.2.patch"
 	"${FILESDIR}/${PN}-20210225.0-mesh-partitioner-config.patch"
