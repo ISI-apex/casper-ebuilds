@@ -1,0 +1,36 @@
+--- a/setup.py	2021-04-13 01:07:35.000000000 -0000
++++ b/setup.py	2021-04-13 01:10:17.000000000 -0000
+@@ -5,8 +5,6 @@
+ from Cython.Distutils import build_ext
+ import os
+ import sys
+-import numpy as np
+-import petsc4py
+ import versioneer
+ 
+ from firedrake_configuration import get_config
+@@ -57,8 +55,23 @@
+                ("supermeshimpl", ["supermesh", "petsc"])]
+ 
+ 
++numpy_include = os.environ.get('NUMPY_INCLUDE')
++if numpy_include is None:
++    try:
++        import numpy
++        numpy_include = numpy.get_include()
++    except ImportError:
++        sys.exit("Error: required dependency not found: numpy")
++petsc4py_include = os.environ.get('PETSC4PY_INCLUDE')
++if petsc4py_include is None:
++    try:
++        import petsc4py
++        petsc4py.get_include()
++    except ImportError:
++        sys.exit("Error: required dependency not found: petsc4py")
++
+ petsc_dirs = get_petsc_dir()
+-include_dirs = [np.get_include(), petsc4py.get_include()]
++include_dirs = [numpy_include, petsc4py_include]
+ include_dirs += ["%s/include" % d for d in petsc_dirs]
+ 
+ dirs = (sys.prefix, *petsc_dirs)
