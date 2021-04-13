@@ -3,7 +3,7 @@
 
 EAPI=7
 
-MINKV="3.11"
+MINKV="3.10"
 PYTHON_COMPAT=( python3_{7..9} )
 inherit meson python-any-r1
 
