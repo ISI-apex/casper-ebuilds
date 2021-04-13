@@ -1,8 +1,1 @@
-# Dependencies for Halide DSL
-
-dev-libs/boost
-dev-lang/halide
-
-# For SAR app
-sci-libs/fftw
-sci-libs/cnpy
+7
