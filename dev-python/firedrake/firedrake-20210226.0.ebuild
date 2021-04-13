@@ -42,8 +42,8 @@ BDEPEND="
 DEPEND="
 	>=sci-libs/libsupermesh-1.0.1.20190401
 	>=sci-libs/libspatialindex-1.8.5-r1
-	>=sci-mathematics/petsc-3.14[hdf5,eigen,scotch?,metis?,complex-scalars=,index-64bit=]
-	slepc? ( sci-mathematics/slepc[complex-scalars=,index-64bit=] )
+	>=sci-mathematics/petsc-3.14[hdf5,eigen,scotch?,metis?,complex-scalars=,index-64bit=,python]
+	slepc? ( sci-mathematics/slepc[complex-scalars=,index-64bit=,python] )
 	metis? ( sci-libs/parmetis )
 	scotch? ( sci-libs/scotch )
 	"
