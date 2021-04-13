@@ -6,7 +6,7 @@ EAPI=7
 PYTHON_COMPAT=( python3_{6,7,8} )
 DISTUTILS_SINGLE_IMPL=1
 
-inherit distutils-r1 firedrake
+inherit distutils-r1 firedrake python-info
 
 MY_PN=PyOP2
 MY_FV=$(ver_cut 1)
@@ -63,16 +63,13 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-20210225.0-setup-cross-compile.patch
 )
 
-# To support cross-compilation, we need to suppress autodetection of these
-pyop2_export_includes() {
-	[[ -n "${PETSC_DIR}" ]] || die "PETSC_DIR must be set"
-	export PETSC4PY_INCLUDE=${PETSC_DIR}/lib/petsc4py/include
-	export NUMPY_INCLUDE=$(python_get_sitedir)/numpy/core/include
-}
+# Need include paths from these modules to build against them, but for
+# cross-compilation need to get them via python-info.eclass
+MY_PY_DEPS=(numpy petsc4py)
 
 python_compile()
 {
-	pyop2_export_includes
+	python-info_export_include ${MY_PY_DEPS[@]}
 	distutils-r1_python_compile
 }
 
@@ -85,7 +82,7 @@ python_test()
 
 python_install()
 {
-	pyop2_export_includes
+	python-info_export_include ${MY_PY_DEPS[@]}
 	distutils-r1_python_install
 }
 
