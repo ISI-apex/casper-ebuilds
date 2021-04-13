@@ -24,7 +24,7 @@
 +if petsc4py_include is None:
 +    try:
 +        import petsc4py
-+        petsc4py.get_include()
++        petsc4py_include = petsc4py.get_include()
 +    except ImportError:
 +        sys.exit("Error: required dependency not found: petsc4py")
 +
