@@ -49,7 +49,7 @@ HOMEPAGE="http://www.open-mpi.org"
 LICENSE="BSD"
 SLOT="0"
 # TODO: ltdl: looks for nonexistant ltprtedl.h header
-IUSE="+avx cma cuda debug fortran heterogeneous ipv6 java ltdl +man
+IUSE="+avx cma cray_xpmem cuda debug fortran heterogeneous ipv6 java ltdl +man
 	mpi1 romio udreg
 	${IUSE_OPENMPI_FABRICS} ${IUSE_OPENMPI_FS} ${IUSE_OPENMPI_RM}
 	${IUSE_OPENMPI_OFED_FEATURES}"
@@ -57,6 +57,7 @@ IUSE="+avx cma cuda debug fortran heterogeneous ipv6 java ltdl +man
 REQUIRED_USE="
 	openmpi_rm_slurm? ( !openmpi_rm_pbs )
 	openmpi_rm_pbs? ( !openmpi_rm_slurm )
+	cray_xpmem? ( openmpi_fabrics_xpmem )
 	"
 
 # TODO: check whether should depend on subslot of hwloc
@@ -77,7 +78,7 @@ CDEPEND="
 	openmpi_fabrics_psm? ( sys-fabric/infinipath-psm:* )
 	openmpi_fabrics_ucx? ( sys-cluster/ucx:= )
 	openmpi_fabrics_ugni? ( sys-cluster/cray-libs )
-	openmpi_fabrics_xpmem? ( sys-cluster/cray-libs )
+	openmpi_fabrics_xpmem? ( cray_xpmem? ( sys-cluster/cray-libs ) )
 	openmpi_rm_pbs? ( sys-cluster/torque )
 	openmpi_rm_alps? ( sys-cluster/cray-libs )
 	"
@@ -193,9 +194,11 @@ multilib_src_configure() {
 	# those external libs from all binaries (e.g. mpicc). See PRRTE #871.
 	local dso_components=(
 		$(usex openmpi_fabrics_ugni btl-ugni)
-		$(usex openmpi_fabrics_xpmem btl-sm)
 		$(usex udreg rcache-udreg)
 	)
+	if use openmpi_fabrics_xpmem && use cray_xpmem; then
+		dso_components+=(btl-sm)
+	fi
 	local enable_mca_dso=""
 	if [[ "${#dso_components[@]}" -gt 0 ]]; then
 		enable_mca_dso=--enable-mca-dso="$(my_join , ${dso_components[@]})"
@@ -243,6 +246,7 @@ multilib_src_configure() {
 		$(multilib_native_use_with openmpi_fabrics_ucx ucx-libdir "${EPREFIX}"/usr/$(get_libdir)) \
 		$(multilib_native_use_with openmpi_fabrics_ugni ugni) \
 		$(multilib_native_use_with openmpi_fabrics_xpmem xpmem) \
+		$(multilib_native_use_with cray_xpmem cray-xpmem) \
 		$(multilib_native_use_with udreg udreg) \
 		${conf_flags[@]}
 }
