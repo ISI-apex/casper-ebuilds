@@ -343,6 +343,9 @@ src_install() {
 
 	use python && python_optimize
 
+	dosym "${EPREFIX}"/usr/$(get_libdir)/petsc/lib/pkgconfig/petsc.pc \
+		/usr/$(get_libdir)/pkgconfig/petsc.pc
+
 	# add PETSC_DIR to environmental variables
 	cat >> 99petsc <<- EOF
 		PETSC_DIR=${EPREFIX}/usr/$(get_libdir)/petsc
