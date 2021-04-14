@@ -117,6 +117,9 @@ src_install() {
 
 	use python && python_optimize
 
+	dosym "${EPREFIX}"/usr/$(get_libdir)/slepc/lib/pkgconfig/slepc.pc \
+		/usr/$(get_libdir)/pkgconfig/slepc.pc
+
 	# add PETSC_DIR to environmental variables
 	cat >> 99slepc <<- EOF
 		SLEPC_DIR=${EPREFIX}/usr/$(get_libdir)/slepc
