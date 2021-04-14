@@ -21,6 +21,7 @@ fi
 MY_P=${P/-mpi}
 S=${WORKDIR}/${MY_P}
 
+# TODO: --without-xpmem is not honored
 IUSE_OPENMPI_FABRICS="
 	openmpi_fabrics_knem
 	openmpi_fabrics_ofi
