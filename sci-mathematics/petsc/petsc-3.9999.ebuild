@@ -326,7 +326,6 @@ src_install() {
 	#emake DESTDIR="${ED}" DESTPREFIX="/usr/$(get_libdir)/petsc" install
 	#dodir /usr/$(get_libdir)/petsc
 	emake DESTDIR="${D}" install
-	use python && python_optimize
 
 	# petsc4py installs into PETSC_DIR, so create shortcut from site dir
 	if use python; then
@@ -341,6 +340,8 @@ src_install() {
 			"p and (p in sys.path or sys.path.append(p))" \
 			> "${dest_sitedir}"/petsc4py.pth || die
 	fi
+
+	use python && python_optimize
 
 	# add PETSC_DIR to environmental variables
 	cat >> 99petsc <<- EOF

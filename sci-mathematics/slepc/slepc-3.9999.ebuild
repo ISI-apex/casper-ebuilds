@@ -100,7 +100,6 @@ src_install() {
 	use python && python_setup
 	local slepc_install_dir="${EPREFIX}"/usr/$(get_libdir)/slepc
 	emake SLEPC_DIR="${S}" SLEPC_INSTALLDIR="${slepc_install_dir}" DESTDIR="${D}" install
-	use python && python_optimize
 
 	# slepc4py installs into SLEPC_DIR, so create shortcut from site dir
 	if use python; then
@@ -115,6 +114,8 @@ src_install() {
 			"p and (p in sys.path or sys.path.append(p))" \
 			> "${dest_sitedir}"/slepc4py.pth || die
 	fi
+
+	use python && python_optimize
 
 	# add PETSC_DIR to environmental variables
 	cat >> 99slepc <<- EOF
