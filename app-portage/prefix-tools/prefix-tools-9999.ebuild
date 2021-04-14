@@ -41,9 +41,9 @@ src_compile() {
 }
 
 src_install() {
-	mkdir -p "${T}"/etc/prefix-tools
-	sed -e "s:@__EPREFIX__@:${EPREFIX}:g" \
-		etc.in/prefix-tools/prefixrc > "${T}"/etc/prefix-tools/prefixrc
+	(cd etc.in && find . -type f -exec install -D {} "${T}"/etc/{} \;)
+	find "${T}"/etc -type f \
+		-execdir sed -i -e "s:@__EPREFIX__@:${EPREFIX}:g" {} \;
 
 	insinto /
 	doins -r "${T}"/etc
