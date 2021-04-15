@@ -52,15 +52,25 @@ conf-overlay_update() {
 # @USAGE:
 # @DESCRIPTION: Move each <conf_file> installed by usptream into <conf_file>.d/
 conf-overlay_src_install() {
+	declare -A conf_dirs
 	local conf_file
 	for conf_file in "${CONF_OVERLAY_FILES[@]}"; do
 		if [[ -f "${ED}"/"${conf_file}" ]]; then
 			local conf_dir="${conf_file}.d"
+			local conf_dir_path="/${conf_dir}"
+			conf_dirs[${conf_dir_path}]=1
 			mkdir -p "${ED}"/"${conf_dir}" || die
 			mv "${ED}"/"${conf_file}" \
 				"${ED}"/"${conf_dir}/00-default.conf" || die
 		fi
 	done
+
+	local envd_file=99${PN}-conf-overlay
+	cat > "${T}"/${envd_file} <<- EOF
+	CONFIG_PROTECT_MASK="${!conf_dirs[@]}"
+	EOF
+	insinto /etc/env.d
+	doins "${T}"/${envd_file}
 }
 
 conf-overlay_pkg_postinst() {
