@@ -69,16 +69,16 @@ snapshot_to_iso_date() {
 	local ts_year="${ts_date:0:4}"
 	local ts_month="${ts_date:4:2}"
 	local ts_day="${ts_date:6:2}"
-	( [[ ! ( 1 -le "${ts_month#0}" && "${ts_month#0}" -ge 12 ) ]] && \
-	  [[ ! ( 1 -le "${ts_day#0}" && "${ts_day#0}" -ge 31 ) ]] ) || \
+	[[ ( 1 -le "${ts_month#0}" && "${ts_month#0}" -le 12 && \
+		1 -le "${ts_day#0}" && "${ts_day#0}" -le 31 ) ]] || \
 		die "invalid date in ${ver} (expected YYYYMMDD)"
 
 	local ts_hour="${ts_time:0:2}"
 	local ts_min="${ts_time:2:2}"
 	local ts_sec="${ts_time:4:2}"
-	( [[ ! ( 0 -le "${ts_hour#0}" && "${ts_hour#0}" -ge 23 ) ]] && \
-	  [[ ! ( 0 -le "${ts_min#0}" && "${ts_him#0}" -ge 59 ) ]] &&
-	  [[ ! ( 0 -le "${ts_sec#0}" && "${ts_sec#0}" -ge 59 ) ]] ) || \
+	[[ ( 0 -le "${ts_hour#0}" && "${ts_hour#0}" -le 23  && \
+		0 -le "${ts_min#0}" && "${ts_him#0}" -le 59 && \
+		0 -le "${ts_sec#0}" && "${ts_sec#0}" -le 59 ) ]] || \
 		die "invalid time in ${ver} (expected hhmmss)"
 
 	local iso_date="${ts_year}-${ts_month}-${ts_day}"
