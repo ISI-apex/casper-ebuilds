@@ -3,19 +3,18 @@
 
 EAPI=7
 
-inherit git-r3 cmake
+EGIT_REPO_URI="https://github.com/rogersce/cnpy.git"
+
+inherit git-r3 cmake snapshot
 
 DESCRIPTION="Library to read/write .npy and .npz files in C/C++"
 HOMEPAGE="https://github.com/rogersce/cnpy"
-EGIT_REPO_URI="https://github.com/rogersce/cnpy.git"
 
-if [[ "$(ver_cut 2 ${PV})" = "pre" ]]
+if [[ ${PV} = *9999 ]]
 then
-	MY_D="$(ver_cut 3 ${PV})"
-	EGIT_COMMIT_DATE="${MY_D:0:4}-${MY_D:4:2}-${MY_D:6:2}"
-	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
-else # live
 	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 fi
 
 LICENSE="MIT"
