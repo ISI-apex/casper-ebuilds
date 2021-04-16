@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -8,16 +8,13 @@ FORTRAN_NEEDED=fortran
 inherit fortran-2 toolchain-funcs flag-o-matic
 
 DESCRIPTION="Parallel matrix preconditioners library"
-HOMEPAGE="
-	https://www.llnl.gov/casc/hypre/
-	https://computation.llnl.gov/projects/hypre-scalable-linear-solvers-multigrid-methods
-"
+HOMEPAGE="https://computation.llnl.gov/projects/hypre-scalable-linear-solvers-multigrid-methods"
 SRC_URI="https://github.com/${PN}-space/${PN}/archive/v${PV}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="LGPL-2.1"
 SLOT="0/${PV}"
-KEYWORDS="amd64 ~x86 ~amd64-linux ~x86-linux ~ppc64 ~ppc64-linux"
-IUSE="debug examples fortran index-64bit openmp mpi"
+KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux"
+IUSE="debug examples fortran int64 openmp mpi"
 
 BDEPEND="virtual/pkgconfig"
 RDEPEND="
@@ -30,13 +27,13 @@ DEPEND="${RDEPEND}"
 DOCS=( CHANGELOG COPYRIGHT README )
 
 pkg_pretend() {
-	[[ ${MERGE_TYPE} != binary ]] &&\
-		use openmp && [[ $(tc-getCC)$ == *gcc* ]] && tc-check-openmp
+	if [[ ${MERGE_TYPE} != binary ]] && use openmp && [[ $(tc-getCC) == *gcc* ]] ; then
+		tc-check-openmp
+	fi
 }
 
 pkg_setup() {
-	if [[ ${MERGE_TYPE} != binary ]] && \
-		   use openmp && [[ $(tc-getCC)$ == *gcc* ]] && ! tc-has-openmp ; then
+	if [[ ${MERGE_TYPE} != binary ]] && use openmp && [[ $(tc-getCC) == *gcc* ]] && ! tc-has-openmp ; then
 		ewarn "You are using a non capable gcc compiler ( < 4.2 ? )"
 		die "Need an OpenMP capable compiler"
 	fi
@@ -44,12 +41,15 @@ pkg_setup() {
 
 src_prepare() {
 	default
+
 	# link with system superlu and propagate LDFLAGS
 	sed -e "s:@LIBS@:@LIBS@ $($(tc-getPKG_CONFIG) --libs superlu):" \
 		-e 's:_SHARED@:_SHARED@ $(LDFLAGS):g' \
 		-i src/config/Makefile.config.in || die
+
 	sed -e '/HYPRE_ARCH/s: = :=:g' \
 		-i src/configure || die
+
 	# link with system blas and lapack
 	sed -e '/^BLASFILES/d' \
 		-e '/^LAPACKFILES/d' \
@@ -59,11 +59,18 @@ src_prepare() {
 src_configure() {
 	tc-export CC CXX
 	append-flags -Dhypre_dgesvd=dgesvd_
-	use openmp && [[ $(tc-getCC)$ == *gcc* ]] && \
-		append-flags -fopenmp && append-ldflags -fopenmp
-	use mpi && CC=mpicc FC=mpif77 CXX=mpicxx
 
-	cd src
+	if use openmp && [[ $(tc-getCC) == *gcc* ]] ; then
+		append-flags -fopenmp && append-ldflags -fopenmp
+	fi
+
+	if use mpi ; then
+		CC=mpicc
+		FC=mpif77
+		CXX=mpicxx
+	fi
+
+	cd src || die
 
 	# without-superlu: means do not use bundled one
 	econf \
@@ -76,7 +83,7 @@ src_configure() {
 		--without-superlu \
 		$(use_enable debug) \
 		$(use_enable openmp hopscotch) \
-		$(use_enable index-64bit bigint) \
+		$(use_enable int64 bigint) \
 		$(use_enable fortran) \
 		$(use_with openmp) \
 		$(use_with mpi MPI)
@@ -93,25 +100,10 @@ src_test() {
 }
 
 src_install() {
-	local libdir=usr/$(get_libdir)
-	local incdir=usr/include/${PN}
 	emake -C src install \
 		  HYPRE_INSTALL_DIR="${ED}" \
-		  HYPRE_LIB_INSTALL="${ED}/${libdir}" \
-		  HYPRE_INC_INSTALL="${ED}/${incdir}"
-
-	local urls=(${HOMEPAGE})
-	cat <<-EOF > ${PN}.pc
-	Name: ${PN}
-	Description: ${DESCRIPTION}
-	Version: ${PV}
-	URL: ${urls[0]}
-	Libs: -lHYPRE
-	Cflags: -I${EPREFIX}/${incdir}
-	EOF
-
-	insinto /usr/$(get_libdir)/pkgconfig
-	doins ${PN}.pc
+		  HYPRE_LIB_INSTALL="${ED}/usr/$(get_libdir)" \
+		  HYPRE_INC_INSTALL="${ED}/usr/include/hypre"
 
 	if use examples; then
 		dodoc -r src/examples
