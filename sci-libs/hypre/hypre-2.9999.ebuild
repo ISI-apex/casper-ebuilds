@@ -6,7 +6,7 @@ EAPI=7
 EGIT_REPO_URI="https://github.com/hypre-space/hypre.git"
 FORTRAN_NEEDED=fortran
 
-inherit fortran-2 toolchain-funcs flag-o-matic git-r3 snapshot
+inherit autotools fortran-2 toolchain-funcs flag-o-matic git-r3 snapshot
 
 DESCRIPTION="Parallel matrix preconditioners library"
 HOMEPAGE="https://computation.llnl.gov/projects/hypre-scalable-linear-solvers-multigrid-methods"
@@ -31,6 +31,10 @@ RDEPEND="
 	mpi? ( virtual/mpi )"
 DEPEND="${RDEPEND}"
 
+PATCHES=(
+	"${FILESDIR}"/${PN}-2.20.0-conf-fix-without-args.patch
+)
+
 DOCS=( CHANGELOG COPYRIGHT README )
 
 pkg_pretend() {
@@ -48,6 +52,11 @@ pkg_setup() {
 
 src_prepare() {
 	default
+
+	# Needed only because we patched configure.in
+	pushd src || die
+	./config/bootstrap || die
+	popd || die
 
 	# link with system superlu and propagate LDFLAGS
 	sed -e "s:@LIBS@:@LIBS@ $($(tc-getPKG_CONFIG) --libs superlu):" \
