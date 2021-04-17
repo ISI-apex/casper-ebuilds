@@ -58,7 +58,10 @@ RDEPEND="
 	eigen? ( dev-cpp/eigen )
 	hdf5? ( sci-libs/hdf5[mpi?] )
 	hpddm? ( sci-libs/hpddm )
-	hypre? ( >=sci-libs/hypre-2.18.0[mpi?,index-64bit=] )
+	hypre? (
+		index-64bit? ( >=sci-libs/hypre-2.18.0[mpi?,bigint] )
+		!index-64bit? ( >=sci-libs/hypre-2.18.0[mpi?] )
+	)
 	parmetis? ( >=sci-libs/parmetis-4[index-64bit=] )
 	!parmetis? ( metis? ( sci-libs/metis ) )
 	python? ( ${PYTHON_DEPS}
