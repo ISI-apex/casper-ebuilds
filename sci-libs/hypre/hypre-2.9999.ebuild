@@ -21,14 +21,71 @@ else
 	KEYWORDS="~amd64 ~arm ~arm64 ~ppc ~ppc64 ~x86 ~amd64-linux ~x86-linux"
 fi
 
-IUSE="debug examples fortran index-64bit openmp mpi"
+# Type and precision settings
+IUSE_HYPRE_TYPES="
+	hypre_types_bigint
+	hypre_types_complex
+	hypre_types_single
+	hypre_types_longdouble
+"
+# Portability layers
+IUSE_HYPRE_PORT="
+	hypre_port_kokkos
+	hypre_port_raja
+"
+# Memory types for which to use the Umpire memory allocator
+IUSE_HYPRE_UMPIRE="
+	hypre_umpire_host
+	hypre_umpire_device
+	hypre_umpire_pinned
+	hypre_umpire_um
+"
+# GPU-accelerated libraries and features to use with AMD GPUs
+IUSE_HYPRE_ROC="
+	hypre_roc_sparse
+	hypre_roc_blas
+	hypre_roc_rand
+"
+# GPU-accelerated libraries and features to use with nVidia GPUs
+IUSE_HYPRE_CUDA="
+	hypre_cuda_blas
+	hypre_cuda_cub
+	hypre_cuda_sparse
+	hypre_cuda_streams
+	hypre_cuda_rand
+"
 
+IUSE="debug examples fortran hopscotch mli persistent mpi unified-memory
+	openmp device-openmp
+	node-aware-mpi gpu-aware-mpi
+	caliper gpu-profiling timing memory-tracker
+	${IUSE_HYPRE_TYPES} ${IUSE_HYPRE_PORT}
+	umpire ${IUSE_HYPRE_UMPIRE}
+	roc ${IUSE_HYPRE_ROC}
+	cuda ${IUSE_HYPRE_CUDA}
+	"
+
+REQUIRED_USE="
+	?? ( ${IUSE_HYPRE_TYPES} )
+	?? ( ${IUSE_HYPRE_PORT} )
+	hopscotch? ( openmp )
+	cuda? ( unified-memory )
+	gpu-aware-mpi? ( mpi )
+	node-aware-mpi? ( mpi )
+"
+
+# TODO: unpackaged: raja umpire dsuperlu
+# TODO: deps for roc raja umpire
 BDEPEND="virtual/pkgconfig"
 RDEPEND="
 	sci-libs/superlu:=
 	virtual/blas
 	virtual/lapack
-	mpi? ( virtual/mpi )"
+	caliper? ( dev-libs/caliper )
+	cuda? ( dev-util/nvidia-cuda-toolkit )
+	hypre_port_kokkos? ( dev-cpp/kokkos )
+	mpi? ( virtual/mpi )
+"
 DEPEND="${RDEPEND}"
 
 PATCHES=(
@@ -88,21 +145,48 @@ src_configure() {
 
 	cd src || die
 
-	# without-superlu: means do not use bundled one
 	econf \
 		--enable-shared \
+		--with-blas \
 		--with-blas-libs="$($(tc-getPKG_CONFIG) --libs-only-l blas | sed -e 's/-l//g')" \
 		--with-blas-lib-dirs="$($(tc-getPKG_CONFIG) --libs-only-L blas | sed -e 's/-L//g')" \
+		--with-lapack \
 		--with-lapack-libs="$($(tc-getPKG_CONFIG) --libs-only-l lapack | sed -e 's/-l//g')" \
 		--with-lapack-lib-dirs="$($(tc-getPKG_CONFIG) --libs-only-L lapack | sed -e 's/-L//g')" \
-		--with-timing \
-		--without-superlu \
+		--with-superlu \
+		--without-dsuperlu \
 		$(use_enable debug) \
 		$(use_enable openmp hopscotch) \
-		$(use_enable index-64bit bigint) \
+		$(use_enable hypre_types_bigint bigint) \
+		$(use_enable hypre_types_complex complex) \
+		$(use_enable hypre_types_longdouble longdouble) \
+		$(use_enable hypre_types_single single) \
 		$(use_enable fortran) \
+		$(use_enable hopscotch) \
+		$(use_enable persistent) \
+		$(use_enable unified-memory) \
+		$(use_enable gpu-profiling) \
+		$(use_enable gpu-aware-mpi) \
+		$(use_with cuda) \
+		$(use_enable hypre_cuda_streams cuda-streams) \
+		$(use_enable hypre_cuda_sparse cusparse) \
+		$(use_enable hypre_cuda_cub cub) \
+		$(use_enable hypre_cuda_blas cublas) \
+		$(use_enable hypre_cuda_rand curand) \
+		$(use_with roc hip) \
+		$(use_enable hypre_roc_sparse rocsparse) \
+		$(use_enable hypre_roc_blas rocblas) \
+		$(use_enable hypre_roc_rand rocrand) \
+		$(use_with hypre_port_kokkos kokkos) \
+		$(use_with hypre_port_raja raja) \
+		$(use_with caliper) \
+		$(use_with memory-tracker) \
+		$(use_with mli) \
 		$(use_with openmp) \
-		$(use_with mpi MPI)
+		$(use_with device-openmp) \
+		$(use_with mpi MPI) \
+		$(use_with node-aware-mpi) \
+		$(use_with timing)
 }
 
 src_compile() {
