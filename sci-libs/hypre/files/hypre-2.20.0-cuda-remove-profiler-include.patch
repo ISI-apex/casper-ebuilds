@@ -1,0 +1,20 @@
+--- a/src/utilities/hypre_cuda_utils.h	2021-04-16 20:47:23.669462125 -0400
++++ b/src/utilities/hypre_cuda_utils.h	2021-04-16 20:47:29.162631673 -0400
+@@ -13,7 +13,6 @@
+ #if defined(HYPRE_USING_CUDA) || defined(HYPRE_USING_DEVICE_OPENMP)
+ #include <cuda.h>
+ #include <cuda_runtime.h>
+-#include <cuda_profiler_api.h>
+ #include <curand.h>
+ #include <cublas_v2.h>
+ #include <cusparse.h>
+--- a/src/utilities/_hypre_utilities.hpp	2021-04-16 20:55:20.642184484 -0400
++++ b/src/utilities/_hypre_utilities.hpp	2021-04-16 20:55:27.858407298 -0400
+@@ -78,7 +78,6 @@
+ #if defined(HYPRE_USING_CUDA) || defined(HYPRE_USING_DEVICE_OPENMP)
+ #include <cuda.h>
+ #include <cuda_runtime.h>
+-#include <cuda_profiler_api.h>
+ #include <curand.h>
+ #include <cublas_v2.h>
+ #include <cusparse.h>

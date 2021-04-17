@@ -70,6 +70,7 @@ REQUIRED_USE="
 	?? ( ${IUSE_HYPRE_PORT} )
 	hopscotch? ( openmp )
 	cuda? ( unified-memory )
+	device-openmp? ( cuda )
 	gpu-aware-mpi? ( mpi )
 	node-aware-mpi? ( mpi )
 "
@@ -82,7 +83,7 @@ RDEPEND="
 	virtual/blas
 	virtual/lapack
 	caliper? ( dev-libs/caliper )
-	cuda? ( dev-util/nvidia-cuda-toolkit )
+	cuda? ( dev-util/nvidia-cuda-toolkit[profiler] )
 	hypre_port_kokkos? ( dev-cpp/kokkos )
 	mpi? ( virtual/mpi )
 "
@@ -90,6 +91,8 @@ DEPEND="${RDEPEND}"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-2.20.0-conf-fix-without-args.patch
+	# Either remove the include, or require profiler use flag in cuda
+	#"${FILESDIR}"/${PN}-2.20.0-cuda-remove-profiler-include.patch
 )
 
 DOCS=( CHANGELOG COPYRIGHT README )
@@ -145,6 +148,11 @@ src_configure() {
 
 	cd src || die
 
+	if use cuda; then
+		export CUDA_HOME=${EPREFIX}/opt/cuda
+		# nvcc doesn't accept -Wl, (present in default linux profile)
+		filter-flags -Wl,*
+	fi
 	econf \
 		--enable-shared \
 		--with-blas \
