@@ -32,9 +32,6 @@ dev-java/openjdk:11
 dev-java/openjdk-bin:11
 dev-java/oracle-jdk-bin
 
-# nvidia-cuda-toolkit can be installed without it (false dep)
-x11-drivers/nvidia-drivers
-
 # This is the latest version for which ghc bootstrap binaries are available
 # from Gentoo for ppc64le, (and bootstrap using host's ghc (outside of prefix)
 # is not desirable due to dependency on stuff installed into host OS, and it is
