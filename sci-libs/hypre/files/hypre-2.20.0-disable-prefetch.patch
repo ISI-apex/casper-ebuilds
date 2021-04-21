@@ -1,0 +1,16 @@
+--- a/src/utilities/hypre_memory.c	2021-04-21 15:02:27.428694087 -0400
++++ b/src/utilities/hypre_memory.c	2021-04-21 15:03:59.863552672 -0400
+@@ -252,11 +252,13 @@
+ 
+ #endif /* #if defined(HYPRE_USING_UMPIRE_UM) */
+ 
++#if 0 /* results in 'invalid device ordinal' with CUDA v10 on K40 */
+    /* prefecth to device */
+    if (ptr)
+    {
+       hypre_UnifiedMemPrefetch(ptr, size, hypre_MEMORY_DEVICE);
+    }
++#endif
+ 
+    if (ptr && zeroinit)
+    {
