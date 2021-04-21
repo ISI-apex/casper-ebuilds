@@ -1,0 +1,20 @@
+--- a/src/ksp/pc/impls/hypre/hypre.c	2021-04-19 12:57:40.670589426 -0400
++++ b/src/ksp/pc/impls/hypre/hypre.c	2021-04-19 13:03:23.790191332 -0400
+@@ -234,6 +234,8 @@
+     ierr = PCHYPRESetType(pc,"boomeramg");CHKERRQ(ierr);
+   }
+ 
++  HYPRE_Init();
++
+   ierr = PetscObjectTypeCompare((PetscObject)pc->pmat,MATHYPRE,&ishypre);CHKERRQ(ierr);
+   if (!ishypre) {
+     ierr = MatDestroy(&jac->hpmat);CHKERRQ(ierr);
+@@ -510,6 +512,8 @@
+   ierr = PetscObjectComposeFunction((PetscObject)pc,"PCHYPRESetPoissonMatrix_C",NULL);CHKERRQ(ierr);
+   ierr = PetscObjectComposeFunction((PetscObject)pc,"PCGetInterpolations_C",NULL);CHKERRQ(ierr);
+   ierr = PetscObjectComposeFunction((PetscObject)pc,"PCGetCoarseOperators_C",NULL);CHKERRQ(ierr);
++
++  HYPRE_Finalize();
+   PetscFunctionReturn(0);
+ }
+ 

@@ -1,0 +1,22 @@
+--- a/src/ksp/pc/impls/hypre/hypre.c	2021-04-21 14:43:24.566351991 -0400
++++ b/src/ksp/pc/impls/hypre/hypre.c	2021-04-21 14:43:39.542815092 -0400
+@@ -438,8 +438,8 @@
+   if (!jac->applyrichardson) {ierr = VecSet(x,0.0);CHKERRQ(ierr);}
+   ierr = VecGetArrayRead(b,(const PetscScalar **)&bv);CHKERRQ(ierr);
+   ierr = VecGetArrayWrite(x,(PetscScalar **)&xv);CHKERRQ(ierr);
+-  VecHYPRE_ParVectorReplacePointer(hjac->b,bv,sbv);
+-  VecHYPRE_ParVectorReplacePointer(hjac->x,xv,sxv);
++  PetscStackCallStandard(HYPRE_IJVectorLoad, (hjac->b, bv));
++  PetscStackCallStandard(HYPRE_IJVectorLoad, (hjac->x, xv));
+ 
+   PetscStackCallStandard(HYPRE_IJMatrixGetObject,(hjac->ij,(void**)&hmat));
+   PetscStackCallStandard(HYPRE_IJVectorGetObject,(hjac->b,(void**)&jbv));
+@@ -451,8 +451,6 @@
+   if (jac->setup == HYPRE_AMSSetup && jac->ams_beta_is_zero_part) {
+     PetscStackCallStandard(HYPRE_AMSProjectOutGradients,(jac->hsolver,jxv));
+   }
+-  VecHYPRE_ParVectorReplacePointer(hjac->b,sbv,bv);
+-  VecHYPRE_ParVectorReplacePointer(hjac->x,sxv,xv);
+   ierr = VecRestoreArrayWrite(x,(PetscScalar **)&xv);CHKERRQ(ierr);
+   ierr = VecRestoreArrayRead(b,(const PetscScalar **)&bv);CHKERRQ(ierr);
+   PetscFunctionReturn(0);

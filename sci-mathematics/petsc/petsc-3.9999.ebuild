@@ -106,6 +106,8 @@ PATCHES=(
 	"${FILESDIR}"/${PN}-3.13.0-pastix-comm-type.patch
 	"${FILESDIR}"/${PN}-3.13.0-pastix-refine.patch
 	"${FILESDIR}"/${PN}-3.15.0-suppress-py-import-check-for-cross-compilation.patch
+	"${FILESDIR}"/${PN}-3.15.0-hypre-init.patch
+	"${FILESDIR}"/${PN}-3.15.0-hypre-load-vector-for-cuda.patch
 )
 
 MAKEOPTS="${MAKEOPTS} V=1"
