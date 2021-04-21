@@ -1,0 +1,3 @@
+CC="gcc-8.3.0"
+CXX="g++-8.3.0"
+HYPRE_CUDA_SM=35

@@ -155,6 +155,7 @@ src_configure() {
 
 	if use hypre_device_cuda; then
 		export CUDA_HOME=${EPREFIX}/opt/cuda
+		# HYPRE_CUDA_SM set via package.env (which comes from profile)
 		# nvcc doesn't accept -Wl, (present in default linux profile)
 		filter-flags -Wl,*
 	fi
