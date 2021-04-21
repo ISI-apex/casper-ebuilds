@@ -95,7 +95,6 @@ RDEPEND="
 DEPEND="${RDEPEND}"
 
 PATCHES=(
-	"${FILESDIR}"/${PN}-2.20.0-conf-fix-without-args.patch
 	# Either remove the include, or require profiler use flag in cuda
 	#"${FILESDIR}"/${PN}-2.20.0-cuda-remove-profiler-include.patch
 )
@@ -125,7 +124,6 @@ src_prepare() {
 
 	# link with system superlu and propagate LDFLAGS
 	sed -e "s:@LIBS@:@LIBS@ $($(tc-getPKG_CONFIG) --libs superlu):" \
-		-e 's:_SHARED@:_SHARED@ $(LDFLAGS):g' \
 		-i src/config/Makefile.config.in || die
 
 	sed -e '/HYPRE_ARCH/s: = :=:g' \
