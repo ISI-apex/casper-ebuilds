@@ -24,7 +24,7 @@ RESTRICT="bindist mirror"
 BDEPEND=""
 RDEPEND="
 	<sys-devel/gcc-11_pre[cxx]
-	>=x11-drivers/nvidia-drivers-${DRIVER_PV}[uvm]
+	>=x11-drivers/nvidia-drivers-${DRIVER_PV}[uvm(+)]
 	debugger? (
 		dev-libs/openssl-compat:1.0.0
 		sys-libs/libtermcap-compat
