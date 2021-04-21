@@ -12,3 +12,4 @@ amd64-linux casper-anl-theta-knl dev
 ppc64-linux casper-olcf-summit dev
 amd64-linux casper-generic-amd64 dev
 amd64-linux casper-generic-sandybridge dev
+amd64-linux casper-isi-gpuk40 dev
