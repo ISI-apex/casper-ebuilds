@@ -22,11 +22,11 @@ else
 fi
 
 # Type and precision settings
-IUSE_HYPRE_TYPES="
-	hypre_types_bigint
-	hypre_types_complex
-	hypre_types_single
-	hypre_types_longdouble
+IUSE_HYPRE_TYPE="
+	hypre_type_bigint
+	hypre_type_complex
+	hypre_type_single
+	hypre_type_longdouble
 "
 # Portability layers
 IUSE_HYPRE_PORT="
@@ -40,11 +40,16 @@ IUSE_HYPRE_UMPIRE="
 	hypre_umpire_pinned
 	hypre_umpire_um
 "
+IUSE_HYPRE_DEVICE="
+	hypre_device_openmp
+	hypre_device_hip
+	hypre_device_cuda
+"
 # GPU-accelerated libraries and features to use with AMD GPUs
-IUSE_HYPRE_ROC="
-	hypre_roc_sparse
-	hypre_roc_blas
-	hypre_roc_rand
+IUSE_HYPRE_HIP="
+	hypre_hip_sparse
+	hypre_hip_blas
+	hypre_hip_rand
 "
 # GPU-accelerated libraries and features to use with nVidia GPUs
 IUSE_HYPRE_CUDA="
@@ -55,22 +60,22 @@ IUSE_HYPRE_CUDA="
 	hypre_cuda_rand
 "
 
-IUSE="debug examples fortran hopscotch mli persistent mpi unified-memory
-	openmp device-openmp
+IUSE="debug examples fortran hopscotch mli persistent mpi unified-memory openmp
 	node-aware-mpi gpu-aware-mpi
 	caliper gpu-profiling timing memory-tracker
-	${IUSE_HYPRE_TYPES} ${IUSE_HYPRE_PORT}
+	${IUSE_HYPRE_TYPE} ${IUSE_HYPRE_PORT}
 	umpire ${IUSE_HYPRE_UMPIRE}
-	roc ${IUSE_HYPRE_ROC}
-	cuda ${IUSE_HYPRE_CUDA}
+	${IUSE_HYPRE_DEVICE} ${IUSE_HYPRE_CUDA} ${IUSE_HYPRE_HIP}
 	"
 
 REQUIRED_USE="
-	?? ( ${IUSE_HYPRE_TYPES} )
+	?? ( ${IUSE_HYPRE_TYPE} )
 	?? ( ${IUSE_HYPRE_PORT} )
+	?? ( ${IUSE_HYPRE_DEVICE} )
 	hopscotch? ( openmp )
-	cuda? ( unified-memory )
-	device-openmp? ( cuda )
+	hypre_device_cuda? ( unified-memory )
+	unified-memory? ( || ( ${IUSE_HYPRE_DEVICE} ) )
+	hypre_device_openmp? ( openmp )
 	gpu-aware-mpi? ( mpi )
 	node-aware-mpi? ( mpi )
 "
@@ -83,7 +88,7 @@ RDEPEND="
 	virtual/blas
 	virtual/lapack
 	caliper? ( dev-libs/caliper )
-	cuda? ( dev-util/nvidia-cuda-toolkit[profiler] )
+	hypre_device_cuda? ( dev-util/nvidia-cuda-toolkit[profiler] )
 	hypre_port_kokkos? ( dev-cpp/kokkos )
 	mpi? ( virtual/mpi )
 "
@@ -148,7 +153,7 @@ src_configure() {
 
 	cd src || die
 
-	if use cuda; then
+	if use hypre_device_cuda; then
 		export CUDA_HOME=${EPREFIX}/opt/cuda
 		# nvcc doesn't accept -Wl, (present in default linux profile)
 		filter-flags -Wl,*
@@ -164,34 +169,33 @@ src_configure() {
 		--with-superlu \
 		--without-dsuperlu \
 		$(use_enable debug) \
-		$(use_enable openmp hopscotch) \
-		$(use_enable hypre_types_bigint bigint) \
-		$(use_enable hypre_types_complex complex) \
-		$(use_enable hypre_types_longdouble longdouble) \
-		$(use_enable hypre_types_single single) \
+		$(use_enable hypre_type_bigint bigint) \
+		$(use_enable hypre_type_complex complex) \
+		$(use_enable hypre_type_longdouble longdouble) \
+		$(use_enable hypre_type_single single) \
 		$(use_enable fortran) \
 		$(use_enable hopscotch) \
 		$(use_enable persistent) \
 		$(use_enable unified-memory) \
 		$(use_enable gpu-profiling) \
 		$(use_enable gpu-aware-mpi) \
-		$(use_with cuda) \
+		$(use_with hypre_device_cuda cuda) \
 		$(use_enable hypre_cuda_streams cuda-streams) \
 		$(use_enable hypre_cuda_sparse cusparse) \
 		$(use_enable hypre_cuda_cub cub) \
 		$(use_enable hypre_cuda_blas cublas) \
 		$(use_enable hypre_cuda_rand curand) \
-		$(use_with roc hip) \
-		$(use_enable hypre_roc_sparse rocsparse) \
-		$(use_enable hypre_roc_blas rocblas) \
-		$(use_enable hypre_roc_rand rocrand) \
+		$(use_with hypre_device_hip hip) \
+		$(use_enable hypre_hip_sparse rocsparse) \
+		$(use_enable hypre_hip_blas rocblas) \
+		$(use_enable hypre_hip_rand rocrand) \
+		$(use_with hypre_device_openmp device-openmp) \
 		$(use_with hypre_port_kokkos kokkos) \
 		$(use_with hypre_port_raja raja) \
 		$(use_with caliper) \
 		$(use_with memory-tracker) \
 		$(use_with mli) \
 		$(use_with openmp) \
-		$(use_with device-openmp) \
 		$(use_with mpi MPI) \
 		$(use_with node-aware-mpi) \
 		$(use_with timing)
