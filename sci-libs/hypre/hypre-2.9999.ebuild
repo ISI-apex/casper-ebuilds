@@ -98,6 +98,7 @@ PATCHES=(
 	# Either remove the include, or require profiler use flag in cuda
 	#"${FILESDIR}"/${PN}-2.20.0-cuda-remove-profiler-include.patch
 	"${FILESDIR}"/${PN}-2.20.0-reinstall.patch
+	"${FILESDIR}"/${PN}-2.20.0-vector-load.patch
 )
 
 DOCS=( CHANGELOG COPYRIGHT README )
