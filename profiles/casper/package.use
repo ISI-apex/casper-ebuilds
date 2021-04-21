@@ -50,7 +50,7 @@ sci-libs/superlu_mt -index-64bit openmp
 # also, adolc is incompatible with ampi-0_pre20170209 (latest commit): TLM_MPI_Allreduce -> TLS_MPI_Allreduce
 # ^ might be a simple sed patch
 sci-libs/adolc -mpi sparse boost -swig
-sci-libs/hypre mpi openmp unified-memory cuda hypre_cuda_blas hypre_cuda_sparse hypre_cuda_rand
+sci-libs/hypre mpi openmp unified-memory hypre_device_cuda hypre_cuda_blas hypre_cuda_sparse hypre_cuda_rand -hypre_cuda_streams
 # TODO: petsc superlu glpk (old API)
 # trilinos breaks with hypre with 64-bit types (TODO: does trilinos expose a flag?)
 sci-libs/trilinos arprec boost clp hdf5 metis mumps scalapack scotch sparse tbb yaml zlib matio qd taucs tvmet hwloc adolc -hypre gtest eigen netcdf threads
