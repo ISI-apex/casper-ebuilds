@@ -1,0 +1,2 @@
+# Kepler GPU (K40) is supported only up to v10
+>=dev-util/nvidia-cuda-toolkit-11
