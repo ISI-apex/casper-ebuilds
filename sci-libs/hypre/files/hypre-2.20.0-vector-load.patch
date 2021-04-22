@@ -1,28 +1,70 @@
---- a/src/IJ_mv/HYPRE_IJ_mv.h	2021-04-21 14:17:59.141188961 -0400
-+++ b/src/IJ_mv/HYPRE_IJ_mv.h	2021-04-21 14:27:48.349404425 -0400
-@@ -354,6 +354,8 @@
+--- a/src/IJ_mv/HYPRE_IJ_mv.h	2021-04-22 00:48:15.738090994 -0400
++++ b/src/IJ_mv/HYPRE_IJ_mv.h	2021-04-22 00:48:17.194135877 -0400
+@@ -354,6 +354,13 @@
   **/
  typedef struct hypre_IJVector_struct *HYPRE_IJVector;
  
 +HYPRE_Int
 +HYPRE_IJVectorLoad( HYPRE_IJVector vec, HYPRE_Complex * data);
++HYPRE_Int
++HYPRE_IJVectorSave( HYPRE_IJVector vec, HYPRE_Complex * data);
++HYPRE_Int
++HYPRE_IJVectorZero( HYPRE_IJVector vec);
++
  /**
   * Create a vector object.  Each process owns some unique consecutive
   * range of vector unknowns, indicated by the global indices \e
---- a/src/IJ_mv/HYPRE_IJMatrix.c	2021-04-21 14:17:09.270647205 -0400
-+++ b/src/IJ_mv/HYPRE_IJMatrix.c	2021-04-21 14:27:54.768602873 -0400
-@@ -882,6 +882,17 @@
+--- a/src/IJ_mv/HYPRE_IJMatrix.c	2021-04-22 00:47:07.469986637 -0400
++++ b/src/IJ_mv/HYPRE_IJMatrix.c	2021-04-22 00:30:27.045082612 -0400
+@@ -882,6 +882,54 @@
     return hypre_error_flag;
  }
  
++// TODO: check if possible to do this from PETSc
++//    * check if HYPRE_memcpy is exposed
++//    * check if HYPRE_USING* are exposed
 +HYPRE_Int
 +HYPRE_IJVectorLoad( HYPRE_IJVector vec, HYPRE_Complex * data)
 +{
-+   hypre_IJVector *ijvec = (hypre_IJVector *) vec;
-+   hypre_ParVector *pv = (hypre_ParVector *)ijvec->object;
-+   hypre_Vector *lv = pv->local_vector;
-+   hypre_Memcpy(lv->data, data, lv->size,
-+      HYPRE_MEMORY_DEVICE, HYPRE_MEMORY_HOST);
++#if defined(HYPRE_USING_CUDA) || defined(HYPRE_USING_HIP) || defined(HYPRE_USING_DEVICE_OPENMP)
++   hypre_MemoryLocation dst_loc = HYPRE_MEMORY_DEVICE;
++#else
++   hypre_MemoryLocation dst_loc = HYPRE_MEMORY_HOST;
++#endif
++   hypre_IJVector *ijvec = (hypre_IJVector *)vec;
++   hypre_ParVector *pv = (hypre_ParVector*)hypre_IJVectorObject(ijvec);
++   hypre_Vector *lv = hypre_ParVectorLocalVector(pv);
++   hypre_Memcpy(lv->data, data, lv->size * sizeof(HYPRE_Complex), dst_loc, HYPRE_MEMORY_HOST);
++   return hypre_error_flag;
++}
++
++HYPRE_Int
++HYPRE_IJVectorSave( HYPRE_IJVector vec, HYPRE_Complex * data)
++{
++#if defined(HYPRE_USING_CUDA) || defined(HYPRE_USING_HIP) || defined(HYPRE_USING_DEVICE_OPENMP)
++   hypre_MemoryLocation src_loc = HYPRE_MEMORY_DEVICE;
++#else
++   hypre_MemoryLocation src_loc = HYPRE_MEMORY_HOST;
++#endif
++   hypre_IJVector *ijvec = (hypre_IJVector *)vec;
++   hypre_ParVector *pv = (hypre_ParVector*)hypre_IJVectorObject(ijvec);
++   hypre_Vector *lv = hypre_ParVectorLocalVector(pv);
++   hypre_Memcpy(data, lv->data, lv->size * sizeof(HYPRE_Complex), HYPRE_MEMORY_HOST, src_loc);
++   return hypre_error_flag;
++}
++
++HYPRE_Int
++HYPRE_IJVectorZero( HYPRE_IJVector vec)
++{
++#if defined(HYPRE_USING_CUDA) || defined(HYPRE_USING_HIP) || defined(HYPRE_USING_DEVICE_OPENMP)
++   hypre_MemoryLocation dst_loc = HYPRE_MEMORY_DEVICE;
++#else
++   hypre_MemoryLocation dst_loc = HYPRE_MEMORY_HOST;
++#endif
++   hypre_IJVector *ijvec = (hypre_IJVector *)vec;
++   hypre_ParVector *pv = (hypre_ParVector*)hypre_IJVectorObject(ijvec);
++   hypre_Vector *lv = hypre_ParVectorLocalVector(pv);
++   hypre_Memset(lv->data, 0, lv->size * sizeof(HYPRE_Complex), dst_loc);
 +   return hypre_error_flag;
 +}
 +
