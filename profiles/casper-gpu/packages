@@ -1,0 +1,9 @@
+# CUDA is a dep for some packages, but list it explicitly because it's also a
+# dep for some apps that we might want to build that are not packages.
+dev-util/nvidia-cuda-toolkit
+
+# The CUDA slot of this lib is not a hard dep of anything, so list here,
+# or else it won't get pulled in.
+# NOTE: technically this would be part of casper-firedrake-gpu, but keep it
+# simple for now.
+sci-libs/superlu_dist:cuda

@@ -18,8 +18,6 @@ dev-python/pytest
 sys-devel/clang
 sys-devel/llvm
 
-dev-util/nvidia-cuda-toolkit
-
 # TODO: shouldn't need to specify this (should be a dep)
 # *media-libs/fontconfig
 app-arch/lzma

@@ -2,9 +2,6 @@
 
 dev-python/firedrake
 
-# The CUDA slot is not a hard dep of anything, so list here
-sci-libs/superlu_dist:cuda
-
 # For Firedrake benchmarks
 dev-python/pybench
 
