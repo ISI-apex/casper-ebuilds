@@ -12,7 +12,7 @@ DESCRIPTION="Parallel matrix preconditioners library"
 HOMEPAGE="https://computation.llnl.gov/projects/hypre-scalable-linear-solvers-multigrid-methods"
 
 LICENSE="LGPL-2.1"
-SLOT="0/${PV}"
+SLOT="0/$(ver_cut 1-3)"
 
 if [[ ${PV} == *9999 ]]
 then
