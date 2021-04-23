@@ -25,3 +25,8 @@ sys-fabric/libibverbs
 >dev-python/islpy-2019.1.2
 
 >sys-cluster/rdma-core-31.0
+
+# Version of userspace half of the driver installed in the prefix
+# must match the version of the kernel half on Summit
+>x11-drivers/nvidia-drivers-418.116.00
+<x11-drivers/nvidia-drivers-418.116.00
