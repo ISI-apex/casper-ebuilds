@@ -1,2 +1,8 @@
 # Kepler GPU (K40) is supported only up to v10
 >=dev-util/nvidia-cuda-toolkit-11
+
+# Optional: if you want to minimize differences between platforms, then
+# have this uncommented (Summit's max version given here, constrainted by the
+# kernel driver installed on Summit); otherwise, if you want to use
+# the max version for a this platform, then comment this out
+>dev-util/nvidia-cuda-toolkit-10.1.243
