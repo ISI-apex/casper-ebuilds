@@ -16,3 +16,5 @@ sys-cluster/pmix -debug
 # This is deprecated, all the userspace libraries moved to rdma-core
 # sys-cluster/ucx mt verbs ucx_ib_rc ucx_ib_ud ucx_ib_dm ucx_ib_hw-tm ucx_ib_cm
 # sys-fabric/ofed
+
+x11-drivers/nvidia-drivers -X libglvnd -driver -kms -tools -wayland -gtk3 uvm -modprobe -persistenced

@@ -84,8 +84,6 @@ app-portage/layman sync-plugin-portage git
 
 dev-python/scipy sparse
 
-x11-drivers/nvidia-drivers -X libglvnd -driver -kms -tools -wayland -gtk3 uvm
-
 dev-lang/python sqlite
 
 sys-libs/libcap -pam

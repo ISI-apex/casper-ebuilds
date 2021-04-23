@@ -1,3 +1,7 @@
 virtual/mpi -cxx romio
 sys-cluster/openmpi -cxx heterogeneous romio -pmi ucx -internal_pmix -internal_prrte
 sys-cluster/ucx
+
+# Perhaps this should be masked altogether on generic; but no harm setting
+# the basic use flags that are needed to build without X server.
+x11-drivers/nvidia-drivers -X libglvnd -driver -kms -tools -wayland -gtk3 uvm

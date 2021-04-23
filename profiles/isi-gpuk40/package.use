@@ -1,0 +1,1 @@
+x11-drivers/nvidia-drivers -X libglvnd -driver -kms -tools -wayland -gtk3 uvm
