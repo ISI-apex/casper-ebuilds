@@ -1,0 +1,5 @@
+# Tesla V100
+HYPRE_CUDA_SM=70
+
+# Workaround for error: _ieee128 undefined
+CXXFLAGS="$CXXFLAGS -mno-float128"

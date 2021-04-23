@@ -3,4 +3,5 @@ gentoo:default/linux/ppc64le/17.0/prefix/kernel-3.2+
 ../casper
 ../casper-halide
 ../casper-firedrake
+../casper-gpu
 ../cpu-native
