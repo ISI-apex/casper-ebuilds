@@ -66,6 +66,7 @@ src_prepare() {
 
 	local PATCHES=(
 		"${WORKDIR}/${PATCHSET}"
+		"${FILESDIR}"/${PN}-3-shutil-disable-sendfile-issue-43743.patch
 	)
 
 	default

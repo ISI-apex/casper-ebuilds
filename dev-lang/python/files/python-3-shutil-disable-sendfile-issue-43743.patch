@@ -1,0 +1,13 @@
+--- a/Lib/shutil.py	2021-04-23 02:03:18.962125000 -0000
++++ b/Lib/shutil.py	2021-04-23 03:08:35.546292972 -0000
+@@ -50,7 +50,9 @@
+     import nt
+ 
+ COPY_BUFSIZE = 1024 * 1024 if _WINDOWS else 64 * 1024
+-_USE_CP_SENDFILE = hasattr(os, "sendfile") and sys.platform.startswith("linux")
++# Workaround for Issue 43743
++#_USE_CP_SENDFILE = hasattr(os, "sendfile") and sys.platform.startswith("linux")
++_USE_CP_SENDFILE = False
+ _HAS_FCOPYFILE = posix and hasattr(posix, "_fcopyfile")  # macOS
+ 
+ # CMD defaults in Windows 10
