@@ -207,9 +207,12 @@ src_install() {
 			nvcuvid
 			nvidia-eglcore
 			nvidia-encode
+			nvidia-fatbinaryloader
+			#nvidia-fbc # doesn't exist in ppc64le installer?
 			nvidia-glcore
 			nvidia-glsi
 			nvidia-glvkspirv
+			#nvidia-ifr # doesn't exist in ppc64le installer?
 			nvidia-opencl
 			nvidia-ptxjitcompiler
 		)
