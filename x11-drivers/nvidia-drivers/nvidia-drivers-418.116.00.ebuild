@@ -7,27 +7,28 @@ MODULES_OPTIONAL_USE="driver"
 inherit desktop linux-info linux-mod multilib-build optfeature \
 	readme.gentoo-r1 systemd toolchain-funcs unpacker
 
-NV_KERNEL_MAX="5.11"
-NV_BIN_URI="https://download.nvidia.com/XFree86/Linux-"
+NV_KERNEL_MAX="4.14" # unverified
+NV_BIN_URI="https://us.download.nvidia.com/tesla/${PV}/NVIDIA-Linux-"
 NV_GIT_URI="https://github.com/NVIDIA/nvidia-"
+NV_GIT_VER="418.74" # latest 418.x
 
 DESCRIPTION="NVIDIA Accelerated Graphics Driver"
 HOMEPAGE="https://www.nvidia.com/download/index.aspx"
 SRC_URI="
-	amd64? ( ${NV_BIN_URI}x86_64/${PV}/NVIDIA-Linux-x86_64-${PV}.run )
-	arm64? ( ${NV_BIN_URI}aarch64/${PV}/NVIDIA-Linux-aarch64-${PV}.run )
-	${NV_GIT_URI}installer/archive/${PV}.tar.gz -> nvidia-installer-${PV}.tar.gz
-	${NV_GIT_URI}modprobe/archive/${PV}.tar.gz -> nvidia-modprobe-${PV}.tar.gz
-	${NV_GIT_URI}persistenced/archive/${PV}.tar.gz -> nvidia-persistenced-${PV}.tar.gz
-	${NV_GIT_URI}settings/archive/${PV}.tar.gz -> nvidia-settings-${PV}.tar.gz
-	${NV_GIT_URI}xconfig/archive/${PV}.tar.gz -> nvidia-xconfig-${PV}.tar.gz"
+	amd64? ( ${NV_BIN_URI}x86_64-${PV}.run )
+	ppc64? ( ${NV_BIN_URI}ppc64le-${PV}.run )
+	${NV_GIT_URI}installer/archive/${NV_GIT_VER}.tar.gz -> nvidia-installer-${NV_GIT_VER}.tar.gz
+	${NV_GIT_URI}modprobe/archive/${NV_GIT_VER}.tar.gz -> nvidia-modprobe-${NV_GIT_VER}.tar.gz
+	${NV_GIT_URI}persistenced/archive/${NV_GIT_VER}.tar.gz -> nvidia-persistenced-${NV_GIT_VER}.tar.gz
+	${NV_GIT_URI}settings/archive/${NV_GIT_VER}.tar.gz -> nvidia-settings-${NV_GIT_VER}.tar.gz
+	${NV_GIT_URI}xconfig/archive/${NV_GIT_VER}.tar.gz -> nvidia-xconfig-${NV_GIT_VER}.tar.gz"
 # nvidia-installer is unused but here for GPL-2's "distribute sources"
 S="${WORKDIR}"
 
 LICENSE="GPL-2 MIT NVIDIA-r2 ZLIB"
 SLOT="0/${PV%%.*}"
-KEYWORDS="-* ~amd64"
-IUSE="+X +driver static-libs +tools"
+KEYWORDS="-* ~amd64 ~ppc64"
+IUSE="+X +driver +modprobe +persistenced static-libs +tools"
 
 COMMON_DEPEND="
 	acct-group/video
@@ -76,7 +77,7 @@ PATCHES=(
 	"${FILESDIR}"/nvidia-modprobe-390.141-uvm-perms.patch
 )
 DOCS=(
-	README.txt NVIDIA_Changelog supported-gpus/supported-gpus.json
+	README.txt NVIDIA_Changelog
 	nvidia-settings/doc/{FRAMELOCK,NV-CONTROL-API}.txt
 )
 HTML_DOCS=( html/. )
@@ -133,10 +134,10 @@ pkg_setup() {
 
 src_prepare() {
 	# make user patches usable across versions
-	rm nvidia-modprobe && mv nvidia-modprobe{-${PV},} || die
-	rm nvidia-persistenced && mv nvidia-persistenced{-${PV},} || die
-	rm nvidia-settings && mv nvidia-settings{-${PV},} || die
-	rm nvidia-xconfig && mv nvidia-xconfig{-${PV},} || die
+	rm nvidia-modprobe && mv nvidia-modprobe{-${NV_GIT_VER},} || die
+	rm nvidia-persistenced && mv nvidia-persistenced{-${NV_GIT_VER},} || die
+	rm nvidia-settings && mv nvidia-settings{-${NV_GIT_VER},} || die
+	rm nvidia-xconfig && mv nvidia-xconfig{-${NV_GIT_VER},} || die
 
 	default
 
@@ -176,8 +177,8 @@ src_compile() {
 
 	use driver && linux-mod_src_compile
 
-	nvidia-drivers_make modprobe
-	nvidia-drivers_make persistenced
+	use modprobe && nvidia-drivers_make modprobe
+	use persistenced && nvidia-drivers_make persistenced
 	use X && nvidia-drivers_make xconfig
 
 	if use tools; then
@@ -204,17 +205,13 @@ src_install() {
 			GLESv2_nvidia
 			cuda
 			nvcuvid
-			nvidia-allocator
 			nvidia-eglcore
 			nvidia-encode
 			nvidia-glcore
 			nvidia-glsi
 			nvidia-glvkspirv
-			nvidia-ml
 			nvidia-opencl
-			nvidia-opticalflow
 			nvidia-ptxjitcompiler
-			nvidia-tls
 		)
 		use amd64 && libs+=( nvidia-compiler )
 
@@ -236,12 +233,14 @@ src_install() {
 			libdir+=/32
 		else
 			libs+=(
-				nvidia-cbl
 				nvidia-cfg
+			)
+			use amd64 && libs+=(
+				nvidia-cbl
+				nvidia-ngx
 				nvidia-rtcore
 				nvoptix
 			)
-			use amd64 && libs+=( nvidia-ngx )
 		fi
 
 		local lib soname
@@ -266,10 +265,6 @@ src_install() {
 		newins "${FILESDIR}"/nvidia-460.conf nvidia.conf
 		doins "${FILESDIR}"/nvidia-blacklist-nouveau.conf
 		doins "${FILESDIR}"/nvidia-rmmod.conf
-
-		# used for gpu verification with binpkgs (not kept)
-		insinto /usr/share/nvidia
-		doins supported-gpus/supported-gpus.json
 	fi
 
 	if use X; then
@@ -299,15 +294,19 @@ src_install() {
 	newins nvidia-application-profiles{-${PV},}-rc
 
 	# install built helpers
-	nvidia-drivers_make_install modprobe
-	# allow video group to load mods and create devs (bug #505092)
-	fowners root:video /usr/bin/nvidia-modprobe
-	fperms 4710 /usr/bin/nvidia-modprobe
+	if use modprobe; then
+		nvidia-drivers_make_install modprobe
+		# allow video group to load mods and create devs (bug #505092)
+		fowners root:video /usr/bin/nvidia-modprobe
+		fperms 4710 /usr/bin/nvidia-modprobe
+	fi
 
-	nvidia-drivers_make_install persistenced
-	newconfd "${FILESDIR}/nvidia-persistenced.confd" nvidia-persistenced
-	newinitd "${FILESDIR}/nvidia-persistenced.initd" nvidia-persistenced
-	systemd_dounit nvidia-persistenced.service
+	if use persistenced; then
+		nvidia-drivers_make_install persistenced
+		newconfd "${FILESDIR}/nvidia-persistenced.confd" nvidia-persistenced
+		newinitd "${FILESDIR}/nvidia-persistenced.initd" nvidia-persistenced
+		systemd_dounit nvidia-persistenced.service
+	fi
 
 	use X && nvidia-drivers_make_install xconfig
 
@@ -346,12 +345,6 @@ src_install() {
 	# install prebuilt-only libraries
 	multilib_foreach_abi nvidia-drivers_libs_install
 
-	# install systemd sleep services
-	exeinto /lib/systemd/system-sleep
-	doexe systemd/system-sleep/nvidia
-	dobin systemd/nvidia-sleep.sh
-	systemd_dounit systemd/system/nvidia-{hibernate,resume,suspend}.service
-
 	einstalldocs
 	readme.gentoo_create_doc
 }
@@ -365,20 +358,6 @@ pkg_preinst() {
 	[[ ${g} ]] || die "Failed to determine video group id"
 	sed "s/PACKAGE/${PF}/;s/VIDEOGID/${g}/" \
 		-i "${ED}"/etc/modprobe.d/nvidia.conf || die
-
-	# try to find driver mismatches using temporary supported-gpus.json
-	for g in $(grep -l 0x10de /sys/bus/pci/devices/*/vendor 2>/dev/null); do
-		g=$(grep -io "\"devid\":\"$(<${g%vendor}device)\"[^}]*branch\":\"[0-9]*" \
-			"${ED}"/usr/share/nvidia/supported-gpus.json 2>/dev/null)
-		if [[ ${g} ]]; then
-			g=$((${g##*\"}+1))
-			if ver_test -ge ${g}; then
-				NV_LEGACY_MASK=">=${CATEGORY}/${PN}-${g}"
-				break
-			fi
-		fi
-	done
-	rm "${ED}"/usr/share/nvidia/supported-gpus.json || die
 }
 
 pkg_postinst() {
