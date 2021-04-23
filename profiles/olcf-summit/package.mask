@@ -30,3 +30,9 @@ sys-fabric/libibverbs
 # must match the version of the kernel half on Summit
 >x11-drivers/nvidia-drivers-418.116.00
 <x11-drivers/nvidia-drivers-418.116.00
+
+# Limited by the driver version.
+# NOTE: This info is already present in the ebuild, but we need to mask here
+# explicitly, so that portage doesn't warn us that it can't pull in the latest
+# version.
+>=dev-util/nvidia-cuda-toolkit-10.2
