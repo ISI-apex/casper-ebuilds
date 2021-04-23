@@ -71,21 +71,7 @@ sci-libs/hpddm -c -fortran -python arpack -suitesparse mumps
 sci-libs/htool arpack hpddm lapack
 sci-libs/cadna fortran mpi openmp
 
-media-libs/mesa osmesa -llvm libglvnd -gles2 -gbm -gallium egl -zstd -dri3 classic -X
-media-libs/gd png fontconfig
-# sci-libs/vtk insists on libGL.so, but libglvnd builds libGL.so only when GLX (i.e. X) is enabled
-media-libs/libglvnd libgl X
-virtual/opengl libgl
-x11-libs/libxcb -xkb
-
-app-portage/layman sync-plugin-portage git
-
 dev-python/scipy sparse
-
-dev-lang/python sqlite
-
-sys-libs/libcap -pam
-www-client/elinks javascript -mouse
 
 dev-python/loopy opencl
 dev-python/numpy lapack
@@ -94,35 +80,8 @@ dev-python/slepc4py mpi
 # NOTE: scotch has priority over metis, so enable only one to not mislead
 dev-python/firedrake mpi metis -scotch slepc examples
 
-sys-devel/llvm bitwriter mcjit lld passes mlir examples lit
 dev-lang/halide examples test opengl python tools
-
-# TODO: ubsan requires cfi but can't turn on cfi for some reason
-sys-libs/compiler-rt-sanitizers -ubsan
 
 # Dependencies of CASPER Auto-Scheduler
 
-# For tensorflow
 sci-libs/tensorflow python -cuda
-dev-java/openjdk headless-awt -cups -alsa
-app-text/ghostscript-gpl -cups
-net-print/cups -pam
-net-print/cups-filters -postscript -foomatic
-
-
-app-misc/screen -pam
-dev-python/requests socks5
-dev-libs/libxml2 python
-dev-vcs/git-lfs doc
-
-# pulled in by dev-python/matplotlib
-dev-python/pillow jpeg
-
-# For 'dot' which is needed to view profiling results from pybench,
-# which is used by Firedrake benchmarks
-media-gfx/graphviz -cairo
-media-libs/gd fontconfig jpeg png truetype
-
-dev-lang/ghc -profile -ghcbootstrap
-
-dev-util/nvidia-cuda-toolkit profiler debugger nsight vis-profiler sanitizer

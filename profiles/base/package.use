@@ -1,0 +1,52 @@
+# Packages that form our customized system (that are not part of @system).
+# These packages are somewhat generic, useful for roughly any project, either
+# the CASPER project or some other project. These package configs are still
+# somewhat coupled to what 'casper*' profiles need, but it's still useful to
+# separate them from the numerical libs for clarity.
+
+### Languages
+
+dev-lang/python sqlite
+dev-lang/ghc -profile -ghcbootstrap
+dev-java/openjdk headless-awt -cups -alsa
+
+# Features needed by CASPER Compiler
+sys-devel/llvm bitwriter mcjit lld passes mlir examples lit
+
+# TODO: ubsan requires cfi but can't turn on cfi for some reason
+sys-libs/compiler-rt-sanitizers -ubsan
+
+dev-util/nvidia-cuda-toolkit profiler debugger nsight vis-profiler sanitizer
+
+### Visualization
+
+# For 'dot' which is needed to view profiling results from pybench,
+# which is used by Firedrake benchmarks
+media-gfx/graphviz -cairo
+media-libs/gd fontconfig jpeg png truetype
+media-libs/mesa osmesa -llvm libglvnd -gles2 -gbm -gallium egl -zstd -dri3 classic -X
+media-libs/gd png fontconfig
+# sci-libs/vtk insists on libGL.so, but libglvnd builds libGL.so only when GLX (i.e. X) is enabled
+media-libs/libglvnd libgl X
+virtual/opengl libgl
+x11-libs/libxcb -xkb
+
+# pulled in by dev-python/matplotlib
+dev-python/pillow jpeg
+
+app-text/ghostscript-gpl -cups
+net-print/cups -pam
+net-print/cups-filters -postscript -foomatic
+
+### Apps and tools
+
+app-misc/screen -pam
+dev-vcs/git-lfs doc
+www-client/elinks javascript -mouse
+app-portage/layman sync-plugin-portage git
+
+### Misc libs
+
+dev-python/requests socks5
+dev-libs/libxml2 python
+sys-libs/libcap -pam
