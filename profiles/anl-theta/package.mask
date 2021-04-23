@@ -6,3 +6,7 @@ sys-kernel/gentoo-sources
 # Masked since using the uGNI transport built-into OpenMPI
 sys-fabric/libfabric
 sys-cluster/ucx
+
+# CUDA has not been tested on Theta yet
+# NOTE: if you unmask, remember to add use flags for Theta
+x11-drivers/nvidia-drivers
