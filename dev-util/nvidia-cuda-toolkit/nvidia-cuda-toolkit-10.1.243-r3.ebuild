@@ -10,11 +10,14 @@ DRIVER_PV="418.87.00"
 
 DESCRIPTION="NVIDIA CUDA Toolkit (compiler and friends)"
 HOMEPAGE="https://developer.nvidia.com/cuda-zone"
-SRC_URI="https://developer.download.nvidia.com/compute/cuda/${MYD}/Prod/local_installers/cuda_${PV}_${DRIVER_PV}_linux.run"
+SRC_URI="
+	amd64? ( https://developer.download.nvidia.com/compute/cuda/${MYD}/Prod/local_installers/cuda_${PV}_${DRIVER_PV}_linux.run )
+	ppc64? ( https://developer.download.nvidia.com/compute/cuda/${MYD}/Prod/local_installers/cuda_${PV}_${DRIVER_PV}_linux_ppc64le.run )
+	"
 
 LICENSE="NVIDIA-CUDA"
 SLOT="0/${PV}"
-KEYWORDS="-* ~amd64 ~amd64-linux"
+KEYWORDS="-* ~amd64 ~amd64-linux ~ppc64"
 IUSE="debugger doc eclipse profiler"
 RESTRICT="bindist mirror"
 
@@ -103,7 +106,7 @@ src_install() {
 	into ${cudadir}
 
 	# Install binaries separately to make sure the X permission is set
-	local bindirs=( bin nvvm/bin extras/demo_suite $(usex profiler "libnsight/nsight") )
+	local bindirs=( bin nvvm/bin $(usex profiler "libnsight/nsight") )
 	for i in $(find "${bindirs[@]}" -maxdepth 1 -type f); do
 		exeinto ${cudadir}/${i%/*}
 		doexe ${i}
