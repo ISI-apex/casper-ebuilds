@@ -70,6 +70,11 @@ multilib_src_install_all() {
 	# installed via fuse-common
 	rm -r "${ED}"/{etc,$(get_udevdir)} || die
 
+	# TODO: fix unprefixed install in upstream build system
+	mkdir -p "${ED}"/etc/init.d || die
+	mv "${D}"/etc/init.d/fuse3 "${ED}"/etc/init.d/ || die
+	rmdir "${D}"/etc/init.d "${D}"/etc || die
+
 	# useroot=false prevents the build system from doing this.
 	use suid && fperms u+s /usr/bin/fusermount3
 
