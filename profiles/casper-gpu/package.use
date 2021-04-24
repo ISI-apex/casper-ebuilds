@@ -1,0 +1,8 @@
+# Use flags that enable GPU features in various packages
+
+sci-libs/cholmod cuda
+sci-libs/pastix cuda
+dev-libs/starpu cuda
+sci-libs/spqr cuda
+sci-libs/superlu_dist:cuda
+sci-libs/hypre unified-memory hypre_device_cuda hypre_cuda_blas hypre_cuda_sparse hypre_cuda_rand -hypre_cuda_streams

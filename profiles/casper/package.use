@@ -1,7 +1,7 @@
-sci-libs/pastix cuda -mpi -index-64bit scotch -fortran metis debug starpu
+sci-libs/pastix -cuda -mpi -index-64bit scotch -fortran metis debug starpu
 
 sci-libs/fftw mpi
-dev-libs/starpu fftw mpi opencl cuda blas -opengl -valgrind
+dev-libs/starpu fftw mpi opencl -cuda blas -opengl -valgrind
 
 virtual/blas -eselect-ldso
 virtual/cblas -eselect-ldso
@@ -23,9 +23,9 @@ sci-libs/parmetis mpi -index-64bit double-precision
 sci-libs/suitesparseconfig static-libs
 sci-libs/colamd static-libs
 sci-libs/amd static-libs
-sci-libs/cholmod cuda partition static-libs
+sci-libs/cholmod -cuda partition static-libs
 sci-libs/umfpack cholmod static-libs
-sci-libs/spqr cuda partition
+sci-libs/spqr -cuda partition
 sci-libs/suitesparse partition
 sci-libs/arpack mpi
 sci-libs/hdf5 mpi
@@ -52,8 +52,6 @@ sci-libs/superlu_mt -index-64bit openmp
 sci-libs/adolc -mpi sparse boost -swig
 
 sci-libs/hypre mpi openmp
-# For CUDA-enabled HYPRE
-#sci-libs/hypre mpi openmp unified-memory hypre_device_cuda hypre_cuda_blas hypre_cuda_sparse hypre_cuda_rand -hypre_cuda_streams
 
 # TODO: petsc superlu glpk (old API)
 # trilinos breaks with hypre with 64-bit types (TODO: does trilinos expose a flag?)
