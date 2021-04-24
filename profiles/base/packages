@@ -1,0 +1,40 @@
+# System-level stuff
+
+dev-lang/python:3.8
+dev-python/pkgconfig
+dev-python/pytest
+
+# If latest version supported by Nvidia CUDA (see cuda-config -s) is lower than
+# the default sys-devel/gcc version, then add another version here.
+#sys-devel/gcc:10.2.0
+
+# For Casper compiler (uses MLIR) and for Halide
+sys-devel/clang
+sys-devel/llvm
+
+# TODO: shouldn't need to specify this (should be a dep)
+# *media-libs/fontconfig
+app-arch/lzma
+
+# Useful utilities
+app-misc/colordiff
+app-misc/screen
+sys-apps/man-pages
+sys-process/htop
+#dev-vcs/hub
+dev-python/gdown
+sys-devel/gdb
+
+# Useful portage helpers
+app-portage/cpuid2cpuflags
+app-portage/eix
+app-portage/gentoolkit
+app-portage/layman
+app-portage/repo-commit
+app-portage/repoman
+
+# Choices for virtual packages
+# dep of sci-libs/tensorflow <- dev-util/bazel
+# sci-libs/tensorflow (or one of its dependencies) requires v8, not picked up
+# from ::casper with v11
+dev-java/openjdk:8
