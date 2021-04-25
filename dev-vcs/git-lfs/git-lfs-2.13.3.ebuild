@@ -33,6 +33,10 @@ DOCS=(
 	SECURITY.md
 )
 
+PATCHES=(
+	"${FILESDIR}"/${P}-no-cleanup-issue-4488.patch
+)
+
 src_compile() {
 	# Flags -w, -s: Omit debugging information to reduce binary size,
 	# see https://golang.org/cmd/link/.

@@ -1,0 +1,13 @@
+--- a/config/config.go	2021-04-25 01:08:25.226329000 -0000
++++ b/config/config.go	2021-04-25 01:09:10.301149313 -0000
+@@ -435,7 +435,9 @@
+ func (c *Configuration) Cleanup() error {
+ 	c.loading.Lock()
+ 	defer c.loading.Unlock()
+-	return c.fs.Cleanup()
++	// TODO: temporary workaround for Issue #4488: don't cleanup temp dir
++	//return c.fs.Cleanup()
++	return nil
+ }
+ 
+ func (c *Configuration) OSEnv() Environment {
