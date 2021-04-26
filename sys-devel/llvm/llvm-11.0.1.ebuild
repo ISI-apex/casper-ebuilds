@@ -224,6 +224,7 @@ get_distribution_components() {
 		# common stuff
 		cmake-exports
 		llvm-headers
+		llvm-libraries
 
 		# libraries needed for clang-tblgen
 		LLVMDemangle
