@@ -44,8 +44,9 @@ src_configure() {
 #	cmake_src_test -E 'Test_hmat_[^_]*_prod_[1-4]'
 #}
 
-#src_install() {
-#	cmake_src_install
+src_install() {
+	cmake_src_install
+	snapshot_src_install
 #
 #	# TODO: Requires: hpddm ?
 #	cat <<-EOF > ${PN}.pc
@@ -61,4 +62,4 @@ src_configure() {
 #	EOF
 #	insinto /usr/$(get_libdir)/pkgconfig
 #	doins ${PN}.pc
-#}
+}
