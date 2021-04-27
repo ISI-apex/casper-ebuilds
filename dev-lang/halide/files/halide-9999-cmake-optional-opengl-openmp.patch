@@ -1,0 +1,31 @@
+--- a/dependencies/CMakeLists.txt	2021-04-26 11:11:15.501715652 -0400
++++ b/dependencies/CMakeLists.txt	2021-04-26 11:15:48.390084962 -0400
+@@ -6,15 +6,22 @@
+ find_package(Threads REQUIRED)
+ set_target_properties(Threads::Threads PROPERTIES IMPORTED_GLOBAL TRUE)
+ 
++option(WITH_OPENGL "Enable OpenGL backend" ON)
++option(WITH_OPENMP "Enable OpenMP support" ON)
++
+ # TODO(https://github.com/halide/Halide/issues/5633): verify this is still correct / necessary for OpenGLCompute
+-find_package(OpenGL)
+-if (TARGET OpenGL::GL)
+-    set_target_properties(OpenGL::GL PROPERTIES IMPORTED_GLOBAL TRUE)
++if (WITH_OPENGL)
++    find_package(OpenGL)
++    if (TARGET OpenGL::GL)
++        set_target_properties(OpenGL::GL PROPERTIES IMPORTED_GLOBAL TRUE)
++    endif ()
+ endif ()
+ 
+-find_package(OpenMP)
+-if (TARGET OpenMP::OpenMP_CXX)
+-    set_target_properties(OpenMP::OpenMP_CXX PROPERTIES IMPORTED_GLOBAL TRUE)
++if (WITH_OPENMP)
++    find_package(OpenMP)
++    if (TARGET OpenMP::OpenMP_CXX)
++        set_target_properties(OpenMP::OpenMP_CXX PROPERTIES IMPORTED_GLOBAL TRUE)
++    endif ()
+ endif ()
+ 
+ ##

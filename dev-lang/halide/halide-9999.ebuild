@@ -5,18 +5,24 @@ EAPI=7
 
 PYTHON_COMPAT=( python3_8 )
 
-inherit cmake python-single-r1
+EGIT_REPO_URI="https://github.com/ISI-apex/Halide.git"
+EGIT_BRANCH="distributed"
+
+if [[ ${PV} == *9999 ]]; then
+	KEYWORDS=""
+else
+	KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
+fi
+
+inherit cmake python-single-r1 snapshot
 
 MY_PN=Halide
-MY_COMMIT=a79da6e72827c32f6e295dd66aac982411cf2497
 
 DESCRIPTION="A language for fast, portable data-parallel computation"
 HOMEPAGE="https://halide-lang.org"
-SRC_URI="https://github.com/halide/${MY_PN}/archive/${MY_COMMIT}.tar.gz -> ${P}.tar.gz"
 
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~amd64-linux ~ppc64 ~ppc64-linux"
 
 # subset of LLVM targets
 MY_TARGETS=(AArch64 AMDGPU ARM Hexagon Mips
@@ -41,18 +47,11 @@ DEPEND="
 
 RDEPEND="${DEPEND}"
 
-S="${WORKDIR}/${MY_PN}-${MY_COMMIT}"
-
 PATCHES=(
-	"${FILESDIR}"/${P}-cmake-opengl-opt.patch
-	"${FILESDIR}"/${P}-cmake-openmp-opt.patch
-	"${FILESDIR}"/${P}-cmake-llvm-fix-linking-against-LLVM-shared-lib.patch
-	"${FILESDIR}"/${P}-cmake-pybind11.patch
-	"${FILESDIR}"/${P}-generator-param-info.patch
-	"${FILESDIR}"/${P}-throw-on-compile-warn.patch
-	"${FILESDIR}"/${P}-pybind11-no-system.patch
+	"${FILESDIR}"/${PN}-9999-cmake-optional-opengl-openmp.patch
+	"${FILESDIR}"/${PN}-9999-generator-param-info.patch
+	"${FILESDIR}"/${PN}-9999-throw-on-compile-warn.patch
 )
-	#"${FILESDIR}"/${P}-generator-registry-lookup.patch
 
 src_configure() {
 	# Halide build relies on -DNDEBUG flag being set by CMake, but
@@ -78,8 +77,6 @@ src_configure() {
 		mycmakeargs+=(-DWITH_${target^^}=$(usex llvm_targets_${target}))
 	done
 	cmake_src_configure
-	#mkdir -p build && cd build
-	#cmake -GNinja -DWITH_NVPTX=ON -DWITH_X86=ON -DCMAKE_BUILD_TYPE=Release ..
 }
 
 src_install() {
