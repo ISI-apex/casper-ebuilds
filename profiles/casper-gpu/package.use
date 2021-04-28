@@ -5,4 +5,6 @@ sci-libs/pastix cuda
 dev-libs/starpu cuda
 sci-libs/spqr cuda
 sci-libs/superlu_dist:cuda
-sci-libs/hypre unified-memory hypre_device_cuda hypre_cuda_blas hypre_cuda_sparse hypre_cuda_rand -hypre_cuda_streams
+
+# HYPRE with GPU enabled is slower, so don't enable by default, but it does work
+#sci-libs/hypre unified-memory hypre_device_cuda hypre_cuda_blas hypre_cuda_sparse hypre_cuda_rand -hypre_cuda_streams
