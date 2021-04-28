@@ -30,4 +30,3 @@ dev-python/fiat:0
 dev-python/ufl:0
 dev-python/finat:0
 dev-python/h5py
-sys-cluster/ampi

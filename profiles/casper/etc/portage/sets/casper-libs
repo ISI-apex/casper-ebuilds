@@ -24,7 +24,6 @@ sci-libs/vtk
 sci-mathematics/glpk
 sci-mathematics/petsc
 sci-mathematics/slepc
-sys-cluster/ampi
 virtual/blas
 virtual/cblas
 virtual/lapack

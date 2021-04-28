@@ -30,4 +30,3 @@ dev-python/finat:fd
 dev-python/tsfc:fd
 dev-python/pyop2:fd
 dev-python/h5py
-sys-cluster/ampi
