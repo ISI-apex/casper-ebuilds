@@ -41,6 +41,7 @@ DEPEND="
 	sys-libs/zlib
 	media-libs/libpng
 	virtual/jpeg
+	virtual/mpi
 	opengl? ( virtual/opengl )
 	python? ( dev-python/pybind11 )
 	"
