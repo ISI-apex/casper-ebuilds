@@ -27,7 +27,7 @@ sys-devel/gdb
 # useful for working with git-lfs via file:// (without HTTP LFS server)
 # NOTE: it does require setuid root on /usr/bin/fusermount3 though, so
 # only useful when you have root on the system.
-sys-fs/sshfs
+net-fs/sshfs
 
 # Useful portage helpers
 app-portage/cpuid2cpuflags
