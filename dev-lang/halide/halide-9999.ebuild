@@ -43,13 +43,14 @@ DEPEND="
 	virtual/jpeg
 	virtual/mpi
 	opengl? ( virtual/opengl )
-	python? ( dev-python/pybind11 )
+	python? ( >=dev-python/pybind11-2.6.2 )
 	"
 
 RDEPEND="${DEPEND}"
 
 PATCHES=(
 	"${FILESDIR}"/${PN}-9999-cmake-optional-opengl-openmp.patch
+	"${FILESDIR}"/${PN}-9999-cmake-pybind11-required.patch
 	"${FILESDIR}"/${PN}-9999-generator-param-info.patch
 	"${FILESDIR}"/${PN}-9999-throw-on-compile-warn.patch
 )
