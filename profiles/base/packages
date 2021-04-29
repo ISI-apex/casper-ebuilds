@@ -24,6 +24,7 @@ sys-process/htop
 #dev-vcs/hub
 dev-python/gdown
 sys-devel/gdb
+dev-vcs/git-lfs
 # useful for working with git-lfs via file:// (without HTTP LFS server)
 # NOTE: it does require setuid root on /usr/bin/fusermount3 though, so
 # only useful when you have root on the system.
