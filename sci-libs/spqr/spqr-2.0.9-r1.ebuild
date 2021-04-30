@@ -30,7 +30,7 @@ RDEPEND="${DEPEND}"
 
 src_prepare() {
 	suitesparse_src_prepare
-	cuda_src_prepare
+	use cuda && cuda_src_prepare
 }
 
 my_src_compile() {
