@@ -1,4 +1,0 @@
-# Disable multilib for good.
-# Gentoo bug: multilib ends up enabled even with no-multilib profile, see
-# multilib_get_enabled_abi_pairs (e.g. when configuring sys-cluster/openmpi)
--abi_x86_64
