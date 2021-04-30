@@ -110,10 +110,14 @@ CONF_OVERLAY_FILES=(
 	"etc/openmpi-mca-params.conf"
 )
 
-MULTILIB_WRAPPED_HEADERS=(
-	/usr/include/mpi.h
-	/usr/include/openmpi/ompi/mpi/java/mpiJava.h
-)
+# TODO: this wrapping unexpectedly happens with no-multilib profile
+# See report here: https://archives.gentoo.org/gentoo-user/message/c064b42a85f52758e3c5a46fd4fe37eb
+# And, the wrapper doesn't work with 'clang -target le64-uknown-unknown-unknown' which
+# is being used by dev-lang/halide. Workaround: disable wrapping.
+#MULTILIB_WRAPPED_HEADERS=(
+#	/usr/include/mpi.h
+#	/usr/include/openmpi/ompi/mpi/java/mpiJava.h
+#)
 
 # Be verbose when executing important commands
 my_vrun() {
