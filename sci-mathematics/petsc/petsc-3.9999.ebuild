@@ -213,8 +213,9 @@ src_configure() {
 	# TODO: eselect superlu_dist_cuda when cuda is enabled for petsc
 	local current_superlu_dist=$(eselect superlu_dist list \
 		| grep '*' | sed -e 's/^\s*//' -e 's/\s\+/,/g' | cut -d, -f2)
-	[ -n "${current_superlu_dist}" ] || die
-	my_vrun eselect superlu_dist set superlu_dist
+	if [[ -n "${current_superlu_dist}" ]]; then
+		my_vrun eselect superlu_dist set superlu_dist
+	fi
 
 	# bug 548498
 	# PETSc runs mpi processes during configure that result in a sandbox
