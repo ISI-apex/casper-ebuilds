@@ -539,9 +539,9 @@ pkg_postinst() {
 			fi
 		done
 
-		for key_file in /${ssh_dir}/ssh_host_*_key.pub
+		for file in /${ssh_dir}/ssh_known_hosts /${ssh_dir}/ssh_host_*_key.pub
 		do
-			ln -sf ${key_file} "${EROOT}"/${key_file} || die
+			ln -sf ${file} "${EROOT}"/${file} || die
 		done
 
 		# ssh-keysign is a setuid root executable, so point to host's
